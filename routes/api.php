@@ -15,14 +15,18 @@ use Illuminate\Support\Facades\Request;
 
 
 //retourne tous les endpoints commençant par /api/auth fait appel à AuthentificationController
-
+Route::group([
+   'prefix'=>'auth',
+   'middleware' => 'cors',
+],function($route){
     Route::get('/{photo}/{filename}',      ['as'=>'log','uses'=>'ApiController@images']);
-    Route::post('/auth/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);
+    Route::post('/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);
     Route::post('/register',  ['as'=>'logi','uses'=>'AuthentificationController@register']);
     Route::get('/me',      ['as'=>'log','uses'=>'AuthentificationController@me']);
     Route::post('/logout', ['as'=>'lo','uses'=>'AuthentificationController@logout']);
 
-    
+});
+
  Route::get('error', function () {
     return response("Pas accés", 401);
    })->name('error');
