@@ -31,7 +31,7 @@ class AuthentificationController extends Controller
     public function register(Request $request) 
     { 
         $article = User::latest()->first();
-        $fileNameToStore="nulll";
+        $fileNameToStore="null";
         if($article==null){
             $one=0;
         }else{
@@ -83,7 +83,7 @@ class AuthentificationController extends Controller
             $com->genre=$input['genre'];
             $com->ville=$input['ville'];
             $com->adresse=$input['adresse'];
-            if($fileNameToStore){
+            if($fileNameToStore!="null"){
             $com->photo=$fileNameToStore;
             }
             
