@@ -31,7 +31,7 @@ class AuthentificationController extends Controller
     public function register(Request $request) 
     { 
         $article = User::latest()->first();
-        
+        $fileNameToStore="nulll";
         if($article==null){
             $one=0;
         }else{
