@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable 
 {
     use HasApiTokens, Notifiable;
-
+    protected $table="membre";
 
     /**
      * The attributes that are mass assignable.
@@ -17,9 +17,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-       'profil','nom', 'telephone','professionnel_id','particulier_id','prenom', 'password','email','pays'
+       'prenom','nom','password','departement_id','departement','telephoneportable','telephonefixe','email', 'localisation','etatcompte','compte','typecompte','sexe','codemembre','DateInscription','telephonefixe'
     ];
-
+    public $timestamps = false;
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -39,13 +39,10 @@ class User extends Authenticatable
     ];
     
     public function isRole(){
-        return $this->profil;
+        return $this->typecompte;
     }
-    public function particulier(){
-        return $this->belongsTo('App\particulier');
-    }
-    public function professionnel(){
-        return $this->belongsTo('App\professionnel');
+    public function departement(){
+        return $this->belongsTo('App\departement','departement_id');
     }
 
 }

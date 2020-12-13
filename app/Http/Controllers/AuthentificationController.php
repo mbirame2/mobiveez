@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\SendEmailService;
 use App\User;
+use App\departement;
 use App\particulier;
 use App\professionnel;
 use App\Services\SendEmailServiceImpl;
@@ -30,26 +31,20 @@ class AuthentificationController extends Controller
      */ 
     public function register(Request $request) 
     { 
-        $article = User::latest()->first();
-        $fileNameToStore="null";
-        if($article==null){
-            $one=0;
-        }else{
-            $one=$article->id;
-        }
-        
-        $article=$one+1;
       //  var_dump("SN".strval(date("y")).strval($article));die();
         $validator = Validator::make($request->all(), [ 
-            'prenom' => 'required', 
-            'nom' => 'required', 
-            'telephone' => 'required', 
+            'first_name' => 'required', 
+            'last_name' => 'required', 
+            'phone' => 'required', 
             'password' => 'required', 
-            'compte' => 'required', 
+            'accountType' => 'required', 
             'email' => 'required', 
-            'ville' => 'required', 
+            'city' => 'required', 
             'adresse' => 'required', 
-            'pays' => 'required', 
+            'country' => 'required', 
+            
+         
+
         ]);
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], 401);            
@@ -57,57 +52,42 @@ class AuthentificationController extends Controller
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']); 
         
-        if($request->hasFile('photo') ){
-            $image_name = $request->file('photo')->getClientOriginalName();
-        $filename = pathinfo($image_name,PATHINFO_FILENAME);
-        $image_ext = $request->file('photo')->getClientOriginalExtension();
-        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-        $path =  $request->file('photo')->storeAs('public/images/user',$fileNameToStore);
-          }
+
           $co=new User();
-          $co->prenom=$input['prenom'];
-        $co->nom=$input['nom'];
+          $co->prenom=$input['first_name'];
+        $co->nom=$input['last_name'];
         $co->password=$input['password'];
-        $co->telephone=$input['telephone'];
+        $co->telephoneportable=$input['phone'];
         $co->email=$input['email'];
-        $co->pays=$input['pays'];
-        
-        if($request->compte=="particulier")
+        $co->localisation=$input['adresse'];
+        $co->etatcompte=0;
+        $co->compte=0;
+        $dept=departement::where('lib_dept',$input['city'])->first();;  
+        /*var_dump($dept->lib_dept);die();*/
+        $co->departement()->associate($dept);
+        $co->pays=$input['country'];
+        if($request->accountType=="particulier")
         {
-            $co->profil="particulier";
-            
-
-            $input['id_user']="SN".strval(date("y"))."Pa".strval($article);
-            $com=new particulier();
-            $com->numero_id=$input['id_user'];
-            $com->genre=$input['genre'];
-            $com->ville=$input['ville'];
-            $com->adresse=$input['adresse'];
-            if($fileNameToStore!="null"){
-            $com->photo=$fileNameToStore;
-            }
-            
-            $com->save();
-            $co->particulier()->associate($com);
+            $co->typecompte="particulier";
+            $article = User::where('pays',$input['country'])->where('typecompte',"particulier")->get();  
+            $article = count($article)+1;
+            $co->sexe=$request->gender;
+            $code=$request->country.strval(date("y"))."Pa".strval($article+1);
+            $co->codemembre=$code;
+            $co->DateInscription=date("Y-m-d h:i:sa");
+        
             $co->save();
-        }else if($request->compte=="professionnel"){
+        }else if($request->accountType=="professionnel"){
 
-            
-            $co->profil="professionnel";
-            
-            $input['id_user']="SN".strval(date("y"))."Pr".strval($article);
-            $com=new professionnel();
-            $com->numero_id=$input['id_user'];
-            $com->entreprise=$input['entreprise'];
-            $com->ville=$input['ville'];
-            $com->adresse=$input['adresse'];
-            if($fileNameToStore){
-                $com->photo=$fileNameToStore;
-                }
-            $com->telephone_fixe=$input['telephone_fixe'];
-            
-            $com->save();
-            $co->professionnel()->associate($com);
+            $co->typecompte="professionnel";
+            $article = User::where('pays',$input['country'])->where('typecompte',"professionnel")->get();  
+            $article = count($article)+1;
+
+            $code=$request->country.strval(date("y"))."Pr".strval($article);
+            $co->DateInscription=date("Y-m-d h:i:sa");
+            $co->codemembre=$code;
+            $co->societe=$request->company;
+            $co->telephonefixe=$request->landline;
             $co->save();
 
         }else{
@@ -123,7 +103,12 @@ class AuthentificationController extends Controller
  
 
     public function login(){ 
-        if(Auth::attempt(['telephone' => request('telephone_mail'), 'password' => request('password')]) || Auth::attempt(['email' => request('telephone/mail'), 'password' => request('password')]) ){ 
+        if (is_numeric(request('telephone_mail'))) {
+            $field = 'telephoneportable' ;
+        }else{
+            $field = 'email' ;
+        }
+        if( Auth::attempt([$field => request('telephone_mail'), 'password' => request('password')]) ){ 
             $user = Auth::user(); 
             $token =  $user->createToken('MyApp')->accessToken; 
             return response()->json( [$token,$user]); 
