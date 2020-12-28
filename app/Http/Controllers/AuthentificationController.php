@@ -50,7 +50,7 @@ class AuthentificationController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);            
         }
         $input = $request->all(); 
-        $input['password'] = bcrypt($input['password']); 
+        $input['password'] = sha1($input['password']); 
         
 
           $co=new User();
@@ -59,6 +59,7 @@ class AuthentificationController extends Controller
         $co->password=$input['password'];
         $co->telephoneportable=$input['phone'];
         $co->email=$input['email'];
+        $co->num_whatsapp=$input['num_whatsapp'];
         $co->localisation=$input['adresse'];
         $co->etatcompte=0;
         $co->compte=0;
@@ -102,13 +103,13 @@ class AuthentificationController extends Controller
 
  
 
-    public function login(){ 
+    public function loggin(){ 
         if (is_numeric(request('telephone_mail'))) {
             $field = 'telephoneportable' ;
         }else{
             $field = 'email' ;
         }
-        if( Auth::attempt([$field => request('telephone_mail'), 'password' => request('password')]) ){ 
+        if( Auth::attempt([$field => request('telephone_mail'), 'password' => sha1(request('password'))]) ){ 
             $user = Auth::user(); 
             $token =  $user->createToken('MyApp')->accessToken; 
             return response()->json( [$token,$user]); 
@@ -116,6 +117,28 @@ class AuthentificationController extends Controller
         else{ 
             return response()->json(['error'=>'Unauthorised'], 401); 
         } 
+    }
+
+    public function login(){
+        if (is_numeric(request('telephone_mail'))) {
+            $field = 'telephoneportable' ;
+        }else{
+            $field = 'email' ;
+        }
+        $user = User::where([
+            $field => request('telephone_mail'), 
+            'password' => sha1(request('password'))
+        ])->first();
+        
+        if($user)
+        {
+            Auth::login($user);
+            $user = Auth::user(); 
+            $token =  $user->createToken('MyApp')->accessToken; 
+            return response()->json( [$token,$user]); 
+        }else{
+            return response()->json(["error: Pas accés",401]); 
+        }
     }
 
     public function me()
