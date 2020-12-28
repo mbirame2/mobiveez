@@ -40,7 +40,7 @@ class AuthentificationController extends Controller
             'accountType' => 'required', 
             'email' => 'required', 
             'city' => 'required', 
-            'adresse' => 'required', 
+            'address' => 'required', 
             'country' => 'required', 
             
          
@@ -60,10 +60,10 @@ class AuthentificationController extends Controller
         $co->telephoneportable=$input['phone'];
         $co->email=$input['email'];
         $co->num_whatsapp=$input['num_whatsapp'];
-        $co->localisation=$input['adresse'];
+        $co->localisation=$input['address'];
         $co->etatcompte=0;
         $co->compte=0;
-        $dept=departement::where('lib_dept',$input['city'])->first();;  
+        $dept=departement::where('lib_dept',$input['city'])->first(); 
         /*var_dump($dept->lib_dept);die();*/
         $co->departement()->associate($dept);
         $co->pays=$input['country'];
