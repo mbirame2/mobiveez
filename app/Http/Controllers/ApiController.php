@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\professionnel;
 use App\plat;
+use App\region;
 use App\chambre;
 use App\evenement;
 use App\vehicule;
 use App\User;
-use App\particulier;
+use App\departement;
+use App\souscategorie;
 use App\annonce;
 use App\automobile;
 use App\commande_plat;
@@ -23,16 +25,13 @@ class ApiController extends Controller
     // Insertion des annonces
     public function annonce(Request $req){
         $validator = Validator::make($req->all(), [ 
-          'categorie' => 'required', 
-          'sous_categorie' => 'required', 
-          'prix' => 'required', 
+          'city' => 'required', 
+          'type_publication' => 'required', 
+          'price' => 'required', 
           'type_publication'=> 'required',
-          'paiement' => 'required', 
-          'ville' => 'required', 
-          'titre' => 'required', 
-          'quartier' => 'required',
+          'payment_type' => 'required', 
+          'title' => 'required', 
           'description' => 'required', 
-          'photo' => 'required', 
       ]); 
         
             //var_dump(auth('api')->user()->id_professionnel);die();
@@ -40,6 +39,26 @@ class ApiController extends Controller
           return response()->json(['error'=>$validator->errors()], 401);            
       }else{
         $annonce= new annonce;
+        $ss=souscategorie::where('lib_souscat',$req->input('subcategory'))->first(); 
+        $annonce->idsouscategorie=$ss->id_souscat;
+        $annonce->prix=$req->input('price');
+        $article = annonce::all();  
+        $artic= count($article)+1;
+        $annonce->referenceannonce=auth('api')->user()->codemembre.'-'.$artic;
+        $annonce->typeannonce=$req->input('type_publication');
+        $annonce->paiementtranche=$req->input('payment_type');
+        $dept=departement::where('lib_dept',$req->input('city'))->first(); 
+        $annonce->departement()->associate($dept);
+        $annonce->titre=$req->input('title');
+        $annonce->troc='non';
+        $annonce->statutvente='en vente';
+        $annonce->localisation=$req->input('localisation');
+        $annonce->description=$req->input('description');
+        $annonce->dateannonce=date("Y-m-d H:i:s");
+        $annonce->idmembre=auth('api')->user()->idmembre;
+      
+        
+
         if($req->input('categorie')=="habillement"){
           $habillement= new habillement;
           $habillement->type=$req->input('type');     
@@ -48,16 +67,17 @@ class ApiController extends Controller
           $habillement->couleur=$req->input('couleur');  
           $habillement->taille=$req->input('taille');  
           $habillement->save();
-          $annonce->habillement()->associate($habillement);
-        }else if($req->input('categorie')=="immobilier" && $req->input('sous_categorie')!='materiel_construction'){
+        }else if($req->input('categorie')=="Immobilier" ){
           $immobilier= new immobilier;
           $immobilier->surface=$req->input('surface');     
-          $immobilier->nombre_piece=$req->input('nombre_piece');  
-          $immobilier->date=$req->input('date');  
-          $immobilier->droit_visite=$req->input('droit_visite');  
-          $immobilier->montant=$req->input('montant');  
+          $immobilier->idannonce=$annonce->idannonce;
+          $immobilier->typeoperation=$req->input('type');   
+          $immobilier->nombrepiece=$req->input('n_rooms');  
+          $immobilier->datedisponibilite=$req->input('open_date');  
+          $immobilier->droitvisite=$req->input('visit_amount');  
+          $immobilier->montantdroit=$req->input('montant');  
+          $annonce->save();
           $immobilier->save();
-          $annonce->immobilier()->associate($immobilier);
         } else if($req->input('categorie')=="automobile" && $req->input('sous_categorie')!='assurance_autos'){
           $automobile= new automobile;
           $automobile->categorie=$req->input('categorie');     
@@ -82,19 +102,7 @@ class ApiController extends Controller
           $path =  $req->file('photo')->storeAs('public/images/annonce',$fileNameToStore);
           $annonce->photo= $fileNameToStore;
         }
-        $annonce->categorie=$req->input('categorie');
-        $annonce->sous_categorie=$req->input('sous_categorie');
-        $annonce->prix=$req->input('prix');
-        $annonce->type_publication=$req->input('type_publication');
-        $annonce->paiement=$req->input('paiement');
-        $annonce->ville=$req->input('ville');
-        $annonce->titre=$req->input('titre');
-        $annonce->quartier=$req->input('quartier');
-        $annonce->description=$req->input('description');
-        $annonce->dateannonce=date("Y-m-d H:i:s");
-        $annonce->user()->associate(auth('api')->user());
-      
-        $annonce->save();
+        
         return response()->json(['succés'=>"Enregistrement de lannonce avec succés"], 200);            
 
       }}
@@ -412,6 +420,12 @@ class ApiController extends Controller
     public function getannonce()
     {
       $article = annonce::with(['user.professionnel','user.particulier','automobile','habillement','immobilier'])->get();
+      return response()->json($article); 
+    }
+
+    public function getregion()
+    {
+      $article = region::all();
       return response()->json($article); 
     }
 

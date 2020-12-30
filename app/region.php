@@ -4,11 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class habillement extends Model
+class region extends Model
 {
-    protected $table="annonce_habillement";
+    protected $table="region";
     public $timestamps = false;
+
     protected $fillable = [
-      'marque','type','couleur','modele','taille'
+        'lib_reg', 'id_pays'
     ];
 }

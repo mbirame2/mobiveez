@@ -20,6 +20,7 @@ class User extends Authenticatable
        'prenom','nom','password','departement_id','num_whatsapp','departement','telephoneportable','telephonefixe','email', 'localisation','etatcompte','compte','typecompte','sexe','codemembre','DateInscription','telephonefixe'
     ];
     public $timestamps = false;
+    protected $primaryKey = "idmembre";
     /**
      * The attributes that should be hidden for arrays.
      *

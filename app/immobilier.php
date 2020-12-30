@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class immobilier extends Model
 {
-    protected $table="annonce_immobilier";
+    protected $table="immobilier";
     public $timestamps = false;
     protected $fillable = [
-      'surface','nombre_piece','date','droit_visite','montant'
+      'surface','nombrepiece','datedisponibilite','droitvisite','montantdroit'
     ];
 }

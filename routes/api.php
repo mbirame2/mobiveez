@@ -26,16 +26,18 @@ Route::group([
     Route::post('/logout', ['as'=>'lo','uses'=>'AuthentificationController@logout']);
 
 });
+Route::get('/region',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getregion']);
 
  Route::get('error', function () {
-    return response("Pas accés", 401);
+    return response()->json(['error'=>"Pas acces"], 401);            
+
    })->name('error');
 
 //endpoint des particuliers
 Route::group([
     'prefix'=>'part',
     'middleware' => 'cors',
-    'middleware' => 'particulier:api',
+    'middleware' => 'auth:api',
  ],function($route){
      Route::post('/annonce',  ['as'=>'lo','uses'=>'ApiController@annonce']);
      Route::post('/commande_plat',  ['as'=>'lo','uses'=>'ApiController@commande_plat']);
@@ -51,7 +53,7 @@ Route::group([
 Route::group([
     'prefix'=>'pro',
     'middleware' => 'cors',
-    'middleware' => 'professionnel:api',
+    'middleware' => 'auth:api',
  ],function($route){
     Route::post('/annonce',  ['as'=>'lo','uses'=>'ApiController@annonce']);
      Route::post('/plat',  ['as'=>'lo','uses'=>'ApiController@plat']);
