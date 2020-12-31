@@ -26,7 +26,7 @@ Route::group([
     Route::post('/logout', ['as'=>'lo','uses'=>'AuthentificationController@logout']);
 
 });
-Route::get('/region',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getregion']);
+Route::get('/region/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getregion']);
 
  Route::get('error', function () {
     return response()->json(['error'=>"Pas acces"], 401);            

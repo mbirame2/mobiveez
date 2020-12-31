@@ -423,10 +423,11 @@ class ApiController extends Controller
       return response()->json($article); 
     }
 
-    public function getregion()
+    public function getregion($id)
     {
-      $article = region::all();
-      return response()->json($article); 
+
+      $article = region::where('id_pays',$id)->get();
+      return response($article, 200)  ;
     }
 
     public function getchambre()
