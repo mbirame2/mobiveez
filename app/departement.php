@@ -12,4 +12,8 @@ class departement extends Model
     protected $fillable = [
         'lib_dept', 'id_reg','id_dept'
     ];
+
+    public function region(){
+        return $this->belongsTo('App\region','id_reg');
+    }
 }

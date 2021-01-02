@@ -423,10 +423,12 @@ class ApiController extends Controller
       return response()->json($article); 
     }
 
-    public function getregion($id)
+    public function getdepartement($id)
     {
 
-      $article = region::where('id_pays',$id)->get();
+      $article = departement::with(['region'])->whereHas('region', function ($query) use ($id) {
+        $query->where('id_pays', $id);
+    })->get();
       return response($article, 200)  ;
     }
 
