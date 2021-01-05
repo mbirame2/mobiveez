@@ -106,7 +106,7 @@ class ApiController extends Controller
           $annonce->photo= $fileNameToStore;
         }
         
-        return response()->json(['succes'=>"Enregistrement de lannonce avec succes"], 200);            
+        return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200]);            
 
       }}
 
