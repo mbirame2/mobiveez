@@ -59,40 +59,43 @@ class ApiController extends Controller
       
         
 
-        if($req->input('categorie')=="habillement"){
+        if($req->input('categorie')=="Habillement et accessoires"){
           $habillement= new habillement;
-          $habillement->type=$req->input('type');     
-          $habillement->marque=$req->input('marque');  
-          $habillement->modele=$req->input('modele');  
-          $habillement->couleur=$req->input('couleur');  
-          $habillement->taille=$req->input('taille');  
+          $habillement->type=$req->input('clothing_type');     
+          $habillement->marque=$req->input('brand');  
+          $habillement->modele=$req->input('model');  
+          $habillement->couleur=$req->input('color');  
+          $habillement->taille=$req->input('size');  
+          $annonce->save();
+          $habillement->annonce()->associate($annonce);
           $habillement->save();
         }else if($req->input('categorie')=="Immobilier" ){
           $immobilier= new immobilier;
           $immobilier->surface=$req->input('surface');     
-          $immobilier->idannonce=$annonce->idannonce;
+         
           $immobilier->typeoperation=$req->input('type');   
           $immobilier->nombrepiece=$req->input('n_rooms');  
           $immobilier->datedisponibilite=$req->input('open_date');  
           $immobilier->droitvisite=$req->input('visit_amount');  
           $immobilier->montantdroit=$req->input('montant');  
           $annonce->save();
+          $a=annonce::latest('idannonce')->first();
+          $immobilier->idannonce=$a->idannonce;
           $immobilier->save();
-        } else if($req->input('categorie')=="automobile" && $req->input('sous_categorie')!='assurance_autos'){
+        } else if($req->input('categorie')=="Automobile et Autres" ){
           $automobile= new automobile;
-          $automobile->categorie=$req->input('categorie');     
-          $automobile->marque=$req->input('marque');  
-          $automobile->modele=$req->input('modele');  
-          $automobile->capacite=$req->input('capacite');  
-          $automobile->couleur=$req->input('couleur');  
-          $automobile->kilometre=$req->input('kilometre');  
-          $automobile->puissance=$req->input('puissance');  
-          $automobile->boite=$req->input('boite');  
-          $automobile->carburant=$req->input('carburant');  
-          $automobile->jante=$req->input('jante');  
-          $automobile->cylindre=$req->input('cylindre'); 
+          
+          $automobile->typeoperation=$req->input('type');  
+          $automobile->couleur=$req->input('color');  
+          $automobile->kilometre=$req->input('mileage');  
+          $automobile->puissance=$req->input('power');  
+          $automobile->boite=$req->input('gearbox');  
+          $automobile->carburant=$req->input('fuel_type');  
+          $automobile->jante=$req->input('rim_type');  
+          $automobile->cylindre=$req->input('n_cylinders'); 
+          $annonce->save();
+          $automobile->annonce()->associate($annonce);
           $automobile->save();
-          $annonce->automobile()->associate($automobile);
         }
         if($req->hasFile('photo') ){
           $image_name = $req->file('photo')->getClientOriginalName();
@@ -103,7 +106,7 @@ class ApiController extends Controller
           $annonce->photo= $fileNameToStore;
         }
         
-        return response()->json(['succés'=>"Enregistrement de lannonce avec succés"], 200);            
+        return response()->json(['succes'=>"Enregistrement de lannonce avec succes"], 200);            
 
       }}
 
