@@ -40,8 +40,10 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+             
             'throttle:60,1',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'bindings',
+    
         ],
     ];
 
@@ -54,8 +56,6 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'cors' => \App\Http\Middleware\cors::class,
-        'particulier' => \App\Http\Middleware\particulier::class,
-        'professionnel' => \App\Http\Middleware\professionnel::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

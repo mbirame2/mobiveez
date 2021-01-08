@@ -28,7 +28,6 @@ class ApiController extends Controller
           'city' => 'required', 
           'type_publication' => 'required', 
           'price' => 'required', 
-          'type_publication'=> 'required',
           'payment_type' => 'required', 
           'title' => 'required', 
           'description' => 'required', 
