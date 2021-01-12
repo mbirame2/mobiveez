@@ -26,7 +26,7 @@ class ApiController extends Controller
     public function annonce(Request $req){
         $validator = Validator::make($req->all(), [ 
           'city' => 'required', 
-          'type_publication' => 'required', 
+          'publish_type' => 'required', 
           'price' => 'required', 
           'payment_type' => 'required', 
           'title' => 'required', 
@@ -44,7 +44,7 @@ class ApiController extends Controller
         $article = annonce::all();  
         $artic= count($article)+1;
         $annonce->referenceannonce=auth('api')->user()->codemembre.'-'.$artic;
-        $annonce->typeannonce=$req->input('type_publication');
+        $annonce->typeannonce=$req->input('publish_type');
         $annonce->paiementtranche=$req->input('payment_type');
         $dept=departement::where('lib_dept',$req->input('city'))->first(); 
         $annonce->departement()->associate($dept);
