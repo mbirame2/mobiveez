@@ -127,7 +127,7 @@ class ApiController extends Controller
         return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
         'id_annonce'=>$a->idannonce,
         'structureimage'=>'api.iveez.com/api/image/{type_publication}/{imagename}',
-        'example'=>"api.iveez.com/api/image/annonce/1166-1611006967.png"
+        'example'=>"api.iveez.com/api/image/annonce/"+$iman->urlimage
         ]);            
 
       }}
