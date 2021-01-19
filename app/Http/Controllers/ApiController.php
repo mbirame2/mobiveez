@@ -17,11 +17,20 @@ use App\automobile;
 use App\commande_plat;
 use App\habillement;
 use App\immobilier;
+use App\imageannonce;
 use Validator;
 use File;
+use Illuminate\Support\Facades\Storage;
+
 
 class ApiController extends Controller
 {
+  public function base(){
+
+   
+    #$path =  $data->storeAs('public/images/annonce',"test.png");
+         // $annonce->photo1= $fileNameToStore;
+  }
     // Insertion des annonces
     public function annonce(Request $req){
         $validator = Validator::make($req->all(), [ 
@@ -55,7 +64,7 @@ class ApiController extends Controller
         $annonce->description=$req->input('description');
         $annonce->dateannonce=date("Y-m-d H:i:s");
         $annonce->idmembre=auth('api')->user()->idmembre;
-      
+  
         
 
         if($req->input('categorie')=="Habillement et accessoires"){
@@ -96,16 +105,30 @@ class ApiController extends Controller
           $automobile->annonce()->associate($annonce);
           $automobile->save();
         }
-        if($req->hasFile('photo') ){
-          $image_name = $req->file('photo')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo')->storeAs('public/images/annonce',$fileNameToStore);
-          $annonce->photo= $fileNameToStore;
-        }
+      
+        $a=annonce::latest('idannonce')->first();
+       
+        for($i=0;$i<$req->numberOfImages;$i++){
+          $iman= new imageannonce;
+          $img=$req->input('image'.$i);
         
-        return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200]);            
+          $base64_str = substr($img, strpos($img, ",")+1);
+          //var_dump($base64_str);die();
+          $data = base64_decode($base64_str);
+          $time=$a->idannonce+$i.'-'.time().'.png';
+          Storage::disk('annonce')->put($time, $data);
+          $iman->idannonce= $a->idannonce;  
+          $iman->urlimage=$time;  
+          $iman->parametre=$i;  
+          $iman->save();
+        }
+      
+        
+        return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
+        'id_annonce'=>$a->idannonce,
+        'structureimage'=>'api.iveez.com/api/image/{type_publication}/{imagename}',
+        'example'=>"api.iveez.com/api/image/annonce/1166-1611006967.png"
+        ]);            
 
       }}
 
@@ -244,7 +267,7 @@ class ApiController extends Controller
           $filename = pathinfo($image_name,PATHINFO_FILENAME);
           $image_ext = $req->file('photo1')->getClientOriginalExtension();
           $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo1')->storeAs('public/images/vehicule',$fileNameToStore);
+          $path =  $req->file('photo1')->storeAs('public/vehicule/photo',$fileNameToStore);
           $annonce->photo1= $fileNameToStore;
         }
         if($req->hasFile('photo2') ){
@@ -291,9 +314,9 @@ class ApiController extends Controller
 
       }}
 
-      public function images ($photo,$filename)
+      public function images ($filename,$photo)
       {
-          $path = public_path('storage')."/images/".$photo.'/'. $filename;
+          $path = public_path('storage')."/".$filename.'/'. $photo;
           $file = File::get($path);
           $response = Response($file, 200);
           $response->header('Content-Type', 'image/jpeg');

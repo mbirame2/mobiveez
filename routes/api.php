@@ -27,7 +27,8 @@ Route::group([
 
 });
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
-
+Route::get('/base',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@base']);
+Route::get('/image/{filename}/{photo}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@images']);
  Route::get('error', function () {
     return response()->json(['error'=>"Pas acces"], 401);            
 
