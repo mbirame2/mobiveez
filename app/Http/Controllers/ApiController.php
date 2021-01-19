@@ -119,7 +119,8 @@ class ApiController extends Controller
           Storage::disk('annonce')->put($time, $data);
           $iman->idannonce= $a->idannonce;  
           $iman->urlimage=$time;  
-          $iman->parametre=$i;  
+          $iman->parametre=$i; 
+          $url=$iman->urlimage;
           $iman->save();
         }
       
@@ -127,7 +128,7 @@ class ApiController extends Controller
         return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
         'id_annonce'=>$a->idannonce,
         'structureimage'=>'api.iveez.com/api/image/{type_publication}/{imagename}',
-        'example'=>"api.iveez.com/api/image/annonce/"+$iman->urlimage
+        'example'=>"api.iveez.com/api/image/annonce/"+$url
         ]);            
 
       }}
