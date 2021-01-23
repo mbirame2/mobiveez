@@ -445,7 +445,13 @@ class ApiController extends Controller
 
     public function getannonce()
     {
-      $article = annonce::with(['user.professionnel','user.particulier','automobile','habillement','immobilier'])->get();
+      $article = annonce::all();
+      foreach($article as $articl){
+        $membre = User::where('idmembre',$articl->idmembre)->first();
+        $articl['membre']=$membre;
+        $souscategorie = souscategorie::where('id_souscat',$articl->idsouscategorie)->first();
+        $articl['souscategorie']=$souscategorie;
+    }
       return response()->json($article); 
     }
 

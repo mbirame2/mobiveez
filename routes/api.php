@@ -46,7 +46,7 @@ Route::group([
      Route::get('/chambre',  ['as'=>'lo','uses'=>'ApiController@getchambre']); 
      Route::get('/vehicule',  ['as'=>'lo','uses'=>'ApiController@getvehicule']); 
      Route::get('/evenement',  ['as'=>'lo','uses'=>'ApiController@getevenement']); 
-
+     Route::get('/getannonce',  ['as'=>'lo','uses'=>'ApiController@getannonce']);
  });
 
 //endpoint des professionnelles
