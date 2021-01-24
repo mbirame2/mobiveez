@@ -51,6 +51,10 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public/annonce'),
         ],
+        'plat' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/plat'),
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

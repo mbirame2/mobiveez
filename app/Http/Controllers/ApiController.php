@@ -9,6 +9,7 @@ use App\region;
 use App\chambre;
 use App\evenement;
 use App\vehicule;
+use App\restauration;
 use App\User;
 use App\departement;
 use App\souscategorie;
@@ -137,12 +138,8 @@ class ApiController extends Controller
       public function plat(Request $req){
         $validator = Validator::make($req->all(), [ 
           'prix' => 'required', 
-          'temps_preparation' => 'required', 
-          'jour_disponible' => 'required', 
-          'plat_accompagnement'=> 'required',
-          'description' => 'required', 
-          'categorie' => 'required', 
-          'nombre_plat' => 'required',
+          'dureepreparation' => 'required', 
+       
       ]); 
         
             //var_dump(auth('api')->user()->id_professionnel);die();
@@ -151,24 +148,29 @@ class ApiController extends Controller
       }else{
         
         $annonce= new plat;
-        if($req->hasFile('photo') ){
-          $image_name = $req->file('photo')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo')->storeAs('public/images/plat',$fileNameToStore);
-          $annonce->photo= $fileNameToStore;
-        }
-        $annonce->categorie=$req->input('categorie');
+        
         $annonce->prix=$req->input('prix');
-        $annonce->temps_preparation=$req->input('temps_preparation');
-        $annonce->jour_disponible=$req->input('jour_disponible');
-        $annonce->plat_accompagnement=$req->input('plat_accompagnement');
+        $annonce->dureepreparation=$req->input('dureepreparation');
+        $annonce->lundi=$req->input('lundi');
+        $annonce->mardi=$req->input('mardi');
+        $annonce->mercredi=$req->input('mercredi');
+        $annonce->jeudi=$req->input('jeudi');
+        $annonce->vendredi=$req->input('vendredi');
+        $annonce->samedi=$req->input('samedi');
+        $annonce->dimanche=$req->input('dimanche');
+        $annonce->plat=$req->input('plat');
         $annonce->description=$req->input('description');
-        $annonce->statut="en attente";
-        $annonce->nombre_plat=$req->input('nombre_plat');
-        $annonce->user()->associate(auth('api')->user());
-      
+        $article = restauration::where('idrestauration',$req->input('idrestauration'))->first();
+        #var_dump($article);die();
+        $annonce->restauration()->associate($article);
+        $img=$req->input('photo');
+        
+        $base64_str = substr($img, strpos($img, ",")+1);
+        //var_dump($base64_str);die();
+        $data = base64_decode($base64_str);
+        $time=$annonce->idmenu.'-'.time().'.png';
+        Storage::disk('plat')->put($time, $data);
+        $annonce->photo=$time;
         $annonce->save();
         return response()->json(['succés'=>"Enregistrement du plat avec succés"], 200);            
 
@@ -439,7 +441,7 @@ class ApiController extends Controller
       // LES CONTROLLEURS DE GET METHODE
       public function getplat()
     {
-      $article = plat::with(['user.professionnel','user.particulier'])->get();
+      $article = plat::with(['restauration'])->get();
       return response()->json($article); 
     }
 

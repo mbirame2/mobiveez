@@ -11,14 +11,14 @@ class plat extends Model
      *
      * @var array
      */
-    protected $table="plat";
+    protected $table="menu";
     public $timestamps = false;
 
     protected $fillable = [
-        'photo', 'prix','user_id','user', 'temps_preparation','jour_disponible','plat_accompagnement','description','statut','categorie','nombre_plat'
+        'photo', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'dureepreparation','plat','description'
     ];
 
-    public function user(){
-        return $this->belongsTo('App\User');
+    public function restauration(){
+        return $this->belongsTo('App\restauration','idrestauration');
     }
 }
