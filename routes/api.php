@@ -41,12 +41,11 @@ Route::group([
  ],function($route){
      Route::post('/annonce',  ['as'=>'lo','uses'=>'ApiController@annonce']);
      Route::post('/commande_plat',  ['as'=>'lo','uses'=>'ApiController@commande_plat']);
-     Route::get('/plat',  ['as'=>'lo','uses'=>'ApiController@getplat']);
-     Route::get('/annonce',  ['as'=>'lo','uses'=>'ApiController@getannonce']);
+     Route::get('/getplat',  ['as'=>'lo','uses'=>'ApiController@getplat']);
+     Route::get('/getannonce',  ['as'=>'lo','uses'=>'ApiController@getannonce']);
      Route::get('/chambre',  ['as'=>'lo','uses'=>'ApiController@getchambre']); 
      Route::get('/vehicule',  ['as'=>'lo','uses'=>'ApiController@getvehicule']); 
      Route::get('/evenement',  ['as'=>'lo','uses'=>'ApiController@getevenement']); 
-     Route::get('/getannonce',  ['as'=>'lo','uses'=>'ApiController@getannonce']);
  });
 
 //endpoint des professionnelles
