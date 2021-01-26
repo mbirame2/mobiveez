@@ -114,10 +114,9 @@ class ApiController extends Controller
 
           if($req->hasFile('image'.$i) ){
             $iman= new imageannonce;
-            $image_name = $req->file('image'.$i)->getClientOriginalName();
-            $filename = pathinfo($image_name,PATHINFO_FILENAME);
+            
             $image_ext = $req->file('image'.$i)->getClientOriginalExtension();
-            $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+            $fileNameToStore = $a->idannonce.'-'.$i.'-'.time().'.'.$image_ext;
             $path =  $req->file('image'.$i)->storeAs('public/images/annonce',$fileNameToStore);
           
             
