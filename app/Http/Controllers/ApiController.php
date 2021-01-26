@@ -110,23 +110,21 @@ class ApiController extends Controller
         $a=annonce::latest('idannonce')->first();
        
         for($i=0;$i<$req->numberOfImages;$i++){
-      
-
-          if($req->hasFile('image'.$i) ){
-            $iman= new imageannonce;
-            
-            $image_ext = $req->file('image'.$i)->getClientOriginalExtension();
-            $fileNameToStore = $a->idannonce.'-'.$i.'-'.time().'.'.$image_ext;
-            $path =  $req->file('image'.$i)->storeAs('public/images/annonce',$fileNameToStore);
-          
-            
-            $iman->idannonce= $a->idannonce;  
-            $iman->urlimage=$fileNameToStore;  
-            $iman->parametre=$i; 
-            $iman->save();
-          }
+          $iman= new imageannonce;
+          $img=$req->input('image'.$i);
+        
+          $base64_str = substr($img, strpos($img, ",")+1);
+          //var_dump($base64_str);die();
+          $data = base64_decode($base64_str);
+          $time=$a->idannonce+$i.'-'.time().'.png';
+          Storage::disk('annonce')->put($time, $data);
+          $iman->idannonce= $a->idannonce;  
+          $iman->urlimage=$time;  
+          $iman->parametre=$i; 
+         
+          $iman->save();
         }
-        $url=$fileNameToStore;
+        $url=$time;
         
         return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
         'id_annonce'=>$a->idannonce,
@@ -321,7 +319,7 @@ class ApiController extends Controller
 
       public function images ($filename,$photo)
       {
-          $path = public_path('storage')."/images/".$filename.'/'. $photo;
+          $path = public_path('storage')."/".$filename.'/'. $photo;
           $file = File::get($path);
           $response = Response($file, 200);
           $response->header('Content-Type', 'image/jpeg');
