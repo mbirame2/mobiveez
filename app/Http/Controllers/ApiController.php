@@ -61,6 +61,7 @@ class ApiController extends Controller
         $annonce->titre=$req->input('title');
         $annonce->troc='non';
         $annonce->statutvente='en vente';
+        $annonce->statut='en attente';
         $annonce->localisation=$req->input('localisation');
         $annonce->description=$req->input('description');
         $annonce->dateannonce=date("Y-m-d H:i:s");
@@ -439,7 +440,7 @@ class ApiController extends Controller
 
 
 
-      // LES CONTROLLEURS DE GET METHODE
+      /////////LES CONTROLLEURS DE GET METHODE/////////////////
       public function getplat()
     {
       $article = plat::with(['restauration'])->get();
@@ -448,15 +449,17 @@ class ApiController extends Controller
 
     public function getannonce()
     {
-      $article = annonce::all();
+      $article = annonce::where('statut','acceptee')->paginate(15);
       foreach($article as $articl){
         $membre = User::where('idmembre',$articl->idmembre)->first();
         $articl['membre']=$membre;
         $souscategorie = souscategorie::where('id_souscat',$articl->idsouscategorie)->first();
         $articl['souscategorie']=$souscategorie;
     }
+  //  $article=$article->paginate(15);
       return response()->json($article); 
     }
+   
 
     public function getdepartement($id)
     {
@@ -482,4 +485,16 @@ class ApiController extends Controller
       $article = evenement::with(['user.professionnel','user.particulier'])->get();
       return response()->json($article); 
     }
+
+
+
+    ////////////BACK-OFFICE/////////////////
+    public function validerannonce($id)
+    {
+      $annonce =annonce::find($id);  
+      $annonce->statut='acceptee';
+      $annonce->save();
+      return response()->json($annonce); 
+    }
+ 
 }

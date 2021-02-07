@@ -15,11 +15,8 @@ class chambre extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'photo1', 'photo2','user_id','photo3', 'photo4','titre','prix_nuitee','service_chambre','type_lit','capacite','description','statut'
+       'prix','typechambre','capacite','description','typelit','climatisation','douche','baignoire','televiseur','refrigerateur','minibar','eauminerale','balcon','selectionfilm','conditionannulation','ventilation','petitdejeuner'
     ];
 
 
-    public function user(){
-        return $this->belongsTo('App\User');
-    }
 }

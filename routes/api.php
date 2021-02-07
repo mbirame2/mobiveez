@@ -62,3 +62,15 @@ Route::group([
 
 
  });
+ Route::group([
+    'prefix'=>'backoffice',
+    'middleware' => 'cors',
+    'middleware' => 'auth:api',
+ ],function($route){
+    Route::get('/annonce/{id}',  ['as'=>'lo','uses'=>'ApiController@validerannonce']);
+     Route::post('/plat',  ['as'=>'lo','uses'=>'ApiController@validerplat']);
+     Route::post('/chambre',  ['as'=>'lo','uses'=>'ApiController@validerchambre']); 
+     Route::post('/vehicule',  ['as'=>'lo','uses'=>'ApiController@validervehicule']); 
+     Route::post('/evenement',  ['as'=>'lo','uses'=>'ApiController@validerevenement']); 
+
+ });
