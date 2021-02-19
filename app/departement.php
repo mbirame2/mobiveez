@@ -8,7 +8,7 @@ class departement extends Model
 {
     protected $table="departement";
     public $timestamps = false;
-
+    protected $primaryKey = "id_dept";
     protected $fillable = [
         'lib_dept', 'id_reg','id_dept'
     ];

@@ -26,115 +26,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ApiController extends Controller
 {
-  public function base(){
 
-   
-    #$path =  $data->storeAs('public/images/annonce',"test.png");
-         // $annonce->photo1= $fileNameToStore;
-  }
-    // Insertion des annonces
-    public function annonce(Request $req){
-        $validator = Validator::make($req->all(), [ 
-          'city' => 'required', 
-          'publish_type' => 'required', 
-          'price' => 'required', 
-          'payment_type' => 'required', 
-          'title' => 'required', 
-          'description' => 'required', 
-      ]); 
-        
-            //var_dump(auth('api')->user()->id_professionnel);die();
-      if ($validator->fails()) { 
-          return response()->json(['error'=>$validator->errors()], 401);            
-      }else{
-        $annonce= new annonce;
-        $ss=souscategorie::where('lib_souscat',$req->input('subcategory'))->first(); 
-        $annonce->idsouscategorie=$ss->id_souscat;
-        $annonce->prix=$req->input('price');
-        $article = annonce::all();  
-        $artic= count($article)+1;
-        $annonce->referenceannonce=auth('api')->user()->codemembre.'-'.$artic;
-        $annonce->typeannonce=$req->input('publish_type');
-        $annonce->paiementtranche=$req->input('payment_type');
-        $dept=departement::where('lib_dept',$req->input('city'))->first(); 
-        $annonce->departement()->associate($dept);
-        $annonce->titre=$req->input('title');
-        $annonce->troc='non';
-        $annonce->statutvente='en vente';
-        $annonce->statut='en attente';
-        $annonce->localisation=$req->input('localisation');
-        $annonce->description=$req->input('description');
-        $annonce->dateannonce=date("Y-m-d H:i:s");
-        $annonce->idmembre=auth('api')->user()->idmembre;
-  
-        
-
-        if($req->input('categorie')=="Habillement et accessoires"){
-          $habillement= new habillement;
-          $habillement->type=$req->input('clothing_type');     
-          $habillement->marque=$req->input('brand');  
-          $habillement->modele=$req->input('model');  
-          $habillement->couleur=$req->input('color');  
-          $habillement->taille=$req->input('size');  
-          $annonce->save();
-          $habillement->annonce()->associate($annonce);
-          $habillement->save();
-        }else if($req->input('categorie')=="Immobilier" ){
-          $immobilier= new immobilier;
-          $immobilier->surface=$req->input('surface');     
-         
-          $immobilier->typeoperation=$req->input('type');   
-          $immobilier->nombrepiece=$req->input('n_rooms');  
-          $immobilier->datedisponibilite=$req->input('open_date');  
-          $immobilier->droitvisite=$req->input('visit_amount');  
-          $immobilier->montantdroit=$req->input('montant');  
-          $annonce->save();
-          $a=annonce::latest('idannonce')->first();
-          $immobilier->idannonce=$a->idannonce;
-          $immobilier->save();
-        } else if($req->input('categorie')=="Automobile et Autres" ){
-          $automobile= new automobile;
-          
-          $automobile->typeoperation=$req->input('type');  
-          $automobile->couleur=$req->input('color');  
-          $automobile->kilometre=$req->input('mileage');  
-          $automobile->puissance=$req->input('power');  
-          $automobile->boite=$req->input('gearbox');  
-          $automobile->carburant=$req->input('fuel_type');  
-          $automobile->jante=$req->input('rim_type');  
-          $automobile->cylindre=$req->input('n_cylinders'); 
-          $annonce->save();
-          $automobile->annonce()->associate($annonce);
-          $automobile->save();
-        }
-      
-        $a=annonce::latest('idannonce')->first();
-       
-        for($i=0;$i<$req->numberOfImages;$i++){
-          $iman= new imageannonce;
-          $img=$req->input('image'.$i);
-        
-          $base64_str = substr($img, strpos($img, ",")+1);
-          //var_dump($base64_str);die();
-          $data = base64_decode($base64_str);
-          $time=$a->idannonce+$i.'-'.time().'.png';
-          Storage::disk('annonce')->put($time, $data);
-          $iman->idannonce= $a->idannonce;  
-          $iman->urlimage=$time;  
-          $iman->parametre=$i; 
-         
-          $iman->save();
-        }
-        $url=$time;
-        
-        return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
-        'id_annonce'=>$a->idannonce,
-        'structureimage'=>'api.iveez.com/api/image/{type_publication}/{imagename}',
-        'example'=>"api.iveez.com/api/image/annonce/".$url,
-        'annonce'=>$annonce,
-        ]);            
-
-      }}
 
 
       public function plat(Request $req){
@@ -449,12 +341,12 @@ class ApiController extends Controller
 
     public function getannonce()
     {
-      $article = annonce::where('statut','acceptee')->paginate(15);
+      $article = annonce::select('titre','prix','localisation','idannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
-        $membre = User::where('idmembre',$articl->idmembre)->first();
-        $articl['membre']=$membre;
-        $souscategorie = souscategorie::where('id_souscat',$articl->idsouscategorie)->first();
-        $articl['souscategorie']=$souscategorie;
+        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
+        $articl['image']=$membre;
+        $articl['url']="api.iveez.com/api/image/annonce/{imagename}";
+        
     }
   //  $article=$article->paginate(15);
       return response()->json($article); 

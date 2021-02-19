@@ -143,13 +143,39 @@ class AuthentificationController extends Controller
 
     public function me()
     {
-        if(auth('api')->user()->profil=="particulier"){
-            $article = particulier::with(['user'])->where('user_id',auth('api')->user()->id)->first();
-            return response()->json($article);
-        }else{
-            $article = professionnel::with(['user'])->where('user_id',auth('api')->user()->id)->first();
-            return response()->json($article);
+       
+            return response()->json(auth('api')->user() );
+        
+        
+    }
+    public function updateuser(Request $request)
+    {
+        if(!auth('api')->user()){
+            return response()->json(
+                ['code'=>403 ,
+                'error'=>'Token not found'
+                ]);
         }
+        $input = $request->all(); 
+        $co = User::find(auth('api')->user()->idmembre);
+       
+        $co->prenom=$input['prenom'];
+        $co->nom=$input['nom']; 
+        $co->telephoneportable=$input['telephoneportable'];
+        $co->email=$input['email'];
+        $co->num_whatsapp=$input['num_whatsapp'];
+        $co->localisation=$input['localisation'];
+       
+        $dept=departement::find($input['departement_id']); 
+        /*var_dump($dept->lib_dept);die();*/
+        $co->departement()->associate($dept);
+        
+        $co->save();
+         
+        return response()->json([
+            "status"=>200,
+            "message"=> "l'utilisateur a été mis à jour"
+      ]);
         
     }
     /**

@@ -49,7 +49,11 @@ return [
         ],
         'annonce' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/annonce'),
+            'root' => storage_path('app/public/photo'),
+        ],
+        'profil' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/profil'),
         ],
         'plat' => [
             'driver' => 'local',
