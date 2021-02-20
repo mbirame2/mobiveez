@@ -158,9 +158,8 @@ class EmarketController extends Controller
     {
     
      // $annonce=[];
-      $sscat =souscategorie::select('id_souscat')->where('nom_souscat',$name)->first();   
      // $annonce=souscategorie::select('id_souscat')->where('nom_souscat',$name)->first();   
-      $article=annonce::select('titre','prix','localisation','idannonce')->where('idsouscategorie',$sscat->id_souscat)->orderBy('idannonce','desc')->get();
+      $article=annonce::select('titre','prix','localisation','idannonce')->where([['idsouscategorie',$name],['statut','acceptee']])->orderBy('idannonce','desc')->get();
      // array_push($annonce, $sscat);
      foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
