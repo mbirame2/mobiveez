@@ -270,14 +270,15 @@ class EmarketController extends Controller
       
       $boutique->dateshowroom=date("Y-m-d H:i:s");
       $img=$req->input('logo');
-      
+      if($img){
       $base64_str = substr($img, strpos($img, ",")+1);
       //var_dump($base64_str);die();
       $data = base64_decode($base64_str);
-      $time=$a->idannonce+$i.'-'.time().'.png';
+      $time=$boutique->idmembre.'-'.time().'.png';
       Storage::disk('annonce')->put($time, $data);
     
       $boutique->logoshowroom="photo/".$time; 
+      }
       $boutique->save();
       return response()->json(['success'=>"Enregistrement de la boutique avec succés"], 200);            
 
@@ -376,6 +377,11 @@ class EmarketController extends Controller
       $commande->datecommande=date("Y-m-d H:i:s");
       $commande->statut="en attente";
       $commande->save();
+      $notification= new notification;
+      $notification->idmembre=auth('api')->user()->idmembre;
+      $notification->date=date("Y-m-d H:i:s");
+      $notification->message="Commande en attente de validatiation par le propiétaire";
+      $notification->save();
       return response()->json(['success'=>"Enregistrement. Commande en attente de validatiation par le propiétaire"], 200);            
     }
     public function modifiercommande(Request $req)
