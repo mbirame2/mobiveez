@@ -53,7 +53,7 @@ class EmarketController extends Controller
         }
         $articl['image']=$membre;
         $articl['number_view']=$file;
-        $articl['url']="api.iveez.com/api/image/annonce/{imagename}";
+        $articl['url']="api.iveez.com/api/image/{imagename}";
         
     }
   //  $article=$article->paginate(15);
