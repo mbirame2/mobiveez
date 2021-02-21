@@ -339,18 +339,7 @@ class ApiController extends Controller
       return response()->json($article); 
     }
 
-    public function getannonce()
-    {
-      $article = annonce::select('titre','prix','localisation','idannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
-      foreach($article as $articl){
-        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
-        $articl['image']=$membre;
-        $articl['url']="api.iveez.com/api/image/annonce/{imagename}";
-        
-    }
-  //  $article=$article->paginate(15);
-      return response()->json($article); 
-    }
+ 
    
 
     public function getdepartement($id)

@@ -42,7 +42,7 @@ Route::group([
      Route::post('/annonce',  ['as'=>'lo','uses'=>'ApiController@annonce']);
      Route::post('/commande_plat',  ['as'=>'lo','uses'=>'ApiController@commande_plat']);
      Route::get('/getplat',  ['as'=>'lo','uses'=>'ApiController@getplat']);
-     Route::get('/getannonce',  ['as'=>'lo','uses'=>'ApiController@getannonce']);
+    
      Route::get('/chambre',  ['as'=>'lo','uses'=>'ApiController@getchambre']); 
      Route::get('/vehicule',  ['as'=>'lo','uses'=>'ApiController@getvehicule']); 
      Route::get('/evenement',  ['as'=>'lo','uses'=>'ApiController@getevenement']); 
@@ -102,10 +102,13 @@ Route::group([
     Route::get('/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
     Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@ajout_panier']); 
     Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@delete_panier']); 
-    Route::get('/liste_panier',  ['as'=>'lo','uses'=>'EmarketController@liste_panier']);  
+    Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@liste_panier']);  
     Route::get('/supprimercommande/{id}',  ['as'=>'lo','uses'=>'EmarketController@supprimercommande']);
     Route::get('/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
     Route::get('/listeservice',  ['as'=>'lo','uses'=>'EmarketController@listeservice']);
     Route::get('/listecommande',  ['as'=>'lo','uses'=>'EmarketController@listecommande']);
+    Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
+    Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
+    Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
 
 });

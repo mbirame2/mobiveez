@@ -55,6 +55,10 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public/profil'),
         ],
+        'vue' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/compteur'),
+        ],
         'plat' => [
             'driver' => 'local',
             'root' => storage_path('app/public/plat'),

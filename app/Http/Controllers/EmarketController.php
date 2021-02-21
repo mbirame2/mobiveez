@@ -36,9 +36,29 @@ class EmarketController extends Controller
     public function oneannonce($id)
     {
       $annonce =annonce::find($id);  
+      $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
+      $annonce['number_view']=$file;
+      Storage::disk('vue')->put($annonce->referenceannonce.'_biens.txt', $file+1);
       return response()->json($annonce); 
     }
-    
+    public function allannonce()
+    {
+      $article = annonce::select('titre','prix','localisation','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      foreach($article as $articl){
+        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
+        if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
+        }else{
+          $file=0;
+        }
+        $articl['image']=$membre;
+        $articl['number_view']=$file;
+        $articl['url']="api.iveez.com/api/image/annonce/{imagename}";
+        
+    }
+  //  $article=$article->paginate(15);
+      return response()->json($article); 
+    }
     public function annonce(Request $req){
       $validator = Validator::make($req->all(), [ 
         'city' => 'required', 
@@ -116,7 +136,7 @@ class EmarketController extends Controller
       }
     
       $a=annonce::latest('idannonce')->first();
-     
+     // var_dump($a);die();
       for($i=0;$i<$req->numberOfImages;$i++){
         $iman= new imageannonce;
         $img=$req->input('image'.$i);
@@ -124,10 +144,10 @@ class EmarketController extends Controller
         $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
         $data = base64_decode($base64_str);
-        $time="photo/".$a->idannonce+$i.'-'.time().'.png';
+        $time=$a->idannonce+$i.'-'.time().'.png';
         Storage::disk('annonce')->put($time, $data);
         $iman->idannonce= $a->idannonce;  
-        $iman->urlimage=$time;  
+        $iman->urlimage="photo/".$time;  
         $iman->parametre=$i; 
        
         $iman->save();
@@ -142,7 +162,8 @@ class EmarketController extends Controller
        
         $iman->save();
       }
-      
+      Storage::disk('vue')->put($a->referenceannonce.'_biens.txt', 0);
+
       return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
       'id_annonce'=>$a->idannonce,
       'type'=>$req->input('publish_type'),
@@ -292,7 +313,7 @@ class EmarketController extends Controller
      
       return response()->json($annonce); 
     }
-
+    
     public function ajout_credit(Request $req)
     {
       $user =User::find(auth('api')->user()->idmembre);
@@ -351,9 +372,9 @@ class EmarketController extends Controller
      
       return response()->json(['success'=>"Suppression de l'article dans le panier avec succés"], 200); 
     }
-    public function liste_panier()
+    public function liste_panier($id)
     {
-      $panier =panier::where('idmembre','=',auth('api')->user()->idmembre)->get();
+      $panier =panier::where('idmembre','=',$id)->get();
     
       foreach($panier as $articl){
         $membre = annonce::where([['idannonce',$articl->idannonce],['statut','acceptee']])->get();
@@ -422,6 +443,23 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($service); 
     }
+    public function payepourmoi($id)
+    {
+      $notification= new notification;
+      $notification->idmembre=$id;
+      $user =auth('api')->user();
+      $notification->date=date("Y-m-d H:i:s");
+      $notification->message=$user->prenom.' '.$user->nom." vous sollicite pour le paiement de sa commande sur iveez ";
+      $notification->save();
+
+      $notification= new notification;
+      $notification->idmembre=$user>idmembre;
+      $notification->date=date("Y-m-d H:i:s");
+      $notification->message="Demande envoyée avec succés, vous recevrez une notification en cas de retour.";
+      $notification->save();
+  //  $article=$article->paginate(15);
+      return response()->json(['success'=>"Succés de la commande"], 200); 
+    }
     public function listecommande()
     {
       $service = commande::with('panier')->whereHas('panier', function ($query) {
@@ -436,6 +474,14 @@ class EmarketController extends Controller
       return response()->json($service); 
     }
 
+    public function statutcompte($id)
+    {
+     // $commande= new commande;
+      $user=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
+      $user->etatcompte=$id;
+      $user->save();
+      return response()->json(['success'=>"Statut de l'utilisateur mise à jour"], 200);   
+    }
     public function imageprofil(Request $req)
     {
      // $commande= new commande;
