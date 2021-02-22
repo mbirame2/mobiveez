@@ -35,9 +35,13 @@ class EmarketController extends Controller
 {
     public function oneannonce($id)
     {
-      $annonce =annonce::find($id);  
-      $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
-      $annonce['number_view']=$file;
+      $annonce =annonce::find($id);   
+      if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
+        }else{
+          $file=0;
+        }
+        $annonce['number_view']=$file;
       Storage::disk('vue')->put($annonce->referenceannonce.'_biens.txt', $file+1);
       return response()->json($annonce); 
     }
