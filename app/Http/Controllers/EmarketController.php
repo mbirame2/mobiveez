@@ -35,28 +35,39 @@ class EmarketController extends Controller
 {
     public function oneannonce($id)
     {
-      $annonce =annonce::find($id);   
+      $annonce =annonce::where([['statut','acceptee'],['idannonce',$id]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
-        }else{
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'));
+          }else {
           $file=0;
         }
-        $annonce['number_view']=$file;
+        $membre = imageannonce::where('idannonce',$annonce->idannonce)->get();
+        $annonce['image']=$membre;
+        $user=User::with('departement')->select('prenom','nom','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$annonce->idmembre)->first();
+        $annonce['vues']=$file;
+        $annonce['proprietaire']=$user;
       Storage::disk('vue')->put($annonce->referenceannonce.'_biens.txt', $file+1);
       return response()->json($annonce); 
     }
+
+
+
     public function allannonce()
     {
-      $article = annonce::select('titre','prix','localisation','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
-        }else{
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'));
+          }else {
           $file=0;
         }
         $articl['image']=$membre;
-        $articl['number_view']=$file;
+        $articl['vues']=$file;
         $articl['url']="api.iveez.com/api/image/{imagename}";
         
     }
@@ -184,12 +195,19 @@ class EmarketController extends Controller
     
      // $annonce=[];
      // $annonce=souscategorie::select('id_souscat')->where('nom_souscat',$name)->first();   
-      $article=annonce::select('titre','prix','localisation','idannonce')->where([['idsouscategorie',$name],['statut','acceptee']])->orderBy('idannonce','desc')->get();
+      $article=annonce::select('titre','prix','localisation','referenceannonce','idannonce')->where([['idsouscategorie',$name],['statut','acceptee']])->orderBy('idannonce','desc')->paginate(30);
      // array_push($annonce, $sscat);
      foreach($article as $articl){
-        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
+        $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
         $articl['image']=$membre;
-        $articl['url']="api.iveez.com/api/image/{imagename}" ;
+        if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
+          }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
+            $file=File::get(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'));
+            }else {
+            $file=0;
+          }
+          $articl['vues']=$file;
         
     }
       return response()->json($article); 
@@ -197,8 +215,20 @@ class EmarketController extends Controller
 
     public function search_article($name)
     {
-     $annonce=annonce::where([['titre','LIKE','%'.$name.'%'],['statut','acceptee']])->get();  
- 
+     $annonce=annonce::select('titre','prix','localisation','referenceannonce','idannonce')->where([['titre','LIKE','%'.$name.'%'],['statut','acceptee']])->orderBy('idannonce','desc')->paginate(30);
+     foreach($annonce as $articl){
+      $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
+      $articl['image']=$membre;
+      if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'));
+          }else {
+          $file=0;
+        }
+        $articl['vues']=$file;
+      
+  }
       return response($annonce); 
     }
 
@@ -220,14 +250,35 @@ class EmarketController extends Controller
 
     public function oneboutique($id)
     {
-      $annonce =boutique::find($id);  
+      $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+      $user=User::select('prenom','nom' ,'codemembre')->where('idmembre',$annonce->idmembre)->first();
+
+      if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
+        }else{
+          $file=0;
+        }
+        $annonce['vues']=$file;
+        $annonce['proprietaire']=$user;
+        Storage::disk('vue')->put($annonce->idshowroom.'_showrooms.txt', $file+1);
       return response()->json($annonce); 
     }
 
     public function getboutique()
     {
-      $boutique = boutique::where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
- 
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
+      foreach($boutique as $articl){
+        $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
+        $articl['user']=$membre;
+        
+        if(File::exists(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'));
+          }else{
+            $file=0;
+          }
+          $articl['vues']=$file;
+        
+    }
   //  $article=$article->paginate(15);
       return response()->json($boutique); 
     }
@@ -248,13 +299,25 @@ class EmarketController extends Controller
     }
     public function getarticleboutique($id)
     {
-      $boutique = annoncesboutique::where('idshowroom',$id)->orderBy('idannonceshowroom','desc')->paginate(30);
-      foreach($boutique as $articl){
-        $membre = annonce::where([['idannonce',$articl->idannonce],['statut','acceptee']])->get();
-        $articl['articles']=$membre;
-        $articl['url']="api.iveez.com/api/image/{imagename}";
-        
+      $boutique = annoncesboutique::select('idannonceshowroom','idannonce')->where('idshowroom',$id)->orderBy('idannonceshowroom','desc')->paginate(30);
+      foreach($boutique as $article){
+        $membre = annonce::select('titre','prix','localisation','idannonce','referenceannonce')->where([['idannonce',$article->idannonce],['statut','acceptee']])->first();
+        $image = imageannonce::where('idannonce',$article->idannonce)->get();
+              
+          if(File::exists(storage_path('app/public/compteur/'.$membre->referenceannonce.'_biens.txt'))){
+            $file=File::get(storage_path('app/public/compteur/'.$membre->referenceannonce.'_biens.txt'));
+            }else if(File::exists(storage_path('app/public/compteur/'.strtolower($membre->referenceannonce).'_biens.txt'))){
+              $file=File::get(storage_path('app/public/compteur/'.strtolower($membre->referenceannonce).'_biens.txt'));
+              }else {
+              $file=0;
+            }
+            $article['articles']=$membre;  
+            $article['image']=$image;   
+            $article['articles']['vues']=$file;
+           
+      
     }
+   
   //  $article=$article->paginate(15);
       return response()->json($boutique); 
     }
@@ -506,35 +569,35 @@ class EmarketController extends Controller
     public function filter_article(Request $req)
     {
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
-   if(!is_null( $req->input('categorie'))){
-    $results = souscategorie::where('nom_souscat' ,'LIKE', '%' . $req->input('categorie') . '%')->first();
+  if(!is_null( $req->input('categorie'))){
+  $results = souscategorie::where('id_souscat' , $req->input('categorie'))->first();
 
-   }else{
-    $results=NULL;
-   }
-  //var_dump($results);die();
-     $annonce= annonce::with('departement')->where(function ($query) use($req,$results) {
-      $query->Where( 'statut','acceptee');
-        $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
-        $query->Where( 'localisation', 'LIKE','%'.$req->input('localisation').'%');
-        $query->Where( 'titre', 'LIKE','%'.$req->input('titre').'%');
-        if($req->input('prix_min')){
-          $query->Where( 'prix','>',$req->input('prix_min'));
+  }else{
+  $results=NULL;
+  }
+//var_dump($results);die();
+    $annonce= annonce::with('departement')->where(function ($query) use($req,$results) {
+    $query->Where( 'statut','acceptee');
+      $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
+      $query->Where( 'localisation', 'LIKE','%'.$req->input('localisation').'%');
+      $query->Where( 'titre', 'LIKE','%'.$req->input('titre').'%');
+      if($req->input('prix_min')){
+        $query->Where( 'prix','>',$req->input('prix_min'));
+      }
+      if($req->input('prix_max')){
+        $query->Where( 'prix','<',$req->input('prix_max'));
+      }
+      if(!is_null($results)){
+        $query->Where( 'idsouscategorie', $results->id_souscat);
         }
-        if($req->input('prix_max')){
-          $query->Where( 'prix','<',$req->input('prix_max'));
-        }
-        if(!is_null($results)){
-          $query->Where( 'idsouscategorie', $results->id_souscat);
-         }
-      
-      //  $query->orwhere($field, 'like',  '%' . $string .'%');
-      
-    })->whereHas('departement', function ($query) use ($req) {
-      $query->where('lib_dept', 'LIKE', '%' .$req->input('departement'). '%');
-    })
-    ->get();
-   
-      return response($annonce); 
-    }
+    
+    //  $query->orwhere($field, 'like',  '%' . $string .'%');
+    
+  })->whereHas('departement', function ($query) use ($req) {
+    $query->where('lib_dept', 'LIKE', '%' .$req->input('departement'). '%');
+  })
+  ->get();
+  
+    return response($annonce); 
+  }
 }
