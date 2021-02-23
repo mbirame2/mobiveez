@@ -569,7 +569,7 @@ class EmarketController extends Controller
     public function filter_article(Request $req)
     {
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
-  if(!is_null( $req->input('categorie'))){
+  if(!is_null( $req->input('sscategorie'))){
   $results = souscategorie::where('id_souscat' , $req->input('categorie'))->first();
 
   }else{
