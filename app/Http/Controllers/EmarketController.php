@@ -70,6 +70,23 @@ class EmarketController extends Controller
         $articl['vues']=$file;
         $articl['url']="api.iveez.com/api/image/{imagename}";
         
+    }}
+    public function proannonce($id)
+    {
+      $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
+      foreach($article as $articl){
+        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
+        if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'));
+          }else {
+          $file=0;
+        }
+        $articl['image']=$membre;
+        $articl['vues']=$file;
+        $articl['url']="api.iveez.com/api/image/{imagename}";
+        
     }
   //  $article=$article->paginate(15);
       return response()->json($article); 
@@ -108,7 +125,7 @@ class EmarketController extends Controller
       $annonce->description=$req->input('description');
       $annonce->dateannonce=date("Y-m-d H:i:s");
       $annonce->idmembre=auth('api')->user()->idmembre;
-
+      $details=[];
       
 
       if($req->input('categorie')=="Habillement et accessoires"){
@@ -121,6 +138,7 @@ class EmarketController extends Controller
         $annonce->save();
         $habillement->annonce()->associate($annonce);
         $habillement->save();
+        array_push($details, $habillement);
       }else if($req->input('categorie')=="Immobilier" ){
         $immobilier= new immobilier;
         $immobilier->surface=$req->input('surface');     
@@ -134,6 +152,7 @@ class EmarketController extends Controller
         $a=annonce::latest('idannonce')->first();
         $immobilier->idannonce=$a->idannonce;
         $immobilier->save();
+        array_push($details, $immobilier);
       } else if($req->input('categorie')=="Automobile et Autres" ){
         $automobile= new automobile;
         
@@ -146,8 +165,10 @@ class EmarketController extends Controller
         $automobile->jante=$req->input('rim_type');  
         $automobile->cylindre=$req->input('n_cylinders'); 
         $annonce->save();
+        array_push($details, $automobile);
         $automobile->annonce()->associate($annonce);
         $automobile->save();
+        
       }
     
       $a=annonce::latest('idannonce')->first();
@@ -182,9 +203,10 @@ class EmarketController extends Controller
       return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
       'id_annonce'=>$a->idannonce,
       'type'=>$req->input('publish_type'),
-      'structureimage'=>'api.iveez.com/api/image/{type_publication}/{imagename}',
-      'example'=>"api.iveez.com/api/image/annonce/".$url,
+      'structureimage'=>'api.iveez.com/api/image/{imagename}',
+      'example'=>"api.iveez.com/api/image/".$url,
       'annonce'=>$annonce,
+      'details'=>$details
       ]);            
 
     }
@@ -285,6 +307,13 @@ class EmarketController extends Controller
     public function getnotification()
     {
       $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+ 
+  //  $article=$article->paginate(15);
+      return response()->json($notification); 
+    }
+    public function gettransaction()
+    {
+      $notification = transaction::where('id_membre',auth('api')->user()->idmembre)->orderBy('id_transaction','desc')->get(); 
  
   //  $article=$article->paginate(15);
       return response()->json($notification); 
@@ -426,6 +455,7 @@ class EmarketController extends Controller
       $panier= new panier;
       $panier->idmembre=auth('api')->user()->idmembre;
       $panier->idannonce=$id;
+      
       $panier->date=date("Y-m-d H:i:s");
       $panier->save();
    
@@ -441,11 +471,14 @@ class EmarketController extends Controller
     }
     public function liste_panier($id)
     {
-      $panier =panier::where('idmembre','=',$id)->get();
+      $panier =panier::select('idannonce')->where('idmembre','=',$id)->get();
     
       foreach($panier as $articl){
-        $membre = annonce::where([['idannonce',$articl->idannonce],['statut','acceptee']])->get();
+        
+        $membre = annonce::select('localisation','idannonce','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
         $articl['annonce']=$membre;
+        $image = imageannonce::select('urlimage')->where('idannonce',$membre->idannonce)->first();
+        $articl['annonce']['image']=$image;
         $articl['url']="api.iveez.com/api/image/{imagename}";
         
     } 
@@ -462,6 +495,7 @@ class EmarketController extends Controller
       $commande= new commande;
 
       $commande->idpanier=$req->input('idpanier');
+      $commande->quantite=$req->input('quantite');
       $commande->datecommande=date("Y-m-d H:i:s");
       $commande->statut="en attente";
       $commande->save();
@@ -529,13 +563,14 @@ class EmarketController extends Controller
     }
     public function listecommande()
     {
-      $service = commande::with('panier')->whereHas('panier', function ($query) {
+      $service = commande::select('idpanier')->with('panier')->whereHas('panier', function ($query) {
         $query->where('idmembre', auth('api')->user()->idmembre);
     })->get();
     foreach($service as $articl){
-      $membre = annonce::where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
+      $membre = annonce::select('localisation','idannonce','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
       $articl['panier']['annonce']=$membre;
-      
+      $image = imageannonce::select('urlimage')->where('idannonce',$membre->idannonce)->first();
+      $articl['panier']['annonce']['image']=$image;
   }
   //  $article=$article->paginate(15);
       return response()->json($service); 
@@ -570,7 +605,7 @@ class EmarketController extends Controller
     {
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
   if(!is_null( $req->input('sscategorie'))){
-  $results = souscategorie::where('id_souscat' , $req->input('categorie'))->first();
+  $results = souscategorie::where('id_souscat' , $req->input('sscategorie'))->first();
 
   }else{
   $results=NULL;

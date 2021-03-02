@@ -137,7 +137,7 @@ class AuthentificationController extends Controller
             $token =  $user->createToken('MyApp')->accessToken; 
             return response()->json( [$token,$user]); 
         }else{
-            return response()->json(["error: Pas accés",401]); 
+            return response()->json(["error: Mot de passe incorrecte",401]); 
         }
     }
 
@@ -163,6 +163,7 @@ class AuthentificationController extends Controller
         $co->nom=$input['nom']; 
         $co->telephoneportable=$input['telephoneportable'];
         $co->email=$input['email'];
+        $co->password= sha1($input['newpassword']); 
         $co->num_whatsapp=$input['num_whatsapp'];
         $co->localisation=$input['localisation'];
        
@@ -230,34 +231,6 @@ class AuthentificationController extends Controller
         }
     }
 
-    public function checkCodeNewMdp(Request $request){
-        $code = $request->code;
-        $user = $this->userService->findUserByEmail($request->email);
-        if($user->dateValiditeCode < Carbon::now()){
-            return response()->json([
-                "status" => 406,
-                "email" => $request->email,
-                "message" => "Ce code n'est plus valide"
-            ]); 
-        }
-        if($user->codeMdpForget == $code){
-            return response()->json([
-                "status" => 200,
-                "email" => $request->email,
-                 "message" => "le code entré correspond bien au code envoyé dans votre mail"
-            ]);
-        }
-        return response()->json([
-            "status" => 403,
-            "email" => $request->email,
-             "message" => "le code entré ne correspond pas au code envoyé dans votre boite mail"
-        ]);
 
-
-    }
-    public function changeMotDePasse(Request $request){
-        $user = $this->userService->findUserByEmail($request->email);
-        $user->password = $request->newPassword;
-        return $user->save();
-    }
+    
 }

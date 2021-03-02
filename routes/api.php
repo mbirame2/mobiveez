@@ -110,5 +110,6 @@ Route::group([
     Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
-
+    Route::get('/gettransaction',  ['as'=>'lo','uses'=>'EmarketController@gettransaction']);
+    Route::get('/proannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@proannonce']);
 });
