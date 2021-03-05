@@ -58,7 +58,7 @@ class EmarketController extends Controller
     {
       $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
-        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
+        $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
         }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
@@ -68,9 +68,10 @@ class EmarketController extends Controller
         }
         $articl['image']=$membre;
         $articl['vues']=$file;
-        $articl['url']="api.iveez.com/api/image/{imagename}";
-        
-    }}
+        $articl['url']="api.iveez.com/api/image/{imagename}";   
+    }
+    return response()->json($article); 
+  }
     public function proannonce($id)
     {
       $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
@@ -254,17 +255,21 @@ class EmarketController extends Controller
       return response($annonce); 
     }
 
-    public function verify_contact($numero)
+    public function verify_contact(Request $req)
     {
-      if (User::where('telephoneportable', '=', $numero)->exists()) {
-        return response()->json([
-          "code"=>200,
-          "response"=> "number ".$numero." exist"
-        ]); 
-     }
+      $numbers=[];
+      echo ''.typeof($req->input('numbers'));
+      foreach($req->input('numbers') as $articl){
+        if (User::where('telephoneportable','LIKE','%'.$articl.'%')->exists()) {
+          //$numbers[$articl]=
+          array_push($numbers, $articl);
+        }
+      }
+     
+        
       return response()->json([
-        "code"=>400,
-        "response"=> "number ".$numero." doesn't exist"
+        "code"=>200,
+        "response"=> $numbers
       ]); 
     }
 
@@ -273,7 +278,7 @@ class EmarketController extends Controller
     public function oneboutique($id)
     {
       $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
-      $user=User::select('prenom','nom' ,'codemembre')->where('idmembre',$annonce->idmembre)->first();
+      $user=User::select('prenom','nom' ,'codemembre','email')->where('idmembre',$annonce->idmembre)->first();
 
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
@@ -288,10 +293,11 @@ class EmarketController extends Controller
 
     public function getboutique()
     {
-      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
+   //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['etatshowroom','acceptee'],['idmembre',auth('api')->user()->idmembre]])->orderBy('idshowroom','desc')->paginate(30);
       foreach($boutique as $articl){
-        $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
-        $articl['user']=$membre;
+      //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
+        //$articl['user']=$membre;
         
         if(File::exists(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'))){
           $file=File::get(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'));
@@ -314,7 +320,12 @@ class EmarketController extends Controller
     public function gettransaction()
     {
       $notification = transaction::where('id_membre',auth('api')->user()->idmembre)->orderBy('id_transaction','desc')->get(); 
- 
+      
+        foreach($notification as $not){
+          $credit=preg_split ("/\,/", $not->description); 
+          $not['credit_vendu']= $credit[0];
+          $not['credit_total']= $credit[1];
+        }
   //  $article=$article->paginate(15);
       return response()->json($notification); 
     }
@@ -419,14 +430,14 @@ class EmarketController extends Controller
       $transaction->id_membre=auth('api')->user()->idmembre;
       $transaction->type="achat";
       $transaction->date=date("Y-m-d H:i:s");
-      $transaction->description="Achat credit de ".$req->credit.". Credit total: ".$user->compte;
+      $transaction->description=$req->credit.",".$user->compte;
       $transaction->save();
       $notification= new notification;
       $notification->idmembre=auth('api')->user()->idmembre;
       $notification->date=date("Y-m-d H:i:s");
       $notification->message="Achat credit de ".$req->credit.". Credit total: ".$user->compte;
       $notification->save();
-      return response()->json(['success'=>$transaction->description], 200); 
+      return response()->json(['success'=>'Enregistré'], 200); 
     }
     public function remove_credit(Request $req)
     {
@@ -440,14 +451,14 @@ class EmarketController extends Controller
       $transaction->id_membre=auth('api')->user()->idmembre;
       $transaction->type="vente";
       $transaction->date=date("Y-m-d H:i:s");
-      $transaction->description="Credit vendu: ".$req->credit.". Credit total: ".$user->compte;
+      $transaction->description=$req->credit.",".$user->compte;
       $transaction->save();
       $notification= new notification;
       $notification->idmembre=auth('api')->user()->idmembre;
       $notification->date=date("Y-m-d H:i:s");
       $notification->message="Credit vendu: ".$req->credit.". Credit total: ".$user->compte;
       $notification->save();
-      return response()->json(['success'=>$transaction->description], 200); 
+      return response()->json(['success'=>'Enregistré'], 200); 
     }
 
     public function ajout_panier($id)
@@ -475,7 +486,7 @@ class EmarketController extends Controller
     
       foreach($panier as $articl){
         
-        $membre = annonce::select('localisation','idannonce','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
+        $membre = annonce::select('localisation','idannonce','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
         $articl['annonce']=$membre;
         $image = imageannonce::select('urlimage')->where('idannonce',$membre->idannonce)->first();
         $articl['annonce']['image']=$image;

@@ -93,7 +93,7 @@ Route::group([
    Route::get('/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
    Route::get('/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
-    Route::get('/verify_contact/{numero}',  ['as'=>'lo','uses'=>'EmarketController@verify_contact']);
+    Route::post('/verify_contact',  ['as'=>'lo','uses'=>'EmarketController@verify_contact']);
     Route::get('/search_article/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 
     Route::get('/search_boutique/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_boutique']); 
     Route::get('/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']); 
