@@ -258,7 +258,7 @@ class EmarketController extends Controller
     public function verify_contact(Request $req)
     {
       $numbers=[];
-      echo ''.typeof($req->input('numbers'));
+     
       foreach($req->input('numbers') as $articl){
         if (User::where('telephoneportable','LIKE','%'.$articl.'%')->exists()) {
           //$numbers[$articl]=
@@ -482,7 +482,7 @@ class EmarketController extends Controller
     }
     public function liste_panier($id)
     {
-      $panier =panier::select('idannonce')->where('idmembre','=',$id)->get();
+      $panier =panier::select('idannonce')->where([['idmembre','=',$id],['statut','!=','commandé']])->get();
     
       foreach($panier as $articl){
         
@@ -503,17 +503,31 @@ class EmarketController extends Controller
 
     public function commander(Request $req)
     {
+     
+      
+      foreach($req->panier as $reqpanier){
+       
+        $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'])->first();
+      //return $panier;
       $commande= new commande;
-
-      $commande->idpanier=$req->input('idpanier');
-      $commande->quantite=$req->input('quantite');
+      //$commande->idpanier=$reqpanier['idpanier'];
+      $commande->panier()->associate($panier);
+      $commande->quantite=$reqpanier['quantite'];
       $commande->datecommande=date("Y-m-d H:i:s");
       $commande->statut="en attente";
       $commande->save();
+      $panier->statut="commandé";
+      $panier->save();
+      $notification= new notification;
+      $notification->idmembre=$panier->annonce->idmembre;
+      $notification->date=date("Y-m-d H:i:s");
+      $notification->message=$panier->annonce->titre." a été commandé. ";
+      $notification->save();
+      }
       $notification= new notification;
       $notification->idmembre=auth('api')->user()->idmembre;
       $notification->date=date("Y-m-d H:i:s");
-      $notification->message="Commande en attente de validatiation par le propiétaire";
+      $notification->message="Commande en attente de validatiation par le(s) propiétaire(s)";
       $notification->save();
       return response()->json(['success'=>"Enregistrement. Commande en attente de validatiation par le propiétaire"], 200);            
     }
@@ -615,27 +629,30 @@ class EmarketController extends Controller
     public function filter_article(Request $req)
     {
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
-  if(!is_null( $req->input('sscategorie'))){
-  $results = souscategorie::where('id_souscat' , $req->input('sscategorie'))->first();
-
-  }else{
-  $results=NULL;
+  if($req->input('categorie')=='habillement'){
+    $list=habillement::select('idannonce')->get();
+  }else if($req->input('categorie')=='automobile'){
+    $list=automobile::select('idannonce')->get();
+  }else if($req->input('categorie')=='immobilier'){
+    $list=immobilier::select('idannonce')->get();
   }
 //var_dump($results);die();
-    $annonce= annonce::with('departement')->where(function ($query) use($req,$results) {
+    $annonce= annonce::with('departement')->where(function ($query) use($req,$list) {
     $query->Where( 'statut','acceptee');
       $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
       $query->Where( 'localisation', 'LIKE','%'.$req->input('localisation').'%');
       $query->Where( 'titre', 'LIKE','%'.$req->input('titre').'%');
-      if($req->input('prix_min')){
-        $query->Where( 'prix','>',$req->input('prix_min'));
+      if($req->input('prix_min') && $req->input('prix_max')){
+        $query->Where( 'prix','>=',$req->input('prix_min'));
+        $query->Where( 'prix','<=',$req->input('prix_max'));
+      }else if($req->input('prix_max') && !$req->input('prix_min')){
+        $query->Where( 'prix','<=',$req->input('prix_max'));
+      }else if(!$req->input('prix_max') && $req->input('prix_min')){
+        $query->Where( 'prix','>=',$req->input('prix_min'));
       }
-      if($req->input('prix_max')){
-        $query->Where( 'prix','<',$req->input('prix_max'));
-      }
-      if(!is_null($results)){
-        $query->Where( 'idsouscategorie', $results->id_souscat);
-        }
+    if($list){
+      $query->whereIn('idannonce', $list);
+    }
     
     //  $query->orwhere($field, 'like',  '%' . $string .'%');
     
