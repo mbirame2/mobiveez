@@ -466,7 +466,7 @@ class EmarketController extends Controller
       $panier= new panier;
       $panier->idmembre=auth('api')->user()->idmembre;
       $panier->idannonce=$id;
-      
+      $panier->statut='';
       $panier->date=date("Y-m-d H:i:s");
       $panier->save();
    
