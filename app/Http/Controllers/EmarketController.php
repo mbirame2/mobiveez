@@ -68,7 +68,7 @@ class EmarketController extends Controller
         }
         $articl['image']=$membre->urlimage;
         $articl['vues']=$file;
-        $articl['url']="api.iveez.com/api/image/{imagename}";   
+     //   $articl['url']="api.iveez.com/api/image/{imagename}";   
     }
     return response()->json($article); 
   }
