@@ -324,7 +324,7 @@ class EmarketController extends Controller
       
         foreach($notification as $not){
           $credit=preg_split ("/\,/", $not->description); 
-          $not['credit_vendu']= $credit[0];
+          $not['credit']= $credit[0];
           $not['credit_total']= $credit[1];
         }
   //  $article=$article->paginate(15);
@@ -436,7 +436,7 @@ class EmarketController extends Controller
       $notification= new notification;
       $notification->idmembre=auth('api')->user()->idmembre;
       $notification->date=date("Y-m-d H:i:s");
-      $notification->message="Achat credit de ".$req->credit.". Credit total: ".$user->compte;
+      $notification->message="Achat credit :".$req->credit.". Credit total: ".$user->compte;
       $notification->save();
       return response()->json(['success'=>'Enregistré'], 200); 
     }
