@@ -260,9 +260,10 @@ class EmarketController extends Controller
       $numbers=[];
      
       foreach($req->input('numbers') as $articl){
-        if (User::where('telephoneportable','LIKE','%'.$articl.'%')->exists()) {
+        $test=User::select('prenom','typecompte','num_whatsapp','nom','codemembre','idmembre','profil','email','telephoneportable')->where('telephoneportable','LIKE','%'.$articl.'%')->first();
+        if ($test) {
           //$numbers[$articl]=
-          array_push($numbers, $articl);
+          array_push($numbers, $test);
         }
       }
      
