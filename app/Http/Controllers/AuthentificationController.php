@@ -163,7 +163,9 @@ class AuthentificationController extends Controller
         $co->nom=$input['nom']; 
         $co->telephoneportable=$input['telephoneportable'];
         $co->email=$input['email'];
+        if($input['newpassword']){
         $co->password= sha1($input['newpassword']); 
+        }
         $co->num_whatsapp=$input['num_whatsapp'];
         $co->localisation=$input['localisation'];
        
