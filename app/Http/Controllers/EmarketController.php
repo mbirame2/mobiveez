@@ -66,7 +66,7 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
-        $articl['image']=$membre;
+        $articl['image']=$membre->urlimage;
         $articl['vues']=$file;
         $articl['url']="api.iveez.com/api/image/{imagename}";   
     }
