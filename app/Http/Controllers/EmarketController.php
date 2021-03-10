@@ -248,7 +248,7 @@ class EmarketController extends Controller
         $query->orWhere('description', 'LIKE', '%' . $name . '%');
         $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
         $query->orWhere( 'titre', 'LIKE','%'.$name.'%');
-       
+        $query->orWhere( 'referenceannonce', 'LIKE','%'.$name.'%');
         if($list){
           $query->orWhereIn('idsouscategorie', $list);
         }
@@ -311,7 +311,7 @@ class EmarketController extends Controller
     public function getboutique()
     {
    //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();
-      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['etatshowroom','acceptee'],['idmembre',auth('api')->user()->idmembre]])->orderBy('idshowroom','desc')->paginate(30);
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
       foreach($boutique as $articl){
       //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
         //$articl['user']=$membre;
@@ -320,10 +320,12 @@ class EmarketController extends Controller
           $file=File::get(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'));
           }else{
             $file=0;
-          }
+          } 
           $articl['vues']=$file;
-        
+          $user=User::select('prenom','nom' ,'telephoneportable','codemembre','email')->where('idmembre',$articl->idmembre)->first();
+          $articl['proprietaire']=$user;
     }
+    
   //  $article=$article->paginate(15);
       return response()->json($boutique); 
     }
@@ -443,8 +445,11 @@ class EmarketController extends Controller
 
     public function search_boutique($name)
     {
-      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name) {
+      $list=User::where('codemembre', 'LIKE', '%' . $name . '%')->select('idmembre')->get();
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list) {
         $query->orWhere('descriptionshowroom', 'LIKE', '%' . $name . '%');
+        if($list){
+       $query->orWherein( 'idmembre', $list);}
         $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
         $query->orWhere( 'nomshowroom', 'LIKE','%'.$name.'%');})->paginate(30);
   
