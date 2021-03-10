@@ -105,11 +105,14 @@ Route::group([
     Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@liste_panier']);  
     Route::get('/supprimercommande/{id}',  ['as'=>'lo','uses'=>'EmarketController@supprimercommande']);
     Route::get('/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
+    Route::get('/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
     Route::get('/listeservice',  ['as'=>'lo','uses'=>'EmarketController@listeservice']);
     Route::get('/listecommande',  ['as'=>'lo','uses'=>'EmarketController@listecommande']);
     Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
+    Route::get('/liste_categorie',  ['as'=>'lo','uses'=>'EmarketController@liste_categorie']);
+    Route::get('/liste_souscategorie',  ['as'=>'lo','uses'=>'EmarketController@liste_souscategorie']);
     Route::get('/gettransaction',  ['as'=>'lo','uses'=>'EmarketController@gettransaction']);
     Route::get('/proannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@proannonce']);
 });

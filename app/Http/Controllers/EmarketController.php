@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\professionnel;
+use App\categorie;
 use App\plat;
 use App\panier;
 use App\region;
@@ -238,10 +239,25 @@ class EmarketController extends Controller
 
     public function search_article($name)
     {
-     $annonce=annonce::select('titre','prix','localisation','referenceannonce','idannonce')->where([['titre','LIKE','%'.$name.'%'],['statut','acceptee']])->orderBy('idannonce','desc')->paginate(30);
+      $list=souscategorie::select('id_souscat')->with('categorie')->whereHas('categorie', function ($query) use($name) {
+        $query->where('nom_cat', 'LIKE', '%' . $name . '%');
+    })->get();
+   // return response($list);
+    
+     $annonce=annonce::select('titre','prix','localisation','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->orderBy('idannonce','desc')->where(function ($query) use($name,$list) {
+        $query->orWhere('description', 'LIKE', '%' . $name . '%');
+        $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
+        $query->orWhere( 'titre', 'LIKE','%'.$name.'%');
+       
+        if($list){
+          $query->orWhereIn('idsouscategorie', $list);
+        }
+      })->paginate(30);
+
      foreach($annonce as $articl){
       $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
-      $articl['image']=$membre;
+      $articl['image']=$membre->urlimage;
+      unset($articl['description']);
       if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
         }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
@@ -314,6 +330,18 @@ class EmarketController extends Controller
     public function getnotification()
     {
       $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+ 
+  //  $article=$article->paginate(15);
+      return response()->json($notification); 
+    }
+    public function liste_souscategorie()
+    {
+      $souscategorie = souscategorie::select('nom_souscat')->get(); 
+      return response()->json($souscategorie); 
+    }
+    public function liste_categorie()
+    {
+      $notification = categorie::select('nom_cat')->get(); 
  
   //  $article=$article->paginate(15);
       return response()->json($notification); 
@@ -415,11 +443,22 @@ class EmarketController extends Controller
 
     public function search_boutique($name)
     {
-      $annonce =boutique::where('nomshowroom','LIKE','%'.$name.'%')->get();  
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name) {
+        $query->orWhere('descriptionshowroom', 'LIKE', '%' . $name . '%');
+        $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
+        $query->orWhere( 'nomshowroom', 'LIKE','%'.$name.'%');})->paginate(30);
+  
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);
-     
-      return response()->json($annonce); 
+     foreach($annonce as $ann){
+     if(File::exists(storage_path('app/public/compteur/'.$ann->idshowroom.'_showrooms.txt'))){
+      $file=File::get(storage_path('app/public/compteur/'.$ann->idshowroom.'_showrooms.txt'));
+      }else{
+        $file=0;
+      }
+      $ann['vues']=$file;}
+
+      return response($annonce); 
     }
     
     public function ajout_credit(Request $req)
@@ -473,6 +512,31 @@ class EmarketController extends Controller
    
      
       return response()->json(['success'=>"Ajout panier avec succés"], 200); 
+    }
+    public function getboutiqueservice()
+    {
+      $list=[28,29,30];
+      $servicevendu = servicevendu::select('idannonce','idservice')->whereIn('idservice', $list)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->orderBy('idvente','desc')->paginate(30);
+      foreach($servicevendu as $articl){
+        $annonce = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['idshowroom',$articl->idannonce],['etatshowroom','acceptee']])->first();
+        
+        $service = service::select('idservice','nomService')->where('idservice',$articl->idservice )->first();
+        if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->idshowroom).'_showrooms.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($annonce->idshowroom).'_biens_showrooms.txt'));
+          }else {
+          $file=0;
+        }
+        unset($articl['idannonce']);
+        unset($articl['idservice']);
+        $articl['boutique']=$annonce;
+        $articl['service']=$service->nomService;
+        $articl['vues']=$file;
+        
+    }
+     
+      return response()->json($servicevendu); 
     }
     public function delete_panier($id)
     {
@@ -552,12 +616,24 @@ class EmarketController extends Controller
 
     public function getarticleservice()
     {
-      $servicevendu = servicevendu::orderBy('idvente','desc')->paginate(30);
+      $servicevendu = servicevendu::select('idannonce','idservice')->where('datefinservice', '>=', date('Y-m-d H:i:s'))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
-        $membre = annonce::where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
-        $articl['article']=$membre;
-        $service = service::where('idservice',$articl->idservice )->first();
-        $articl['service']=$service;
+        $annonce = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
+        
+        $service = service::select('idservice','nomService')->where('idservice',$articl->idservice )->first();
+        $img = imageannonce::where('idannonce',$annonce->idannonce)->first();
+        if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'));
+          }else {
+          $file=0;
+        }
+        
+        $articl['article']=$annonce;
+        $articl['service']=$service->nomService;
+        $articl['image']=$img->urlimage;
+        $articl['vues']=$file;
         
     }
   //  $article=$article->paginate(15);
@@ -636,7 +712,10 @@ class EmarketController extends Controller
     $list=automobile::select('idannonce')->get();
   }else if($req->input('categorie')=='immobilier'){
     $list=immobilier::select('idannonce')->get();
+  }else{
+    $list='';
   }
+  
 //var_dump($results);die();
     $annonce= annonce::with('departement')->where(function ($query) use($req,$list) {
     $query->Where( 'statut','acceptee');
@@ -651,7 +730,7 @@ class EmarketController extends Controller
       }else if(!$req->input('prix_max') && $req->input('prix_min')){
         $query->Where( 'prix','>=',$req->input('prix_min'));
       }
-    if($list){
+    if($list!=''){
       $query->whereIn('idannonce', $list);
     }
     
