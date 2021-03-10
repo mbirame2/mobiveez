@@ -336,12 +336,12 @@ class EmarketController extends Controller
     }
     public function liste_souscategorie()
     {
-      $souscategorie = souscategorie::select('nom_souscat')->get(); 
+      $souscategorie = souscategorie::select('nom_souscat','lib_souscat','id_souscat','lib_souscaten','id_cat')->get(); 
       return response()->json($souscategorie); 
     }
     public function liste_categorie()
     {
-      $notification = categorie::select('nom_cat')->get(); 
+      $notification = categorie::select('nom_cat','lib_caten','lib_cat','id_cat')->get(); 
  
   //  $article=$article->paginate(15);
       return response()->json($notification); 
