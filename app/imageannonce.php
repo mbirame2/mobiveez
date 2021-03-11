@@ -10,6 +10,6 @@ class imageannonce extends Model
     protected $table="imageannonce";
     public $timestamps = false;
     protected $fillable = [
-      'idannone','urlimage','parametre' 
+      'idannonce','urlimage','parametre' 
     ];
 }
