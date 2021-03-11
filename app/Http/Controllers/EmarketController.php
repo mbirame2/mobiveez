@@ -445,11 +445,15 @@ class EmarketController extends Controller
 
     public function search_boutique($name)
     {
+      $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->first(); 
+     // return $dept;
       $list=User::where('codemembre', 'LIKE', '%' . $name . '%')->select('idmembre')->get();
-      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list) {
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list,$dept) {
         $query->orWhere('descriptionshowroom', 'LIKE', '%' . $name . '%');
         if($list){
        $query->orWherein( 'idmembre', $list);}
+       if($dept){
+        $query->orWhere( 'id_dep', $dept->id_dept);}
         $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
         $query->orWhere( 'nomshowroom', 'LIKE','%'.$name.'%');})->paginate(30);
   
