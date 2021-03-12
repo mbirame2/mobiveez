@@ -587,11 +587,14 @@ class EmarketController extends Controller
       //$commande->idpanier=$reqpanier['idpanier'];
       $commande->panier()->associate($panier);
       $commande->quantite=$reqpanier['quantite'];
-      $commande->datecommande=date("Y-m-d H:i:s");
+      $commande->datecommande=date("Y/m/d");
       $commande->statut="en attente";
-      $commande->save();
       $panier->statut="commandé";
       $panier->save();
+      //$number = commande::select('idcommande')->latest();  
+      $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
+      $commande->save();
+      
       $notification= new notification;
       $notification->idmembre=$panier->annonce->idmembre;
       $notification->date=date("Y-m-d H:i:s");
@@ -674,7 +677,7 @@ class EmarketController extends Controller
     }
     public function listecommande()
     {
-      $service = commande::select('idpanier')->where('statut','en attente')->whereHas('panier', function ($query) {
+      $service = commande::select('idpanier','datecommande','reference','quantite')->where('statut','en attente')->whereHas('panier', function ($query) {
         $query->where('idmembre', 2);
         $query->where('statut', 'commandé');
     })->get();
@@ -687,7 +690,7 @@ class EmarketController extends Controller
       $articl['panier']['image']=$image['urlimage'];
       unset($articl['panier']['idpanier']);unset($articl['panier']['idmembre']);
       unset($articl['panier']['idannonce']);unset($articl['panier']['statut']);
-      unset($articl['panier']['date']);unset($articl['idpanier']);
+      unset($articl['panier']['date']);unset($articl['idpanier']);unset($articl['panier']['quantite']);
   }
   //  $article=$article->paginate(15);
       return response()->json($service); 
