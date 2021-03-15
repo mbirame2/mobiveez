@@ -309,6 +309,21 @@ class EmarketController extends Controller
       return response()->json($annonce); 
     }
 
+    public function showroomsuser($id)
+    {
+      $annonces =boutique::where([['etatshowroom','acceptee'],['idmembre',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->get();  
+     
+      foreach($annonces as $annonce){
+      if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
+        }else{
+          $file=0;
+        }
+        $annonce['vues']=$file;
+      }
+      return response()->json($annonces); 
+    }
+
     public function getboutique()
     {
    //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();

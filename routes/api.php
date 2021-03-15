@@ -96,7 +96,8 @@ Route::group([
     Route::post('/verify_contact',  ['as'=>'lo','uses'=>'EmarketController@verify_contact']);
     Route::get('/search_article/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 
     Route::get('/search_boutique/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_boutique']); 
-    Route::get('/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']); 
+    Route::get('/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
+    Route::get('/proshowrooms/{id}',  ['as'=>'lo','uses'=>'EmarketController@showroomsuser']); 
     Route::get('/getboutique',  ['as'=>'lo','uses'=>'EmarketController@getboutique']); 
     Route::get('/getnotification',  ['as'=>'lo','uses'=>'EmarketController@getnotification']); 
     Route::get('/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
