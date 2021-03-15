@@ -136,11 +136,13 @@ class EmarketController extends Controller
         $habillement->marque=$req->input('brand');  
         $habillement->modele=$req->input('model');  
         $habillement->couleur=$req->input('color');  
-        $habillement->taille=$req->input('size');  
+        $habillement->taille=$req->input('size'); 
+        $det=$habillement; 
         $annonce->save();
+      //  array_push($details, $habillement);
         $habillement->annonce()->associate($annonce);
         $habillement->save();
-        array_push($details, $habillement);
+        
       }else if($req->input('categorie')=="Immobilier" ){
         $immobilier= new immobilier;
         $immobilier->surface=$req->input('surface');     
@@ -150,11 +152,12 @@ class EmarketController extends Controller
         $immobilier->datedisponibilite=$req->input('open_date');  
         $immobilier->droitvisite=$req->input('visit_amount');  
         $immobilier->montantdroit=$req->input('montant');  
+        $det=$immobilier;
         $annonce->save();
         $a=annonce::latest('idannonce')->first();
         $immobilier->idannonce=$a->idannonce;
         $immobilier->save();
-        array_push($details, $immobilier);
+      //  array_push($details, $immobilier);
       } else if($req->input('categorie')=="Automobile et Autres" ){
         $automobile= new automobile;
         
@@ -166,8 +169,9 @@ class EmarketController extends Controller
         $automobile->carburant=$req->input('fuel_type');  
         $automobile->jante=$req->input('rim_type');  
         $automobile->cylindre=$req->input('n_cylinders'); 
+       // array_push($details, $automobile);
         $annonce->save();
-        array_push($details, $automobile);
+        $det=$automobile;
         $automobile->annonce()->associate($annonce);
         $automobile->save();
         
@@ -205,10 +209,7 @@ class EmarketController extends Controller
       return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
       'id_annonce'=>$a->idannonce,
       'type'=>$req->input('publish_type'),
-      'structureimage'=>'api.iveez.com/api/image/{imagename}',
-      'example'=>"api.iveez.com/api/image/".$url,
-      'annonce'=>$annonce,
-      'details'=>$details
+      'details'=>$det
       ]);            
 
     }
@@ -311,7 +312,7 @@ class EmarketController extends Controller
     public function getboutique()
     {
    //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();
-      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['etatshowroom','acceptee'],['idmembre',auth('api')->user()->idmembre]])->orderBy('idshowroom','desc')->paginate(30);
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
       foreach($boutique as $articl){
       //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
         //$articl['user']=$membre;
@@ -438,7 +439,7 @@ class EmarketController extends Controller
       $boutique->logoshowroom="photo/".$time; 
       }
       $boutique->save();
-      return response()->json(['success'=>"Enregistrement de la boutique avec succés"], 200);            
+      return response()->json(['success'=>"Enregistrement de la boutique avec succés",'showroom'=>$boutique], 200);            
 
     }}
 
@@ -683,12 +684,12 @@ class EmarketController extends Controller
     foreach($service as $articl){
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
      // return $membre;
-     $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'])->first();
+     $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$articl->panier->idmembre)->first();
 
       $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
       
       $articl['panier']['annonce']=$membre;
-      $articl['panier']['proprietaire']=$user;
+      $articl['panier']['user']=$user;
       $articl['panier']['image']=$image['urlimage'];
       unset($articl['panier']['idpanier']);unset($articl['panier']['idmembre']);
       unset($articl['panier']['idannonce']);unset($articl['panier']['statut']);
