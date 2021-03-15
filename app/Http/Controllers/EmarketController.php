@@ -425,7 +425,6 @@ class EmarketController extends Controller
       $boutique->jourfin=$req->input('jourfin');
       $boutique->heuredebut=$req->input('heuredebut');
       $boutique->heurefin=$req->input('heurefin');
-      $boutique->siteweb=$req->input('siteweb');
       
       $boutique->dateshowroom=date("Y-m-d H:i:s");
       $img=$req->input('logo');
