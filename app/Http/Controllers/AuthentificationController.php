@@ -15,7 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
 
 
 class AuthentificationController extends Controller
@@ -146,7 +147,33 @@ class AuthentificationController extends Controller
        
             return response()->json(auth('api')->user() );
         
+            
+    }
+    public function sendmail($mail)
+    {
+        $number=rand(1000,9999);
+        $details=[
+             
+            'body'=>'Bienvenue dans Iveez. Votre code d activation est :',
+            'code'=>$number
+        ];
         
+      
+            $user = User::where("email", $mail)->first();
+            if (!$user) {
+                return response()->json([
+                    "status"=>403,
+                    "message"=> "le mail n'existe pas dans la base de donnée"
+              ]);
+            }
+            Mail::to($mail)->send(new TestMail($details));
+            return response( [$number]);
+            //$user = $this->userService->findUserByEmail($mail);  //code...
+     
+
+         
+        
+            
     }
     public function updateuser(Request $request)
     {
@@ -204,33 +231,25 @@ class AuthentificationController extends Controller
             'expire_in' => auth('api')->factory()->getTTL(),
         ]);
     }
-    public function sendEmailForgetPassword(Request $request){
+    public function changepassword(Request $request){
         $email = $request->email;
-        try {
-            $user = $this->userService->findUserByEmail($email);  //code...
-        } catch (\Throwable $th) {
-            return response()->json([
-                "status"=>403,
-                "message"=> "le mail n'existe pas dans la base de donnée"
-          ]);
-        }
-
-        if(!empty($user)){
-            $mailSending = $this->sendEmailService->sendEmailPasswordForget($user);   
-            echo "mail sending",$mailSending;
-            if($mailSending){
-                
+      
+            $user = User::where("email", $email)->first(); 
+            if (!$user) {
                 return response()->json([
-                      "status"=>200,
-                      "message"=> "mail sending succefful"
-                ]);
-            } else{
-                return response()->json([
-                    "status"=>500,
-                    "message"=> "error sending mail"
+                    "status"=>403,
+                    "message"=> "le mail n'existe pas dans la base de donnée"
               ]);
-            }  
-        }
+            }
+            $user->password=sha1($request->password); 
+            $user->save();
+            return response()->json([
+                "status"=>200,
+                "message"=> "success"
+          ]);
+      
+
+       
     }
 
 

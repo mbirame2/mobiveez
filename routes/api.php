@@ -18,6 +18,9 @@ Route::group([
    'prefix'=>'auth',
    'middleware' => 'cors',
 ],function($route){
+   Route::get('/sendmail/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
+   
+   Route::post('/changepassword',  ['as'=>'lo','uses'=>'AuthentificationController@changepassword']); 
     Route::post('/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);
     Route::post('/register',  ['as'=>'register','uses'=>'AuthentificationController@register']);
     Route::get('/me',      ['as'=>'log','uses'=>'AuthentificationController@me']);

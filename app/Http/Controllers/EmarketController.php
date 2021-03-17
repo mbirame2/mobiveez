@@ -139,10 +139,10 @@ class EmarketController extends Controller
         $habillement->taille=$req->input('size'); 
         $det=$habillement; 
         $annonce->save();
-      //  array_push($details, $habillement);
+       
         $habillement->annonce()->associate($annonce);
         $habillement->save();
-        
+        array_push($details, $habillement);
       }else if($req->input('categorie')=="Immobilier" ){
         $immobilier= new immobilier;
         $immobilier->surface=$req->input('surface');     
@@ -157,7 +157,9 @@ class EmarketController extends Controller
         $a=annonce::latest('idannonce')->first();
         $immobilier->idannonce=$a->idannonce;
         $immobilier->save();
+        $annonce['immobilier']=$immobilier;
       //  array_push($details, $immobilier);
+        array_push($details, $annonce);
       } else if($req->input('categorie')=="Automobile et Autres" ){
         $automobile= new automobile;
         
@@ -169,12 +171,12 @@ class EmarketController extends Controller
         $automobile->carburant=$req->input('fuel_type');  
         $automobile->jante=$req->input('rim_type');  
         $automobile->cylindre=$req->input('n_cylinders'); 
-       // array_push($details, $automobile);
+        
         $annonce->save();
-        $det=$automobile;
+        //$det=$automobile;
         $automobile->annonce()->associate($annonce);
         $automobile->save();
-        
+        array_push($details, $automobile);
       }
     
       $a=annonce::latest('idannonce')->first();
@@ -203,13 +205,14 @@ class EmarketController extends Controller
         $iman->visibilite=0; 
        
         $iman->save();
+       // array_push($details, $iman);
       }
       Storage::disk('vue')->put($a->referenceannonce.'_biens.txt', 0);
 
       return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
-      'id_annonce'=>$a->idannonce,
+      'data'=>$details,
       'type'=>$req->input('publish_type'),
-      'details'=>$det
+      
       ]);            
 
     }
@@ -464,13 +467,15 @@ class EmarketController extends Controller
      // return $dept;
       $list=User::where('codemembre', 'LIKE', '%' . $name . '%')->select('idmembre')->get();
       $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list,$dept) {
+        $query->orWhere( 'nomshowroom', 'LIKE','%'.$name.'%');
         $query->orWhere('descriptionshowroom', 'LIKE', '%' . $name . '%');
+        $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
         if($list){
        $query->orWherein( 'idmembre', $list);}
        if($dept){
         $query->orWhere( 'id_dep', $dept->id_dept);}
-        $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
-        $query->orWhere( 'nomshowroom', 'LIKE','%'.$name.'%');})->paginate(30);
+       
+        })->paginate(30);
   
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);
