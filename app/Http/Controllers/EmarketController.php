@@ -87,7 +87,13 @@ class EmarketController extends Controller
         }
         $articl['image']=$membre;
         $articl['vues']=$file;
-        $articl['url']="api.iveez.com/api/image/{imagename}";
+        $servicevendu = servicevendu::select('idservice')->where('idannonce', $articl->idannonce)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
+       //return response()->json($servicevendu->idservice); 
+        if($servicevendu){
+        $service=service::where('idService',$servicevendu->idservice)->first();
+        $articl['service']=$service;
+      }
+        
         
     }
   //  $article=$article->paginate(15);
@@ -317,12 +323,22 @@ class EmarketController extends Controller
       $annonces =boutique::where([['etatshowroom','acceptee'],['idmembre',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->get();  
      
       foreach($annonces as $annonce){
+       // $list=[28,29,30];
+        
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
         }else{
           $file=0;
         }
         $annonce['vues']=$file;
+        $servicevendu = servicevendu::select('idservice')->where('idannonce', $annonce->idshowroom)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
+      //  return response()->json($servicevendu->idservice); 
+        if($servicevendu){
+        $service=service::where('idService',$servicevendu->idservice)->first();
+        $annonce['service']=$service;
+      }
+       
+        
       }
       return response()->json($annonces); 
     }
@@ -385,7 +401,7 @@ class EmarketController extends Controller
  
   //  $article=$article->paginate(15);
    
-      return response()->json(['success'=>"Suppression de la notification dans le panier avec succés"], 200); 
+      return response()->json(['success'=>"Suppression de la notification avec succés"], 200); 
     }
     public function getarticleboutique($id)
     {
@@ -444,6 +460,7 @@ class EmarketController extends Controller
       $boutique->jourfin=$req->input('jourfin');
       $boutique->heuredebut=$req->input('heuredebut');
       $boutique->heurefin=$req->input('heurefin');
+      $boutique->siteweb=$req->input('siteweb');
       
       $boutique->dateshowroom=date("Y-m-d H:i:s");
       $img=$req->input('logo');
@@ -501,12 +518,27 @@ class EmarketController extends Controller
       $transaction->date=date("Y-m-d H:i:s");
       $transaction->description=$req->credit.",".$user->compte;
       $transaction->save();
+     
+      return response()->json(['success'=>'Enregistré'], 200); 
+    }
+    public function add_notification(Request $req)
+    {
       $notification= new notification;
       $notification->idmembre=auth('api')->user()->idmembre;
       $notification->date=date("Y-m-d H:i:s");
-      $notification->message="Achat credit :".$req->credit.". Credit total: ".$user->compte;
+      $notification->type=$req->type;
+      $notification->status=$req->status;
+      $notification->client_code=$req->client_code;
+      $notification->vendor_code=$req->vendor_code;
+      $notification->article_id=$req->article_id;
+      $notification->order_id=$req->order_id;
+      $notification->title=$req->title;
+      $notification->module=$req->module;
+      $notification->quantity=$req->quantity;
       $notification->save();
-      return response()->json(['success'=>'Enregistré'], 200); 
+      return response()->json(['success'=>'Enregistré',
+                               'data'=>$notification
+                              ], 200); 
     }
     public function remove_credit(Request $req)
     {
@@ -522,11 +554,6 @@ class EmarketController extends Controller
       $transaction->date=date("Y-m-d H:i:s");
       $transaction->description=$req->credit.",".$user->compte;
       $transaction->save();
-      $notification= new notification;
-      $notification->idmembre=auth('api')->user()->idmembre;
-      $notification->date=date("Y-m-d H:i:s");
-      $notification->message="Credit vendu: ".$req->credit.". Credit total: ".$user->compte;
-      $notification->save();
       return response()->json(['success'=>'Enregistré'], 200); 
     }
 
@@ -615,17 +642,9 @@ class EmarketController extends Controller
       $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
       $commande->save();
       
-      $notification= new notification;
-      $notification->idmembre=$panier->annonce->idmembre;
-      $notification->date=date("Y-m-d H:i:s");
-      $notification->message=$panier->annonce->titre." a été commandé. ";
-      $notification->save();
+  
       }
-      $notification= new notification;
-      $notification->idmembre=auth('api')->user()->idmembre;
-      $notification->date=date("Y-m-d H:i:s");
-      $notification->message="Commande en attente de validatiation par le(s) propiétaire(s)";
-      $notification->save();
+   
       return response()->json(['success'=>"Enregistrement. Commande en attente de validatiation par le propiétaire"], 200);            
     }
     public function modifiercommande(Request $req)

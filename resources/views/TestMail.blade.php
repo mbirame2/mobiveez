@@ -10,7 +10,7 @@
     <body>
          
         <p>Bienvenue dans Iveez! </p>
-        <p> Votre code d'activation est :</p>
+        <p> Votre code de vérification est :</p>
         <h3>{{$details['code']}}</h3>
      
         <p>Si vous n'êtes pas à l'origine de cette action, vous pouvez ignorer ce message.</p>
