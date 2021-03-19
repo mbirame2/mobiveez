@@ -403,6 +403,27 @@ class EmarketController extends Controller
    
       return response()->json(['success'=>"Suppression de la notification avec succés"], 200); 
     }
+    public function deleteshowroom($id)
+    {
+      $boutique = boutique::where('idshowroom','=',$id)->first(); ; 
+      $boutique->etatshowroom='suppression';
+      $boutique->save();
+  //  $article=$article->paginate(15);
+   
+      return response()->json(['success'=>"Suppression de la boutique avec succés"], 200); 
+    }
+    public function boostshowroom($id)
+    {
+      $list=[28,29,30];
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+      foreach($servicevendus as $servicevendu){
+        $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
+        $servicevendu['service']=$service;
+      }
+  //  $article=$article->paginate(15);
+   
+      return response()->json($servicevendus); 
+    }
     public function getarticleboutique($id)
     {
       $boutique = annoncesboutique::select('idannonceshowroom','idannonce')->where('idshowroom',$id)->orderBy('idannonceshowroom','desc')->paginate(30);
