@@ -19,7 +19,8 @@ Route::group([
    'middleware' => 'cors',
 ],function($route){
    Route::get('/sendmail/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
-   
+   Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
+
    Route::post('/changepassword',  ['as'=>'lo','uses'=>'AuthentificationController@changepassword']); 
     Route::post('/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);
     Route::post('/register',  ['as'=>'register','uses'=>'AuthentificationController@register']);

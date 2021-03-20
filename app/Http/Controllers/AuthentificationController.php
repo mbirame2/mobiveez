@@ -149,6 +149,15 @@ class AuthentificationController extends Controller
         
             
     }
+    
+    public function getuser($id)
+    {
+        $user = User::select( 'idmembre','prenom','profil','nom','telephoneportable','telephonefixe','email','codemembre')->where(
+            'idmembre', $id)->first();
+            return response()->json($user);
+        
+            
+    }
     public function sendmail($mail)
     {
         $number=rand(1000,9999);
