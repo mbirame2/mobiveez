@@ -91,6 +91,8 @@ Route::group([
    Route::post('/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);
    Route::post('/modifiercommande',  ['as'=>'lo','uses'=>'EmarketController@modifiercommande']);
    Route::post('/boutique',  ['as'=>'lo','uses'=>'EmarketController@boutique']);
+   
+   Route::post('/commandestatut',  ['as'=>'lo','uses'=>'EmarketController@commandestatut']);
    Route::post('/ajout_credit ',  ['as'=>'lo','uses'=>'EmarketController@ajout_credit']); 
    Route::post('/remove_credit ',  ['as'=>'lo','uses'=>'EmarketController@remove_credit']);
    Route::get('/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
