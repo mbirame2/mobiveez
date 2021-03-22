@@ -547,7 +547,7 @@ class EmarketController extends Controller
     public function add_notification(Request $req)
     {
       $notification= new notification;
-      $notification->idmembre=auth('api')->user()->idmembre;
+      $notification->idmembre=$req->idmembre;
       $notification->date=date("Y-m-d H:i:s");
       $notification->type=$req->type;
       $notification->status=$req->status;
