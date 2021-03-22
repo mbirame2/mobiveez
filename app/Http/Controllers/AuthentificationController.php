@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TestMail;
+use App\region;
+use App\pays;
+
+
 
 
 class AuthentificationController extends Controller
@@ -135,6 +139,12 @@ class AuthentificationController extends Controller
         {
             Auth::login($user);
             $user = Auth::user(); 
+            $dept=departement::with('region')->where('id_dept',$user->departement_id)->first(); 
+            $region=region::where('id_reg',$dept->region->id_reg)->first(); 
+            //return $dept;
+            $pays=pays::where('id_pays',$region->id_pays)->first(); 
+            $user['departement']=$dept->lib_dept;
+            $user['pays']=$pays->lib_pays;
             $token =  $user->createToken('MyApp')->accessToken; 
             return response()->json( [$token,$user]); 
         }else{

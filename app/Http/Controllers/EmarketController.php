@@ -183,6 +183,8 @@ class EmarketController extends Controller
         $automobile->annonce()->associate($annonce);
         $automobile->save();
         array_push($details, $automobile);
+      }else{
+        array_push($details, $annonce);
       }
     
       $a=annonce::latest('idannonce')->first();
@@ -191,9 +193,9 @@ class EmarketController extends Controller
         $iman= new imageannonce;
         $img=$req->input('image'.$i);
       
-        $base64_str = substr($img, strpos($img, ",")+1);
+        //$base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
-        $data = base64_decode($base64_str);
+        $data = base64_decode($img);
         $time=$a->idannonce+$i.'-'.time().'.png';
         Storage::disk('annonce')->put($time, $data);
         $iman->idannonce= $a->idannonce;  
@@ -481,14 +483,14 @@ class EmarketController extends Controller
       $boutique->jourfin=$req->input('jourfin');
       $boutique->heuredebut=$req->input('heuredebut');
       $boutique->heurefin=$req->input('heurefin');
-      $boutique->siteweb=$req->input('siteweb');
+      $boutique->siteweb='';
       
       $boutique->dateshowroom=date("Y-m-d H:i:s");
-      $img=$req->input('logo');
+      $img=$req->input('logoshowroom');
       if($img){
-      $base64_str = substr($img, strpos($img, ",")+1);
+     // $base64_str = substr($img, strpos($img, ",")+1);
       //var_dump($base64_str);die();
-      $data = base64_decode($base64_str);
+      $data = base64_decode($img);
       $time=$boutique->idmembre.'-'.time().'.png';
       Storage::disk('annonce')->put($time, $data);
     
@@ -814,9 +816,9 @@ class EmarketController extends Controller
       
       $img=$req->input('image');
       
-        $base64_str = substr($img, strpos($img, ",")+1);
+       // $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
-        $data = base64_decode($base64_str);
+        $data = base64_decode($img);
         $time=$result->idmembre.'-'.time().'.png';
         Storage::disk('profil')->put($time, $data);
         $result->profil="profil/".$time ;
