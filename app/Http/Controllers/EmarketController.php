@@ -95,6 +95,8 @@ class EmarketController extends Controller
         $articl['service']=$service;
         $articl['service']['dateachat']=$servicevendu->dateachat;
         $articl['service']['datefinservice']=$servicevendu->datefinservice;
+      }else{
+        $articl['service']=null;
       }
         
         
@@ -343,6 +345,8 @@ class EmarketController extends Controller
         $annonce['service']=$service;
         $annonce['service']['dateachat']=$servicevendu->dateachat;
         $annonce['service']['datefinservice']=$servicevendu->datefinservice;
+      }else{
+        $annonce['service']=null;
       }
        
         
