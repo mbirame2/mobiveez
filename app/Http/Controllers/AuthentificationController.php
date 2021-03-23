@@ -194,6 +194,25 @@ class AuthentificationController extends Controller
         
             
     }
+    public function checkuser(Request $request){
+        if (is_numeric(request('telephone_mail'))) {
+            $field = 'telephoneportable' ;
+        }else{
+            $field = 'email' ;
+        }
+        $user = User::where($field, $request->telephone_mail)->first();
+        if (!$user) {
+            return response()->json([
+                "status"=>200,
+                "exist"=> false
+          ]);
+        }
+       
+        return response()->json([
+            "status"=>200,
+            "exist"=> true
+      ]);
+    }
     public function updateuser(Request $request)
     {
         if(!auth('api')->user()){

@@ -198,9 +198,9 @@ class EmarketController extends Controller
         $iman= new imageannonce;
         $img=$req->input('image'.$i);
       
-        //$base64_str = substr($img, strpos($img, ",")+1);
+        $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
-        $data = base64_decode($img);
+        $data = base64_decode($base64_str);
         $time=$a->idannonce+$i.'-'.time().'.png';
         Storage::disk('annonce')->put($time, $data);
         $iman->idannonce= $a->idannonce;  
@@ -496,11 +496,11 @@ class EmarketController extends Controller
       $boutique->siteweb='';
       
       $boutique->dateshowroom=date("Y-m-d H:i:s");
-      $img=$req->input('logoshowroom');
+      $img=$req->input('logo');
       if($img){
-     // $base64_str = substr($img, strpos($img, ",")+1);
+      $base64_str = substr($img, strpos($img, ",")+1);
       //var_dump($base64_str);die();
-      $data = base64_decode($img);
+      $data = base64_decode($base64_str);
       $time=$boutique->idmembre.'-'.time().'.png';
       Storage::disk('annonce')->put($time, $data);
     
@@ -826,9 +826,9 @@ class EmarketController extends Controller
       
       $img=$req->input('image');
       
-       // $base64_str = substr($img, strpos($img, ",")+1);
+       $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
-        $data = base64_decode($img);
+        $data = base64_decode($base64_str);
         $time=$result->idmembre.'-'.time().'.png';
         Storage::disk('profil')->put($time, $data);
         $result->profil="profil/".$time ;
