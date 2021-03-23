@@ -91,7 +91,10 @@ class EmarketController extends Controller
        //return response()->json($servicevendu->idservice); 
         if($servicevendu){
         $service=service::where('idService',$servicevendu->idservice)->first();
+        
         $articl['service']=$service;
+        $articl['service']['dateachat']=$servicevendu->dateachat;
+        $articl['service']['datefinservice']=$servicevendu->datefinservice;
       }
         
         
@@ -338,6 +341,8 @@ class EmarketController extends Controller
         if($servicevendu){
         $service=service::where('idService',$servicevendu->idservice)->first();
         $annonce['service']=$service;
+        $annonce['service']['dateachat']=$servicevendu->dateachat;
+        $annonce['service']['datefinservice']=$servicevendu->datefinservice;
       }
        
         
@@ -421,6 +426,7 @@ class EmarketController extends Controller
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
         $servicevendu['service']=$service;
+        
       }
   //  $article=$article->paginate(15);
    
