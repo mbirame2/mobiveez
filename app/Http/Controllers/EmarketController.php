@@ -333,7 +333,7 @@ class EmarketController extends Controller
           $file=0;
         }
         $annonce['vues']=$file;
-        $servicevendu = servicevendu::select('idservice')->where('idannonce', $annonce->idshowroom)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
+        $servicevendu = servicevendu::select('idservice','dateachat','datefinservice')->where('idannonce', $annonce->idshowroom)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
       //  return response()->json($servicevendu->idservice); 
         if($servicevendu){
         $service=service::where('idService',$servicevendu->idservice)->first();
