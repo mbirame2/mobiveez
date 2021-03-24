@@ -95,12 +95,16 @@ Route::group([
    Route::post('/modifiercommande',  ['as'=>'lo','uses'=>'EmarketController@modifiercommande']);
    Route::post('/boutique',  ['as'=>'lo','uses'=>'EmarketController@boutique']);
    
+   Route::post('/offerarticle',  ['as'=>'lo','uses'=>'EmarketController@offerarticle']);
+
    Route::post('/commandestatut',  ['as'=>'lo','uses'=>'EmarketController@commandestatut']);
    Route::post('/ajout_credit ',  ['as'=>'lo','uses'=>'EmarketController@ajout_credit']); 
    Route::post('/remove_credit ',  ['as'=>'lo','uses'=>'EmarketController@remove_credit']);
    Route::get('/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
    Route::get('/deleteshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteshowroom']);
    Route::get('/boostshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostshowroom']);
+   
+   Route::get('/listoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@listoffer']);
 
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);

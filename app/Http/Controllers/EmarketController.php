@@ -10,6 +10,7 @@ use App\panier;
 use App\region;
 use App\chambre;
 use App\commande;
+use App\propositionprix;
 use App\evenement;
 use App\notification;
 use App\vehicule;
@@ -554,6 +555,29 @@ class EmarketController extends Controller
      
       return response()->json(['success'=>'Enregistré'], 200); 
     }
+    public function offerarticle(Request $req)
+    {
+     
+      $prix= new propositionprix;
+      $prix->idmembre=auth('api')->user()->idmembre;
+      $prix->idannonce=$req->idannonce;
+      $prix->urlimageoffre=$req->urlimageoffre;
+      $prix->description=$req->description;
+      $prix->dateproposition=date("Y-m-d H:i:s");
+      $prix->prixproposition=$req->prix;
+      $prix->save();
+     
+      return response()->json(['success'=>'Enregistré'], 200); 
+    }
+    public function listoffer($id)
+    {
+     
+      $prix=  propositionprix::where('idannonce',$id)->orderBy('idproposition','desc')->paginate(30);
+  
+     
+      return response()->json(['offre'=>$prix], 200); 
+    }
+
     public function add_notification(Request $req)
     {
       $notification= new notification;
