@@ -437,6 +437,19 @@ class EmarketController extends Controller
    
       return response()->json($servicevendus); 
     }
+    
+    public function annoncesboutique(Request $req){
+      if($req->type=="add"){
+        $iman= new annoncesboutique;
+        $iman->idannonce= $req->idannonce;  
+        $iman->idshowroom=$req->input('idshowroom');  
+        $iman->visibilite=0; 
+        $iman->save();
+      }else {
+        $iman= annoncesboutique::where('idannonceshowroom',$req->idannonceshowroom)->delete();
+      }
+      return response()->json(['success'=>"Enregistré avec succes",'data'=>$iman], 200); 
+    }
     public function getarticleboutique($id)
     {
       $boutique = annoncesboutique::select('idannonceshowroom','idannonce')->where('idshowroom',$id)->orderBy('idannonceshowroom','desc')->paginate(30);
@@ -708,12 +721,9 @@ class EmarketController extends Controller
     {
      // $commande= new commande;
       $result=commande::where('idcommande','=',$req->input('idcommande'))->first(); 
-      if($result->statut=='AWAITING'){
+ 
         $result->quantite=$req->input('quantite');
-      }else if($result->statut=='VALIDATED'){
         $result->adresse=$req->input('adresse');
-
-      }
       
       $result->save();
       return response()->json($result);            

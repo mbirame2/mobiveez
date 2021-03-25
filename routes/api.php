@@ -107,6 +107,9 @@ Route::group([
    Route::get('/listoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@listoffer']);
 
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
+   
+   Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
+
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
    Route::get('/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
     Route::post('/verify_contact',  ['as'=>'lo','uses'=>'EmarketController@verify_contact']);
