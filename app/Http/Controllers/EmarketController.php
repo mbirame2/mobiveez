@@ -334,7 +334,10 @@ class EmarketController extends Controller
      
       foreach($annonces as $annonce){
        // $list=[28,29,30];
-        
+       $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
+       $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
+       $annonce['departement']=$dep->lib_dept;
+       $annonce['categorie']=$cat;
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
         }else{
