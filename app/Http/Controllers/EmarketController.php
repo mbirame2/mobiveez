@@ -86,6 +86,8 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
+        $prix=  propositionprix::where('idannonce',$articl->idannonce)->count();
+        $articl['total_offer']=$prix;
         $articl['image']=$membre;
         $articl['vues']=$file;
         $servicevendu = servicevendu::select('idservice','dateachat','datefinservice')->where('idannonce', $articl->idannonce)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
