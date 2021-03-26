@@ -453,6 +453,19 @@ class EmarketController extends Controller
    
       return response()->json($servicevendus); 
     }
+    public function boostarticle($id)
+    {
+      $list=[21,23,24,25,26,27];
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+      foreach($servicevendus as $servicevendu){
+        $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
+        $servicevendu['service']=$service;
+        
+      }
+  //  $article=$article->paginate(15);
+   
+      return response()->json($servicevendus); 
+    }
     
     public function annoncesboutique(Request $req){
       if($req->type=="add"){
