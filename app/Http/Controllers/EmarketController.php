@@ -86,9 +86,12 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
+        $annoncesboutique=  annoncesboutique::select("idannonceshowroom","idshowroom")->where('idannonce',$articl->idannonce)->first();
         $prix=  propositionprix::where('idannonce',$articl->idannonce)->count();
         $articl['total_offer']=$prix;
         $articl['image']=$membre;
+        $articl['idannonceshowroom']=$annoncesboutique->idannonceshowroom;
+        $articl['idshowroom']=$annoncesboutique->idshowroom;
         $articl['vues']=$file;
         $servicevendu = servicevendu::select('idservice','dateachat','datefinservice')->where('idannonce', $articl->idannonce)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
        //return response()->json($servicevendu->idservice); 
@@ -367,7 +370,11 @@ class EmarketController extends Controller
       foreach($boutique as $articl){
       //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
         //$articl['user']=$membre;
-        
+        $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $articl->idcategorieshowroom)->first();
+        $dep= departement::select('lib_dept')->where('id_dept', $articl->id_dep)->first();
+        $articl['departement']=$dep->lib_dept;
+        $articl['categorie']=$cat;
+
         if(File::exists(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'))){
           $file=File::get(storage_path('app/public/compteur/'.$articl->idshowroom.'_showrooms.txt'));
           }else{
