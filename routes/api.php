@@ -33,6 +33,7 @@ Route::group([
 });
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
 Route::get('/base',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@base']);
+Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteimage']);
 Route::get('/image/{filename}/{photo}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@images']);
  Route::get('error', function () {
     return response()->json(['error'=>"Pas acces"], 401);            
@@ -109,6 +110,7 @@ Route::group([
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    
    Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
+   
 
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
    Route::get('/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
@@ -128,6 +130,9 @@ Route::group([
     Route::get('/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
     Route::get('/listeservice',  ['as'=>'lo','uses'=>'EmarketController@listeservice']);
     Route::get('/listecommande',  ['as'=>'lo','uses'=>'EmarketController@listecommande']);
+    
+    Route::get('/listevente',  ['as'=>'lo','uses'=>'EmarketController@listevente']);
+
     Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);

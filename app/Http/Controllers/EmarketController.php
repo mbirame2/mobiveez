@@ -388,6 +388,17 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($notification); 
     }
+
+    public function deleteimage($filename,$id)
+    {
+     // $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+      $image = imageannonce::where('urlimage',$filename.'/'.$id)->delete();
+      Storage::disk('annonce')->delete($id);
+  //  $article=$article->paginate(15);
+      return response()->json(['success'=>"Suppression de l'image avec succés"], 200); 
+    }
+
+
     public function liste_souscategorie()
     {
       $souscategorie = souscategorie::select('nom_souscat','lib_souscat','id_souscat','lib_souscaten','id_cat')->get(); 
@@ -793,7 +804,7 @@ class EmarketController extends Controller
     public function listecommande()
     {
       $service = commande::select('idpanier','datecommande','reference','quantite')->where('statut','AWAITING')->whereHas('panier', function ($query) {
-       
+        $query->where('idmembre', auth('api')->user()->idmembre);
         $query->where('statut', 'commandé');
     })->get();
     foreach($service as $articl){
@@ -814,16 +825,31 @@ class EmarketController extends Controller
       return response()->json($service); 
     }
 
-    public function listecommandebis()
+    public function listevente()
     {
-      $service = commande::select('idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) {
+  
+    $service = annonce::select('idannonce')->where([['idmembre',auth('api')->user()->idmembre],['statut','acceptee']])->get();
+   // $idannonce=$articl->idannonce;
+    $services = commande::select('idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
+      $query->whereIn('idannonce', $service);
+      $query->where('statut', 'commandé');
+     })->get();
+   //  return response()->json($services); 
+    foreach($services as $articl){
+     
+        $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
        
-        $query->where('statut', 'commandé');
-        $query->where('idmembre', 2);
-    })->get();
-
+        $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
+        $articl['annonce']=$membre;
+        $articl['annonce']['image']=$image['urlimage'];
+        unset($articl['panier']);
+      //  $list['commande']['annonce']['image']=$image['urlimage'];
+      // // $list->push($membre);
+       
+     
+    }
   //  $article=$article->paginate(15);
-      return response()->json($service); 
+      return response()->json($services); 
     }
 
     public function statutcompte($id)
