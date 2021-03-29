@@ -87,11 +87,15 @@ class EmarketController extends Controller
           $file=0;
         }
         $annoncesboutique=  annoncesboutique::select("idannonceshowroom","idshowroom")->where('idannonce',$articl->idannonce)->first();
+        #return $annoncesboutique;
+        if($annoncesboutique){
+          $articl['idannonceshowroom']=$annoncesboutique->idannonceshowroom;
+          $articl['idshowroom']=$annoncesboutique->idshowroom;
+        }
         $prix=  propositionprix::where('idannonce',$articl->idannonce)->count();
         $articl['total_offer']=$prix;
         $articl['image']=$membre;
-        $articl['idannonceshowroom']=$annoncesboutique->idannonceshowroom;
-        $articl['idshowroom']=$annoncesboutique->idshowroom;
+        
         $articl['vues']=$file;
         $servicevendu = servicevendu::select('idservice','dateachat','datefinservice')->where('idannonce', $articl->idannonce)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->first();
        //return response()->json($servicevendu->idservice); 
