@@ -91,6 +91,9 @@ class EmarketController extends Controller
         if($annoncesboutique){
           $articl['idannonceshowroom']=$annoncesboutique->idannonceshowroom;
           $articl['idshowroom']=$annoncesboutique->idshowroom;
+        }else{
+          $articl['idannonceshowroom']=null;
+          $articl['idshowroom']=null;
         }
         $prix=  propositionprix::where('idannonce',$articl->idannonce)->count();
         $articl['total_offer']=$prix;
