@@ -629,7 +629,15 @@ class EmarketController extends Controller
     {
      
       $prix=  propositionprix::where('idannonce',$id)->orderBy('idproposition','desc')->paginate(30);
-  
+      foreach($prix as $articl){
+        $user = User::select( 'departement_id','localisation')->where(
+          'idmembre', $articl->idmembre)->first();
+       #   return $user->departement_id;
+          $dep=departement::where('id_dept',$user['departement_id'])->first(); 
+          $articl['departement']=$dep['lib_dept'];
+          $articl['localisation']=$user['localisation'];
+      }
+     
      
       return response()->json(['offre'=>$prix], 200); 
     }
