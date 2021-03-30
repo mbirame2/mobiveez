@@ -838,7 +838,7 @@ class EmarketController extends Controller
     }
     public function listecommande()
     {
-      $service = commande::select('idpanier','datecommande','reference','quantite')->where('statut','AWAITING')->whereHas('panier', function ($query) {
+      $service = commande::select('idpanier','datecommande','reference','quantite','statut')->where('statut','AWAITING')->whereHas('panier', function ($query) {
         $query->where('idmembre', auth('api')->user()->idmembre);
         $query->where('statut', 'commandé');
     })->get();
@@ -850,7 +850,7 @@ class EmarketController extends Controller
       $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
       
       $articl['panier']['annonce']=$membre;
-      $articl['panier']['user']=$user;
+      $articl['panier']['vendeur']=$user;
       $articl['panier']['image']=$image['urlimage'];
       unset($articl['panier']['idpanier']);unset($articl['panier']['idmembre']);
       unset($articl['panier']['idannonce']);unset($articl['panier']['statut']);
@@ -873,9 +873,11 @@ class EmarketController extends Controller
     foreach($services as $articl){
      
         $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
-       
+        $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre->idmembre)->first();
+
         $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
         $articl['annonce']=$membre;
+        $articl['annonce']['client']=$user;
         $articl['annonce']['image']=$image['urlimage'];
         unset($articl['panier']);
       //  $list['commande']['annonce']['image']=$image['urlimage'];
