@@ -154,7 +154,7 @@ class EmarketController extends Controller
       $details=[];
       
 
-      if($req->input('categorie')=="Habillement et accessoires"){
+      if($req->input('categorie')==9){
         $habillement= new habillement;
         $habillement->type=$req->input('clothing_type');     
         $habillement->marque=$req->input('brand');  
@@ -167,7 +167,7 @@ class EmarketController extends Controller
         $habillement->annonce()->associate($annonce);
         $habillement->save();
         array_push($details, $habillement);
-      }else if($req->input('categorie')=="Immobilier" ){
+      }else if($req->input('categorie')==1 ){
         $immobilier= new immobilier;
         $immobilier->surface=$req->input('surface');     
        
@@ -184,7 +184,7 @@ class EmarketController extends Controller
         $annonce['immobilier']=$immobilier;
       //  array_push($details, $immobilier);
         array_push($details, $annonce);
-      } else if($req->input('categorie')=="Automobile et Autres" ){
+      } else if($req->input('categorie')==3 ){
         $automobile= new automobile;
         
         $automobile->typeoperation=$req->input('type');  
