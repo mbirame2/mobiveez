@@ -33,6 +33,8 @@ Route::group([
 });
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
 Route::get('/base',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@base']);
+Route::get('/listemarque',      ['as'=>'log','middleware' => 'cors','uses'=>'EmarketController@listemarque']);
+
 Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteimage']);
 Route::get('/image/{filename}/{photo}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@images']);
  Route::get('error', function () {

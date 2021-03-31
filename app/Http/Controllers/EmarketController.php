@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\professionnel;
 use App\categorie;
 use App\plat;
+use App\marque;
+use App\marque_moto;
 use App\panier;
 use App\region;
 use App\chambre;
@@ -275,10 +277,12 @@ class EmarketController extends Controller
    // return response($list);
     
      $annonce=annonce::select('titre','prix','localisation','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->orderBy('idannonce','desc')->where(function ($query) use($name,$list) {
-        $query->orWhere('description', 'LIKE', '%' . $name . '%');
-        $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
-        $query->orWhere( 'titre', 'LIKE','%'.$name.'%');
-        $query->orWhere( 'referenceannonce', 'LIKE','%'.$name.'%');
+      //  $query->orWhere('description', 'LIKE', '%' . $name . '%');
+        $query->whereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(description) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(titre) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(referenceannonce) like ?', '%'.strtolower($name).'%');
+ 
         if($list){
           $query->orWhereIn('idsouscategorie', $list);
         }
@@ -401,6 +405,14 @@ class EmarketController extends Controller
  
   //  $article=$article->paginate(15);
       return response()->json($notification); 
+    }
+
+    public function listemarque()
+    {
+      $marque = marque::all(); 
+      $marque_moto = marque_moto::all(); 
+  //  $article=$article->paginate(15);
+      return response()->json(['marque_auto'=>$marque,'marque_moto'=>$marque_moto]); 
     }
 
     public function deleteimage($filename,$id)
@@ -574,9 +586,9 @@ class EmarketController extends Controller
      // return $dept;
       $list=User::where('codemembre', 'LIKE', '%' . $name . '%')->select('idmembre')->get();
       $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list,$dept) {
-        $query->orWhere( 'nomshowroom', 'LIKE','%'.$name.'%');
-        $query->orWhere('descriptionshowroom', 'LIKE', '%' . $name . '%');
-        $query->orWhere( 'localisation', 'LIKE','%'.$name.'%');
+        $query->whereRaw('LOWER(nomshowroom) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(descriptionshowroom) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
         if($list){
        $query->orWherein( 'idmembre', $list);}
        if($dept){
