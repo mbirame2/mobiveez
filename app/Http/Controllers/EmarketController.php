@@ -857,7 +857,7 @@ class EmarketController extends Controller
     foreach($service as $articl){
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
      // return $membre;
-     $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$articl->panier->idmembre)->first();
+     $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre->idmembre)->first();
 
       $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
       
@@ -885,7 +885,7 @@ class EmarketController extends Controller
     foreach($services as $articl){
      
         $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
-        $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre->idmembre)->first();
+        $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$articl->panier->idmembre)->first();
 
         $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
         $articl['annonce']=$membre;
