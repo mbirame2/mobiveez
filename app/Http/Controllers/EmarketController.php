@@ -850,7 +850,7 @@ class EmarketController extends Controller
     }
     public function listecommande()
     {
-      $service = commande::select('idpanier','datecommande','reference','quantite','statut')->where('statut','AWAITING')->whereHas('panier', function ($query) {
+      $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->where('statut','AWAITING')->whereHas('panier', function ($query) {
         $query->where('idmembre', auth('api')->user()->idmembre);
         $query->where('statut', 'commandé');
     })->get();
@@ -877,7 +877,7 @@ class EmarketController extends Controller
   
     $service = annonce::select('idannonce')->where([['idmembre',auth('api')->user()->idmembre],['statut','acceptee']])->get();
    // $idannonce=$articl->idannonce;
-    $services = commande::select('idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
+    $services = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
       $query->whereIn('idannonce', $service);
       $query->where('statut', 'commandé');
      })->get();
