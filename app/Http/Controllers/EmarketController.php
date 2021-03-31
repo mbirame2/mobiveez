@@ -135,8 +135,8 @@ class EmarketController extends Controller
         return response()->json(['error'=>$validator->errors()], 401);            
     }else{
       $annonce= new annonce;
-      $ss=souscategorie::where('lib_souscat',$req->input('subcategory'))->first(); 
-      $annonce->idsouscategorie=$ss->id_souscat;
+      //$ss=souscategorie::where('id_souscat',$req->input('subcategory'))->first(); 
+      $annonce->idsouscategorie=$req->input('subcategory');
       $annonce->prix=$req->input('price');
       $article = annonce::all();  
       $artic= count($article)+1;
