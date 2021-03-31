@@ -223,8 +223,8 @@ class EmarketController extends Controller
         $iman->parametre=$i; 
         //array_push($details, $annonce);
         $iman->save();
-
-        array_push($details, $iman->urlimage);
+        $details['image'.$i]=$iman->urlimage;
+      //  array_push($details, $iman->urlimage);
 
       }
       $url=$time;
