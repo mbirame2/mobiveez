@@ -873,7 +873,7 @@ class EmarketController extends Controller
     }
     public function listecommande()
     {
-      $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->where('statut','AWAITING')->whereHas('panier', function ($query) {
+      $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) {
         $query->where('idmembre', auth('api')->user()->idmembre);
         $query->where('statut', 'commandé');
     })->get();
@@ -938,20 +938,20 @@ class EmarketController extends Controller
       $commande=commande::where('idcommande','=',$req->idcommande)->first(); 
       if($req->statut=='FEEDBACK'){
         $commande->feedback=$req->feedback;
-       
+        $commande->save();
       }else if($req->statut=='CANCELLED' || $req->statut=='REJECTED'  ){
         $commande->statut=$req->statut;
         $commande->motif=$req->motif;
-    
+        $commande->save();
       } else if($req->statut=='DELIVERED'){
         $commande->statut=$req->statut;
         $commande->adresse=$req->adresse;
-  
+        $commande->save();
       }  else if($req->statut=='VALIDATED'){
         $commande->statut=$req->statut;
-      
+        $commande->save();
       }  
-      $commande->save();
+     
       
       return response()->json($commande);   
     }
