@@ -40,6 +40,7 @@ class EmarketController extends Controller
     public function oneannonce($id)
     {
       $annonce =annonce::where([['statut','acceptee'],['idannonce',$id]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
         }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'))){
@@ -54,6 +55,9 @@ class EmarketController extends Controller
         $annonce['proprietaire']=$user;
       Storage::disk('vue')->put($annonce->referenceannonce.'_biens.txt', $file+1);
       return response()->json($annonce); 
+      } else{
+        return response()->json(['response'=>null]); 
+      }
     }
 
 
@@ -469,6 +473,17 @@ class EmarketController extends Controller
    
       return response()->json(['success'=>"Suppression de la boutique avec succés"], 200); 
     }
+
+    public function deleteannonce($id)
+    {
+      $annonce = annonce::where('idannonce','=',$id)->first(); ; 
+      $annonce->statut='suppression';
+      $annonce->save();
+  //  $article=$article->paginate(15);
+   
+      return response()->json(['success'=>"Suppression de l' annonce avec succés"], 200); 
+    }
+
     public function boostshowroom($id)
     {
       $list=[28,29,30];
@@ -551,8 +566,13 @@ class EmarketController extends Controller
         return response()->json(['error'=>$validator->errors()], 401);            
     }else{
       
-      $boutique= new boutique;
-
+     
+      if($req->input('idshowroom')){
+        $boutique=boutique::where('idshowroom', $req->input('idshowroom') )->first(); 
+      }else{
+        $boutique= new boutique;
+      }
+      
       $boutique->idmembre=auth('api')->user()->idmembre;
       $boutique->etatshowroom="en attente";
       $boutique->id_dep=$req->input('id_dep');

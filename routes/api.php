@@ -105,6 +105,8 @@ Route::group([
    Route::post('/remove_credit ',  ['as'=>'lo','uses'=>'EmarketController@remove_credit']);
    Route::get('/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
    Route::get('/deleteshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteshowroom']);
+   Route::get('/deleteannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteannonce']);
+
    Route::get('/boostshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostshowroom']);
    Route::get('/boostarticle/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostarticle']);
 
