@@ -571,10 +571,11 @@ class EmarketController extends Controller
         $boutique=boutique::where('idshowroom', $req->input('idshowroom') )->first(); 
       }else{
         $boutique= new boutique;
+        $boutique->etatshowroom="en attente";
       }
       
       $boutique->idmembre=auth('api')->user()->idmembre;
-      $boutique->etatshowroom="en attente";
+      
       $boutique->id_dep=$req->input('id_dep');
       $boutique->localisation=$req->input('localisation');
       $boutique->idcategorieshowroom=$req->input('idcategorieshowroom');
