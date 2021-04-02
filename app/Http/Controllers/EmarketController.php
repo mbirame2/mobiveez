@@ -937,7 +937,7 @@ class EmarketController extends Controller
     public function commandestatut(Request $req)
     {
 
-      $commande=commande::where('idcommande','=',$req->idcommande)->first(); 
+      $commande=commande::where('idcommande',$req->idcommande)->first(); 
       if($req->statut=='FEEDBACK'){
         $commande->feedback=$req->feedback;
         $commande->save();
