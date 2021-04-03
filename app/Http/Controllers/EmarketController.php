@@ -20,6 +20,7 @@ use App\restauration;
 use App\User;
 use App\departement;
 use App\souscategorie;
+use App\gestionnaire;
 use App\annonce;
 use App\automobile;
 use App\commande_plat;
@@ -650,13 +651,19 @@ class EmarketController extends Controller
     }
     public function offerarticle(Request $req)
     {
-     
+     if($req->idproposition){
+      $prix= propositionprix::where('idproposition',$req->idproposition)->first();
+     }else{
       $prix= new propositionprix;
       $prix->idmembre=auth('api')->user()->idmembre;
+      $prix->dateproposition=date("Y-m-d H:i:s");
+     }
+      
+     
       $prix->idannonce=$req->idannonce;
       $prix->urlimageoffre=$req->urlimageoffre;
       $prix->description=$req->description;
-      $prix->dateproposition=date("Y-m-d H:i:s");
+    
       $prix->prixproposition=$req->prix;
       $prix->save();
      
@@ -873,10 +880,10 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json(['success'=>"Succés de la commande"], 200); 
     }
-    public function listecommande()
+    public function listecommande($id)
     {
-      $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) {
-        $query->where('idmembre', auth('api')->user()->idmembre);
+      $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
+        $query->where('idmembre', $id);
         $query->where('statut', 'commandé');
     })->get();
     foreach($service as $articl){
@@ -897,10 +904,10 @@ class EmarketController extends Controller
       return response()->json($service); 
     }
 
-    public function listevente()
+    public function listevente($id)
     {
   
-    $service = annonce::select('idannonce')->where([['idmembre',auth('api')->user()->idmembre],['statut','acceptee']])->get();
+    $service = annonce::select('idannonce')->where([['idmembre',$id],['statut','acceptee']])->get();
    // $idannonce=$articl->idannonce;
     $services = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
       $query->whereIn('idannonce', $service);
@@ -1015,4 +1022,75 @@ class EmarketController extends Controller
   
     return response($annonce); 
   }
+
+
+  //////////////////GESTIONNAIRE
+
+  public function addgestionnaire(Request $req)
+{
+  $gestionnaire= new gestionnaire;
+  $gestionnaire->idmembre=$req->input('idgestionnaire');
+  $gestionnaire->date=date("Y-m-d H:i:s");
+  $gestionnaire->idshowroom= $req->input('idshowroom');
+  $gestionnaire->save();
+  return response(['success'=>"ajouter avec succés"], 200); 
 }
+
+public function listegestionnaire($id)
+{
+  $gestionnaire= gestionnaire::where('idmembre',$id)->get(); 
+
+  foreach($gestionnaire as $test){
+     
+  //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
+    $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->idshowroom]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+    $test['showroom']=$annonce;
+  }
+ 
+  return response($gestionnaire); 
+}
+
+public function deletegestionnaire($id)
+{
+  $gestionnaire= gestionnaire::where('id_gestionnaire',$id)->delete(); 
+
+ 
+  return response()->json(['success'=>"supprime avec succés"], 200); 
+}
+
+public function gestionnaireshowroom($id)
+{
+  $gestionnaire= gestionnaire::select('idmembre')->where('idshowroom',$id)->get(); 
+ 
+  foreach($gestionnaire as $test){
+  $user=User::select('prenom','nom','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
+  $test['user']=$user;
+  }
+
+  return response()->json($gestionnaire); 
+}
+
+
+public function onecommande($id)
+{
+  $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->where('idcommande',$id)->whereHas('panier', function ($query) use($id) {
+ 
+    $query->where('statut', 'commandé');
+})->first();
+
+$membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$service->panier->idannonce],['statut','acceptee']])->first();
+unset($service['panier']);
+$image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
+$service['annonce']=$membre;
+$service['image']=$image;
+
+return response()->json($service); 
+
+}
+
+
+}
+
+
+
+

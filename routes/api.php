@@ -97,8 +97,14 @@ Route::group([
    Route::post('/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);
    Route::post('/modifiercommande',  ['as'=>'lo','uses'=>'EmarketController@modifiercommande']);
    Route::post('/boutique',  ['as'=>'lo','uses'=>'EmarketController@boutique']);
-   
    Route::post('/offerarticle',  ['as'=>'lo','uses'=>'EmarketController@offerarticle']);
+
+   Route::post('/addgestionnaire',  ['as'=>'lo','uses'=>'EmarketController@addgestionnaire']);
+   Route::get('/listegestionnaire/{id}',  ['as'=>'lo','uses'=>'EmarketController@listegestionnaire']);
+   Route::get('/deletegestionnaire/{id}',  ['as'=>'lo','uses'=>'EmarketController@deletegestionnaire']);
+   Route::get('/gestionnaireshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@gestionnaireshowroom']);
+
+   Route::get('/onecommande/{id}',  ['as'=>'lo','uses'=>'EmarketController@onecommande']);
 
    Route::post('/commandestatut',  ['as'=>'lo','uses'=>'EmarketController@commandestatut']);
    Route::post('/ajout_credit ',  ['as'=>'lo','uses'=>'EmarketController@ajout_credit']); 
@@ -106,10 +112,8 @@ Route::group([
    Route::get('/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
    Route::get('/deleteshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteshowroom']);
    Route::get('/deleteannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteannonce']);
-
    Route::get('/boostshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostshowroom']);
    Route::get('/boostarticle/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostarticle']);
-
    Route::get('/listoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@listoffer']);
 
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
@@ -134,9 +138,9 @@ Route::group([
     Route::get('/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
     Route::get('/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
     Route::get('/listeservice',  ['as'=>'lo','uses'=>'EmarketController@listeservice']);
-    Route::get('/listecommande',  ['as'=>'lo','uses'=>'EmarketController@listecommande']);
+    Route::get('/listecommande/{id}',  ['as'=>'lo','uses'=>'EmarketController@listecommande']);
     
-    Route::get('/listevente',  ['as'=>'lo','uses'=>'EmarketController@listevente']);
+    Route::get('/listevente/{id}',  ['as'=>'lo','uses'=>'EmarketController@listevente']);
 
     Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
