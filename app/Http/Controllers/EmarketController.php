@@ -231,9 +231,9 @@ class EmarketController extends Controller
         $iman->save();
         $details['image'.$i]=$iman->urlimage;
       //  array_push($details, $iman->urlimage);
-      $url=$time;
-      }
       
+      }
+    //  $url=$time;
       if($req->input('publish_type')=='article'){
       
         $iman= new annoncesboutique;
@@ -660,7 +660,7 @@ class EmarketController extends Controller
       $prix->dateproposition=date("Y-m-d H:i:s");
      }
       
-     
+     $prix->quantity=$req->quantity;
       $prix->idannonce=$req->idannonce;
       $prix->urlimageoffre=$req->urlimageoffre;
       $prix->description=$req->description;
@@ -1081,8 +1081,13 @@ public function onecommande($id)
 })->first();
 
 $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$service->panier->idannonce],['statut','acceptee']])->first();
+$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$service->panier->idmembre)->first();
+$service['acheteur']=$user;
 unset($service['panier']);
 $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
+$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre->idmembre)->first();
+
+$service['vendeur']=$user;
 $service['annonce']=$membre;
 $service['image']=$image;
 
