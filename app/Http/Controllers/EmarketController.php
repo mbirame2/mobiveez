@@ -231,9 +231,9 @@ class EmarketController extends Controller
         $iman->save();
         $details['image'.$i]=$iman->urlimage;
       //  array_push($details, $iman->urlimage);
-
-      }
       $url=$time;
+      }
+      
       if($req->input('publish_type')=='article'){
       
         $iman= new annoncesboutique;
