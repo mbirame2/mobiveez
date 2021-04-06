@@ -209,6 +209,7 @@ class EmarketController extends Controller
         $automobile->save();
         array_push($details, $automobile);
       }else{
+        $annonce->save();
         array_push($details, $annonce);
       }
     
