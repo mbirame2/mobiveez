@@ -115,6 +115,10 @@ Route::group([
    Route::get('/boostshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostshowroom']);
    Route::get('/boostarticle/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostarticle']);
    Route::get('/listoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@listoffer']);
+   
+   Route::get('/deleteoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteoffer']);
+
+   Route::get('/myoffers/{id}',  ['as'=>'lo','uses'=>'EmarketController@myoffers']);
 
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    

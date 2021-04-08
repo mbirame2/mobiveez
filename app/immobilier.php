@@ -9,6 +9,6 @@ class immobilier extends Model
     protected $table="immobilier";
     public $timestamps = false;
     protected $fillable = [
-      'surface','nombrepiece','datedisponibilite','droitvisite','montantdroit'
+      'surface','nombrepiece','datedisponibilite','droitvisite','montantdroit','idannonce'
     ];
 }

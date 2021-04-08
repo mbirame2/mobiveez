@@ -40,7 +40,7 @@ class EmarketController extends Controller
 {
     public function oneannonce($id)
     {
-      $annonce =annonce::where([['statut','acceptee'],['idannonce',$id]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $annonce =annonce::with('departement')->where([['statut','acceptee'],['idannonce',$id]])->select('titre','prix','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
@@ -54,6 +54,17 @@ class EmarketController extends Controller
         $user=User::with('departement')->select('prenom','nom','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$annonce->idmembre)->first();
         $annonce['vues']=$file;
         $annonce['proprietaire']=$user;
+       
+        $habillement=habillement::where('idannonce',$annonce->idannonce)->first();
+        $immobilier=immobilier::where('idannonce',$annonce->idannonce)->first();
+        $automobile=automobile::where('idannonce',$annonce->idannonce)->first();
+        if($habillement){
+          $annonce['habillement']=$habillement;
+        }else if($immobilier){
+          $annonce['immobilier']=$immobilier;
+        }else if($automobile){
+          $annonce['automobile']=$automobile;
+        }
       Storage::disk('vue')->put($annonce->referenceannonce.'_biens.txt', $file+1);
       return response()->json($annonce); 
       } else{
@@ -687,6 +698,30 @@ class EmarketController extends Controller
       return response()->json(['offre'=>$prix], 200); 
     }
 
+    public function deleteoffer($id)
+    {
+      $prix=  propositionprix::where('idproposition',$id)->delete();
+      return response()->json(['result'=>'success'], 200); 
+
+    }
+    public function myoffers($id)
+    {
+     
+      $prix=  propositionprix::where('idmembre',$id)->orderBy('idproposition','desc')->paginate(30);
+      foreach($prix as $articl){
+ 
+          $annonce =annonce::where([['statut','acceptee'],['idannonce',$articl->idannonce]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+        
+          $image = imageannonce::where('idannonce',$annonce->idannonce)->first();
+           
+          $articl['annonce']=$annonce;
+          $articl['annonce']['image']=$image->urlimage;
+      }
+     
+     
+      return response()->json($prix); 
+    }
+
     public function add_notification(Request $req)
     {
       $notification= new notification;
@@ -883,7 +918,7 @@ class EmarketController extends Controller
     }
     public function listecommande($id)
     {
-      $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
+      $service = commande::select('idcommande','idpanier','motif','feedback','statut','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
         $query->where('idmembre', $id);
         $query->where('statut', 'commandé');
     })->get();
@@ -910,7 +945,7 @@ class EmarketController extends Controller
   
     $service = annonce::select('idannonce')->where([['idmembre',$id],['statut','acceptee']])->get();
    // $idannonce=$articl->idannonce;
-    $services = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
+    $services = commande::select('idcommande','idpanier','motif','feedback','statut','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
       $query->whereIn('idannonce', $service);
       $query->where('statut', 'commandé');
      })->get();
