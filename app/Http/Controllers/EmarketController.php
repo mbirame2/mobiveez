@@ -686,12 +686,12 @@ class EmarketController extends Controller
      
       $prix=  propositionprix::where('idannonce',$id)->orderBy('idproposition','desc')->paginate(30);
       foreach($prix as $articl){
-        $user = User::select( 'departement_id','localisation')->where(
+        $user = User::select( 'departement_id','localisation','prenom','nom','telephoneportable','email','codemembre')->where(
           'idmembre', $articl->idmembre)->first();
        #   return $user->departement_id;
           $dep=departement::where('id_dept',$user['departement_id'])->first(); 
           $articl['departement']=$dep['lib_dept'];
-          $articl['localisation']=$user['localisation'];
+          $articl['vendeur']=$user;
       }
      
      
@@ -711,10 +711,12 @@ class EmarketController extends Controller
       foreach($prix as $articl){
  
           $annonce =annonce::where([['statut','acceptee'],['idannonce',$articl->idannonce]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
-        
+          $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce->idmembre)->first();
+
           $image = imageannonce::where('idannonce',$annonce->idannonce)->first();
            
           $articl['annonce']=$annonce;
+          $articl['vendeur']=$user;
           $articl['annonce']['image']=$image->urlimage;
       }
      
@@ -1054,8 +1056,24 @@ class EmarketController extends Controller
   })->whereHas('departement', function ($query) use ($req) {
     $query->where('lib_dept', 'LIKE', '%' .$req->input('departement'). '%');
   })
-  ->get();
+  ->select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->paginate(30);
   
+  foreach($annonce as $articl){
+    unset($articl['departement']);
+    unset($articl['idmembre']);
+    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
+    if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
+    $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
+    }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
+      $file=File::get(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'));
+      }else {
+      $file=0;
+    }
+    $articl['image']=$membre->urlimage;
+    $articl['vues']=$file;
+ //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+}
+
     return response($annonce); 
   }
 
