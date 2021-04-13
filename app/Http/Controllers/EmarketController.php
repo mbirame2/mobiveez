@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\professionnel;
 use App\categorie;
+use App\modele;
 use App\plat;
 use App\marque;
 use App\marque_moto;
@@ -204,7 +205,16 @@ class EmarketController extends Controller
         array_push($details, $annonce);
       } else if($req->input('categorie')==3 ){
         $automobile= new automobile;
-        
+        $modele=modele::select( 'idmodelevoiture','idmarquevoiture', 'designation_modelevoiture' )->where([['designation_modelevoiture', 'LIKE', '%' . $req->input('model') . '%'],['idmarquevoiture', $req->input('marque')]])->first(); 
+        $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
+
+        $automobile->vehicule_type=$req->input('vehicule_type'); 
+        $automobile->place=$req->input('place');
+        if($modele){
+          $automobile->idmodelevoiture=$modele->idmodelevoiture;
+
+        }
+        $automobile->climatisation=$req->input('climatisation');
         $automobile->typeoperation=$req->input('type');  
         $automobile->couleur=$req->input('color');  
         $automobile->kilometre=$req->input('mileage');  
@@ -218,7 +228,10 @@ class EmarketController extends Controller
         //$det=$automobile;
         $automobile->annonce()->associate($annonce);
         $automobile->save();
-        array_push($details, $automobile);
+        $detail=$automobile;
+        $detail['modele']=$modele->designation_modelevoiture;
+        $detail['marque']=$marque->designation_marquevoiture;
+        array_push($details, $detail);
       }else{
         $annonce->save();
         array_push($details, $annonce);
