@@ -205,7 +205,7 @@ class EmarketController extends Controller
         array_push($details, $annonce);
       } else if($req->input('categorie')==3 ){
         $automobile= new automobile;
-        $modele=modele::select( 'idmodelevoiture','idmarquevoiture', 'designation_modelevoiture' )->where([['designation_modelevoiture', 'LIKE', '%' . $req->input('model') . '%'],['idmarquevoiture', $req->input('marque')]])->first(); 
+        $modele=modele::select( 'idmodelevoiture','idmarquevoiture', 'designation_modelevoiture' )->where([['designation_modelevoiture', 'LIKE', '%' . $req->input('modele') . '%'],['idmarquevoiture', $req->input('marque')]])->first(); 
         $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
 
         $automobile->vehicule_type=$req->input('vehicule_type'); 
