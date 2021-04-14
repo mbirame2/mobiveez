@@ -206,14 +206,10 @@ class EmarketController extends Controller
       } else if($req->input('categorie')==3 ){
         $automobile= new automobile;
         $modele=modele::select( 'idmodelevoiture','idmarquevoiture', 'designation_modelevoiture' )->where([['designation_modelevoiture', 'LIKE', '%' . $req->input('modele') . '%'],['idmarquevoiture', $req->input('marque')]])->first(); 
-        $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
 
         $automobile->vehicule_type=$req->input('vehicule_type'); 
         $automobile->place=$req->input('place');
-        if($modele){
-          $automobile->idmodelevoiture=$modele->idmodelevoiture;
-
-        }
+       
         $automobile->climatisation=$req->input('climatisation');
         $automobile->typeoperation=$req->input('type');  
         $automobile->couleur=$req->input('color');  
@@ -229,8 +225,14 @@ class EmarketController extends Controller
         $automobile->annonce()->associate($annonce);
         $automobile->save();
         $detail=$automobile;
-        $detail['modele']=$modele->designation_modelevoiture;
-        $detail['marque']=$marque->designation_marquevoiture;
+        if($modele){
+ 
+          $automobile->idmodelevoiture=$modele->idmodelevoiture;
+          $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
+          $detail['modele']=$modele->designation_modelevoiture;
+          $detail['marque']=$marque->designation_marquevoiture;
+        }
+       
         array_push($details, $detail);
       }else{
         $annonce->save();
@@ -813,7 +815,7 @@ class EmarketController extends Controller
     public function delete_panier($id)
     {
        
-      $result=panier::where('idannonce','=',$id)->delete(); 
+      $result=panier::where('idpanier','=',$id)->delete(); 
      
       return response()->json(['success'=>"Suppression de l'article dans le panier avec succés"], 200); 
     }
