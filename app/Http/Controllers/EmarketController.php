@@ -1142,6 +1142,10 @@ public function listegestionnaire($id)
      
   //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
     $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->idshowroom]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+    $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
+    $dep=departement::where('id_dept',$annonce->id_dep)->first(); 
+    $test['categorie']=$cat;
+    $test['departement']=$dep->lib_dept;
     $test['showroom']=$annonce;
     $test['idgestionnaire']=$annonce->idmembre;
     
