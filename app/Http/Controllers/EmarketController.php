@@ -1156,11 +1156,12 @@ public function deletegestionnaire($id)
 
 public function gestionnaireshowroom($id)
 {
-  $gestionnaire= gestionnaire::select('idmembre')->where('idshowroom',$id)->get(); 
+  $gestionnaire= gestionnaire::select('idmembre','id_gestionnaire')->where('idshowroom',$id)->get(); 
  $gest=[];
   foreach($gestionnaire as $test){
   $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
   $dept=departement::where('id_dept',$user->departement_id)->first(); 
+  $user['id_gestionnaire']=$test->id_gestionnaire;
   $user['idmembre']=$test->idmembre;
   $user['departement']=$dept->lib_dept;
   unset($user['departement_id']);
