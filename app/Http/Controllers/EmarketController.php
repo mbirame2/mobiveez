@@ -205,12 +205,18 @@ class EmarketController extends Controller
         array_push($details, $annonce);
       } else if($req->input('categorie')==3 ){
         $automobile= new automobile;
-        $modele=modele::select( 'idmodelevoiture','idmarquevoiture', 'designation_modelevoiture' )->where([['designation_modelevoiture', 'LIKE', '%' . $req->input('modele') . '%'],['idmarquevoiture', $req->input('marque')]])->first(); 
+        $marque=marque::where( 'idmarquevoiture', $req->input('brand'))->first(); 
 
-        $automobile->vehicule_type=$req->input('vehicule_type'); 
+        $modele=new modele ;
+        $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
+        $modele->idmarquevoiture=$marque->idmarquevoiture;
+        $modele->save();
+        $a=modele::latest('idmodelevoiture')->first();
+
+        $automobile->vehicule_type=$req->input('vehicle_type'); 
         $automobile->place=$req->input('place');
        
-        $automobile->climatisation=$req->input('climatisation');
+        $automobile->climatisation=$req->input('air_conditionning');
         $automobile->typeoperation=$req->input('type');  
         $automobile->couleur=$req->input('color');  
         $automobile->kilometre=$req->input('mileage');  
@@ -219,19 +225,17 @@ class EmarketController extends Controller
         $automobile->carburant=$req->input('fuel_type');  
         $automobile->jante=$req->input('rim_type');  
         $automobile->cylindre=$req->input('n_cylinders'); 
-        
+
+        $automobile->idmodelevoiture=$a->idmodelevoiture;
         $annonce->save();
         //$det=$automobile;
         $automobile->annonce()->associate($annonce);
         $automobile->save();
         $detail=$automobile;
-        if($modele){
- 
-          $automobile->idmodelevoiture=$modele->idmodelevoiture;
-          $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
-          $detail['modele']=$modele->designation_modelevoiture;
-          $detail['marque']=$marque->designation_marquevoiture;
-        }
+        
+          $detail['model']=$modele->designation_modelevoiture;
+          $detail['brand']=$marque->designation_marquevoiture;
+      
        
         array_push($details, $detail);
       }else{
@@ -310,22 +314,44 @@ class EmarketController extends Controller
         $query->where('nom_cat', 'LIKE', '%' . $name . '%');
     })->get();
    // return response($list);
+//   $boutique = boutique::select('idshowroom')->whereRaw('LOWER(nomshowroom) like ?', '%'.strtolower($name).'%')->first();
+  // if($boutique){
+  //  
+  //  $listtwo        = annoncesboutique::select('idannonce')->where('idshowroom',$boutique->idshowroom)->get();
     
-     $annonce=annonce::select('titre','prix','localisation','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->orderBy('idannonce','desc')->where(function ($query) use($name,$list) {
+   
+     $user = User::select('idmembre')->whereRaw('LOWER(prenom) like ?', '%'.strtolower($name).'%')->orwhereRaw('LOWER(nom) like ?', '%'.strtolower($name).'%')->get();
+ //   return $user;
+     $annonce=annonce::select('titre','prix','localisation','idannonce','idmembre','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->where(function ($query) use($name,$list,$user) {
       //  $query->orWhere('description', 'LIKE', '%' . $name . '%');
-        $query->whereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
+      $query->whereRaw('LOWER(titre) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(description) like ?', '%'.strtolower($name).'%');
-        $query->orwhereRaw('LOWER(titre) like ?', '%'.strtolower($name).'%');
+        
+        $query->orwhereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(referenceannonce) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(typeannonce) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw('LOWER(paiementtranche) like ?', '%'.strtolower($name).'%');
+
  
+        
         if($list){
           $query->orWhereIn('idsouscategorie', $list);
         }
+        if($user){
+          $query->orWhereIn('idmembre', $user);
+        }
+       
+      })->orwhereHas('departement', function ($query) use ($name) {
+        $query->whereRaw('LOWER(lib_dept) like ?', '%'.strtolower($name).'%');
       })->paginate(30);
 
      foreach($annonce as $articl){
       $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
-      $articl['image']=$membre->urlimage;
+      if ($membre){
+        $articl['image']=$membre->urlimage;
+      }
+     
       unset($articl['description']);
       if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
