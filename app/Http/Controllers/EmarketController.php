@@ -819,7 +819,9 @@ class EmarketController extends Controller
       $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['idshowroom',$articl->idannonce],['etatshowroom','acceptee']])->first();
-        
+        $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
+        $dep=departement::where('id_dept',$annonce->id_dep)->first(); 
+         
         $service = service::select('idservice','nomService')->where('idservice',$articl->idservice )->first();
         if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
@@ -831,6 +833,8 @@ class EmarketController extends Controller
         unset($articl['idannonce']);
         unset($articl['idservice']);
         $articl['boutique']=$annonce;
+        $articl['categorie']=$cat;
+        $articl['departement']=$dep->lib_dept;
         $articl['service']=$service->nomService;
         $articl['vues']=$file;
         
