@@ -1144,6 +1144,12 @@ public function listegestionnaire($id)
     $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->idshowroom]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
     $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
     $dep=departement::where('id_dept',$annonce->id_dep)->first(); 
+    if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
+      $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
+      }else{
+        $file=0;
+      }
+      $test['vues']=$file;
     $test['categorie']=$cat;
     $test['departement']=$dep->lib_dept;
     $test['showroom']=$annonce;
