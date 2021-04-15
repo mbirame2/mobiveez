@@ -1134,13 +1134,13 @@ class EmarketController extends Controller
 public function listegestionnaire($id)
 {
   $gestionnaire= gestionnaire::where('idmembre',$id)->get(); 
-
-  foreach($gestionnaire as $test){
+   foreach($gestionnaire as $test){
      
   //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
     $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->idshowroom]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
     $test['showroom']=$annonce;
     $test['idgestionnaire']=$annonce->idmembre;
+    
   }
  
   return response($gestionnaire); 
@@ -1157,13 +1157,17 @@ public function deletegestionnaire($id)
 public function gestionnaireshowroom($id)
 {
   $gestionnaire= gestionnaire::select('idmembre')->where('idshowroom',$id)->get(); 
- 
+ $gest=[];
   foreach($gestionnaire as $test){
-  $user=User::select('prenom','nom','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
-  $test['user']=$user;
+  $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
+  $dept=departement::where('id_dept',$user->departement_id)->first(); 
+  $user['idmembre']=$test->idmembre;
+  $user['departement']=$dept->lib_dept;
+  unset($user['departement_id']);
+  array_push($gest, $user);
   }
 
-  return response()->json($gestionnaire); 
+  return response()->json($gest); 
 }
 
 
