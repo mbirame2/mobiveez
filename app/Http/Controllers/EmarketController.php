@@ -873,7 +873,7 @@ class EmarketController extends Controller
     public function commander(Request $req)
     {
      
-      
+      $commande=[];
       foreach($req->panier as $reqpanier){
        
         $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'])->first();
@@ -886,14 +886,16 @@ class EmarketController extends Controller
       $commande->statut="AWAITING";
       $panier->statut="commandé";
       $panier->save();
-      //$number = commande::select('idcommande')->latest();  
+     
       $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
       $commande->save();
       
+      $number = commande::select('idcommande')->latest();  
+       array_push($commande, $number->idcommande);
   
       }
    
-      return response()->json(['success'=>"Enregistrement. Commande en attente de validatiation par le propiétaire"], 200);            
+      return response()->json(['idcommande'=>$commande], 200);            
     }
     public function modifiercommande(Request $req)
     {
