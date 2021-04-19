@@ -678,12 +678,17 @@ class EmarketController extends Controller
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);
      foreach($annonce as $ann){
+      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$ann->idmembre)->first();
+      $ann['proprietaire']=$user;
+      $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $ann->idcategorieshowroom)->first();
+      $ann['categorie']=$cat;
      if(File::exists(storage_path('app/public/compteur/'.$ann->idshowroom.'_showrooms.txt'))){
       $file=File::get(storage_path('app/public/compteur/'.$ann->idshowroom.'_showrooms.txt'));
       }else{
         $file=0;
       }
-      $ann['vues']=$file;}
+      $ann['vues']=$file;
+    }
 
       return response($annonce); 
     }
@@ -873,7 +878,7 @@ class EmarketController extends Controller
     public function commander(Request $req)
     {
      
-      $commande=[];
+      $array=[];
       foreach($req->panier as $reqpanier){
        
         $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'])->first();
@@ -891,11 +896,11 @@ class EmarketController extends Controller
       $commande->save();
       
       $number = commande::latest('idcommande')->first(); 
-       array_push($commande, $number->idcommande);
+       array_push($array, $number->idcommande);
   
       }
    
-      return response()->json(['idcommande'=>$commande], 200);            
+      return response()->json(['idcommande'=>$array], 200);            
     }
     public function modifiercommande(Request $req)
     {
