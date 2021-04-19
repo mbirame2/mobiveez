@@ -890,7 +890,7 @@ class EmarketController extends Controller
       $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
       $commande->save();
       
-      $number = commande::select('idcommande')->latest();  
+      $number = commande::latest('idcommande')->first(); 
        array_push($commande, $number->idcommande);
   
       }
