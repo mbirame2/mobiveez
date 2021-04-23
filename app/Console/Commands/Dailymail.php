@@ -51,8 +51,7 @@ class Dailymail extends Command
         ];
         $users=User::where('DateDesactivation','=',date("Y-m-d"))->get();
         foreach($users as $user){
-            $user->etatcompte=0;
-            $user->save();
+          
             Mail::to($user->email)->send(new StatutUser($details));
         }
       
