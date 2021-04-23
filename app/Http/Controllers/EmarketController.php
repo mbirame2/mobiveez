@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\StatutUser;
 
 use Illuminate\Http\Request;
 use App\professionnel;
@@ -1026,9 +1029,32 @@ class EmarketController extends Controller
     public function statutcompte($id)
     {
      // $commande= new commande;
-      $user=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
-      $user->etatcompte=$id;
+
+      $details=[
+             
+        'code'=> ''
+    ];
+    $user=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
+    if($id==0){
+      // $schedule= new Schedule;
+    //   $schedule->command('statut:update')->();	
+    $Date1=date("Y/m/d-h:i");
+    $Date2 = date('Y/m/d-h:i', strtotime($Date1 . " + 3 day"));
+    $user->DateDesactivation=$Date2;
+    $user->save();
+    $details['body']="Votre compte sera désactivé le ".$Date2." , il vous reste donc 72h pour annuler la procédure. Au dela , le compte sera definitivement désactivé avec tout ce qui est lié à ce compte";
+
+    }else  if($id==1){
+      $details['body']="Vous compte a été réactivé avec succes";
+      $user->DateDesactivation=null;
+      $user->etatcompte=1;
       $user->save();
+    }
+   
+     
+    #return $details;
+    Mail::to($user->email)->send(new StatutUser($details));
+
       return response()->json(['success'=>"Statut de l'utilisateur mise à jour"], 200);   
     }
     public function commandestatut(Request $req)

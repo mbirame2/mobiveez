@@ -80,7 +80,7 @@ class AuthentificationController extends Controller
             $co->sexe=$request->gender;
             $code=$request->countryCode.strval(date("y"))."Pa".strval($article+1);
             $co->codemembre=$code;
-            $co->DateInscription=date("Y-m-d h:i:sa");
+            $co->DateInscription=date("Y/m/d-h:i");
         
             $co->save();
         }else if($request->accountType=="professionnel"){
@@ -132,7 +132,8 @@ class AuthentificationController extends Controller
         }
         $user = User::where([
             $field => request('telephone_mail'), 
-            'password' => sha1(request('password'))
+            'password' => sha1(request('password')),
+            'etatcompte' => 1
         ])->first();
         
         if($user)
@@ -148,7 +149,7 @@ class AuthentificationController extends Controller
             $token =  $user->createToken('MyApp')->accessToken; 
             return response()->json( [$token,$user]); 
         }else{
-            return response()->json(["error: Mot de passe incorrecte",401]); 
+            return response()->json(["error: Mot de passe incorrecte ou compte desactive",401]); 
         }
     }
 
@@ -191,10 +192,6 @@ class AuthentificationController extends Controller
             return response( [$number]);
             //$user = $this->userService->findUserByEmail($mail);  //code...
      
-
-         
-        
-            
     }
     public function checkuser(Request $request){
         if (is_numeric(request('telephone_mail'))) {
@@ -271,6 +268,7 @@ class AuthentificationController extends Controller
             'expire_in' => auth('api')->factory()->getTTL(),
         ]);
     }
+
     public function changepassword(Request $request){
         $email = $request->email;
       
