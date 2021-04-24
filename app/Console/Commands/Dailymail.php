@@ -57,6 +57,6 @@ class Dailymail extends Command
       
        // date("Y-m-d h:i:sa");
         
-        return $user;
+      #  return $user;
     }
 }

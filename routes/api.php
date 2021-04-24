@@ -99,6 +99,9 @@ Route::group([
    Route::post('/boutique',  ['as'=>'lo','uses'=>'EmarketController@boutique']);
    Route::post('/offerarticle',  ['as'=>'lo','uses'=>'EmarketController@offerarticle']);
 
+   
+   Route::post('/buyboostarticle',  ['as'=>'lo','uses'=>'EmarketController@buyboostarticle']);
+
    Route::post('/addgestionnaire',  ['as'=>'lo','uses'=>'EmarketController@addgestionnaire']);
    Route::get('/listegestionnaire/{id}',  ['as'=>'lo','uses'=>'EmarketController@listegestionnaire']);
    Route::get('/deletegestionnaire/{id}',  ['as'=>'lo','uses'=>'EmarketController@deletegestionnaire']);
@@ -146,6 +149,7 @@ Route::group([
     
     Route::get('/listevente/{id}',  ['as'=>'lo','uses'=>'EmarketController@listevente']);
 
+    
     Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);

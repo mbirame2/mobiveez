@@ -465,10 +465,14 @@ class EmarketController extends Controller
     }
     public function getnotification()
     {
-      $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
- 
+      $notifications = notification::where('id_receiver',225)->orderBy('idnotification','desc')->get(); 
+      foreach($notifications as $notification){
+        $notification['data']=json_decode($notification->data);
+        $notification['timestamp']=json_decode($notification->timestamp);
+        $notification['notification']=json_decode($notification->notification);
+      }
   //  $article=$article->paginate(15);
-      return response()->json($notification); 
+      return response()->json($notifications); 
     }
 
     public function listemarque()
@@ -563,11 +567,33 @@ class EmarketController extends Controller
         $servicevendu['service']=$service;
         
       }
-  //  $article=$article->paginate(15);
-   
       return response()->json($servicevendus); 
     }
     
+    public function buyboostarticle(Request $req)
+    {
+      $result=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
+      if($result->compte < $req->credit){
+        return response()->json(['message'=>"Credit insuffisant",'code'=>401], 200); 
+      }else {
+      $result->compte= $result->compte - $req->credit;
+      $result->save();
+
+      $servicevendu = new servicevendu;
+      $servicevendu->idannonce= $req->idannonce; 
+      $servicevendu->etatvente= 'en attente'; 
+      $servicevendu->idservice= $req->idservice; 
+      $Date1=date("Y/m/d-h:i");
+      $Date2 = date('Y/m/d-h:i', strtotime($Date1 . " + ".$req->days." day"));
+      $servicevendu->datefinservice= $Date2 ; 
+      $servicevendu->dateachat= $Date1; 
+      $servicevendu->save();
+
+    
+      return response()->json(['success'=>"Enregistré avec succes",'data'=>$servicevendu], 200); 
+      }
+    }
+
     public function annoncesboutique(Request $req){
       if($req->type=="add"){
         $iman= new annoncesboutique;
@@ -776,17 +802,12 @@ class EmarketController extends Controller
     public function add_notification(Request $req)
     {
       $notification= new notification;
-      $notification->idmembre=$req->idmembre;
-      $notification->date=date("Y-m-d H:i:s");
-      $notification->type=$req->type;
-      $notification->status=$req->status;
-      $notification->client_code=$req->client_code;
-      $notification->vendor_code=$req->vendor_code;
-      $notification->article_id=$req->article_id;
-      $notification->order_id=$req->order_id;
-      $notification->title=$req->title;
+      $notification->id_sender=$req->id_sender;
+      $notification->id_receiver=$req->id_receiver;
+      $notification->data=$req->data;
+      $notification->timestamp=$req->timestamp;
+      $notification->notification=$req->notification;
       $notification->module=$req->module;
-      $notification->quantity=$req->quantity;
       $notification->save();
       return response()->json(['success'=>'Enregistré',
                                'data'=>$notification

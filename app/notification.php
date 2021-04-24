@@ -15,6 +15,6 @@ class notification extends Model
     public $timestamps = false;
     protected $primaryKey = "idnotification";
     protected $fillable = [
-        'idmembre','status','type','client_code','vendor_code','article_id','order_id','title','module','quantity','date'
+        'id_sender','id_receiver','data','timestamp','notification','module' 
     ];
 }
