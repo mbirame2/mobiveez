@@ -972,7 +972,8 @@ class EmarketController extends Controller
     }
     public function listeservice()
     {
-      $service = service::paginate(40);
+      $list=[21,23,24,25,26,27];
+      $service = service::whereIn('idService',$list)->get();
     
   //  $article=$article->paginate(15);
       return response()->json($service); 
