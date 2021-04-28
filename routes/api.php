@@ -157,4 +157,13 @@ Route::group([
     Route::get('/liste_souscategorie',  ['as'=>'lo','uses'=>'EmarketController@liste_souscategorie']);
     Route::get('/gettransaction',  ['as'=>'lo','uses'=>'EmarketController@gettransaction']);
     Route::get('/proannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@proannonce']);
+
+
+    ////favoris
+    Route::get('/listefavoris/{id}',  ['as'=>'lo','uses'=>'EmarketController@listefavoris']);
+    Route::get('/deletefavoris/{id}',  ['as'=>'lo','uses'=>'EmarketController@deletefavoris']);
+
+    Route::post('/addfavoris',  ['as'=>'lo','uses'=>'EmarketController@addfavoris']);
+
+
 });

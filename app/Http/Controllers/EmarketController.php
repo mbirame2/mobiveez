@@ -8,6 +8,7 @@ use App\Mail\StatutUser;
 use Illuminate\Http\Request;
 use App\professionnel;
 use App\categorie;
+use App\favoris;
 use App\modele;
 use App\plat;
 use App\marque;
@@ -1263,6 +1264,53 @@ return response()->json($service);
 }
 
 
+
+/////////////////////FAVORISS////////////////////
+public function deletefavoris($id)
+{
+  $favoris= favoris::where('idfavoris',$id)->delete(); 
+
+ 
+  return response()->json(['success'=>"supprime avec succés"], 200); 
+}
+public function listefavoris($id)
+{
+  $favoris= favoris::where('id_membre',$id)->get(); 
+  $annonces=[];
+  $showrooms=[];
+   foreach($favoris as $test){
+    $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
+   
+    $boutique =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->id_showroom]])->select('idmembre','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+   // $test['showroom']=$boutique;
+   if($annonce){
+    $imageannonce = imageannonce::where('idannonce',$annonce->idannonce)->first();
+    $annonce['idfavoris']=$test->idfavoris;
+    $annonce['image']=$imageannonce->urlimage;
+    array_push($annonces, $annonce);
+   }else{
+    $boutique['idfavoris']=$test->idfavoris;
+    array_push($showrooms, $boutique);
+   }
+   
+    
+   
+   
+  }
+  return response()->json(['annonce'=>$annonces,'showroom'=>$showrooms], 200);
+
+}
+
+public function addfavoris(Request $req)
+{
+  $favoris= new favoris;
+  $favoris->id_membre=$req->id_membre;
+  $favoris->id_annonce=$req->id_annonce;
+  $favoris->id_showroom=$req->id_showroom;
+  $favoris->save();
+  return response(['success'=>"ajouter avec succés"], 200); 
+}
+//////////////////////////////////////////
 }
 
 
