@@ -465,7 +465,7 @@ class EmarketController extends Controller
     }
     public function getnotification()
     {
-      $notifications = notification::where('id_receiver',225)->orderBy('idnotification','desc')->get(); 
+      $notifications = notification::where('id_receiver',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
       foreach($notifications as $notification){
         $notification['data']=json_decode($notification->data);
         $notification['timestamp']=json_decode($notification->timestamp);
@@ -809,8 +809,7 @@ class EmarketController extends Controller
       $notification->notification=$req->notification;
       $notification->module=$req->module;
       $notification->save();
-      return response()->json(['success'=>'Enregistré',
-                               'data'=>$notification
+      return response()->json(['success'=>'Enregistré'
                               ], 200); 
     }
     public function remove_credit(Request $req)
