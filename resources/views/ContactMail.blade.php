@@ -12,7 +12,7 @@
         <p>{{$details['subject']}}</p>
         <p>{{$details['body']}}</p>
      
-        <p>Veillez me contacter sur mon adresse mail {{$details['from']}}</p>
+        <p>Merci de me contacter sur cet adresse mail {{$details['from']}}.</p>
         <p>L'équipe IVEEZ.</p>
         
     </body>
