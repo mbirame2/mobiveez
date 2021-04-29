@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactUser;
+
 use App\Services\SendEmailService;
 use App\User;
 use App\departement;
@@ -193,6 +195,27 @@ class AuthentificationController extends Controller
             //$user = $this->userService->findUserByEmail($mail);  //code...
      
     }
+
+    public function contact(Request $req )
+    {
+        
+        $details=[];
+        $details['body']=$req->message;
+        $details['from']=$req->emailExp;
+        
+        $details['subject']=$req->messageObject;
+
+      
+         Mail::to($req->emailDest)->send(new ContactUser($details));
+
+        return response()->json([
+            "status"=>200,
+            "message"=> "success"
+        ]);
+            //$user = $this->userService->findUserByEmail($mail);  //code...
+     
+    }
+
     public function checkuser(Request $request){
         if (is_numeric(request('telephone_mail'))) {
             $field = 'telephoneportable' ;

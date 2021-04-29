@@ -22,6 +22,7 @@ Route::group([
    Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
    
    Route::post('/checkuser',  ['as'=>'lo','uses'=>'AuthentificationController@checkuser']); 
+   Route::post('/contact',  ['as'=>'lo','uses'=>'AuthentificationController@contact']); 
 
    Route::post('/changepassword',  ['as'=>'lo','uses'=>'AuthentificationController@changepassword']); 
     Route::post('/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);

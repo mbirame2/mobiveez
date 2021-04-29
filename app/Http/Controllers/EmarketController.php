@@ -562,7 +562,7 @@ class EmarketController extends Controller
     public function boostarticle($id)
     {
       $list=[21,23,24,25,26,27];
-      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where([['idannonce','=',$id],['datefinservice','>',date("Y/m/d-h:i")]])->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
         $servicevendu['service']=$service;
