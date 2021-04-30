@@ -1284,17 +1284,23 @@ public function listefavoris($id)
   $annonces=[];
   $showrooms=[];
    foreach($favoris as $test){
-    $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
+    $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','id_dep','titre','idannonce')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
    
     $boutique =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->id_showroom]])->select('idmembre','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
-   // $test['showroom']=$boutique;
-   if($annonce){
+ 
+    if($annonce){
     $imageannonce = imageannonce::where('idannonce',$annonce->idannonce)->first();
     $annonce['idfavoris']=$test->idfavoris;
     $annonce['image']=$imageannonce->urlimage;
+    $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
+    $annonce['departement']=$dep->lib_dept;
     array_push($annonces, $annonce);
    }else{
+    $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$boutique->idmembre)->first();
+    $dep= departement::select('lib_dept')->where('id_dept', $boutique->id_dep)->first();
+    $boutique['departement']=$dep->lib_dept;
     $boutique['idfavoris']=$test->idfavoris;
+    $boutique['proprietaire']=$user;
     array_push($showrooms, $boutique);
    }
    
