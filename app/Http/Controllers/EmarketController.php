@@ -847,7 +847,7 @@ class EmarketController extends Controller
     public function getboutiqueservice()
     {
       $list=[28,29,30];
-      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice', '>=', date('Y-m-d H:i:s'))->orderBy('idvente','desc')->paginate(30);
+      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['idshowroom',$articl->idannonce],['etatshowroom','acceptee']])->first();
         $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
@@ -949,7 +949,8 @@ class EmarketController extends Controller
 
     public function getarticleservice()
     {
-      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->where('datefinservice','>',date("Y/m/d-h:i"))->orderBy('idvente','desc')->paginate(30);
+      $list=[21,23,24,25,26,27];
+      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
         
