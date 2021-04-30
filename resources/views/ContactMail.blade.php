@@ -9,10 +9,10 @@
         </head>
     <body>
          
-        <p>{{$details['subject']}}</p>
+        <h2>{{$details['subject']}}</h2>
         <p>{{$details['body']}}</p>
      
-        <p>Merci de me contacter sur cet adresse mail {{$details['from']}}.</p>
+        <p>Merci de me contacter sur cette adresse mail {{$details['from']}}.</p>
         <p>L'équipe IVEEZ.</p>
         
     </body>

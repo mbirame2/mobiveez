@@ -549,7 +549,7 @@ class EmarketController extends Controller
     public function boostshowroom($id)
     {
       $list=[28,29,30];
-      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where([['idannonce','=',$id],['datefinservice','>',date("Y/m/d-h:i")]])->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
         $servicevendu['service']=$service;
@@ -584,8 +584,10 @@ class EmarketController extends Controller
       $servicevendu->idannonce= $req->idannonce; 
       $servicevendu->etatvente= 'en attente'; 
       $servicevendu->idservice= $req->idservice; 
-      $Date1=date("Y/m/d-h:i");
-      $Date2 = date('Y/m/d-h:i', strtotime($Date1 . " + ".$req->days." day"));
+      $Date1=date("Y/m/d-H:i");
+      $Date2 = date('Y/m/d-H:i', strtotime($Date1 . " + ".$req->days." day"));
+      //$Date1=gmdate('Y/m/d-h:i', strtotime($Date1) );
+      //$Date2=gmdate('Y/m/d-h:i', strtotime($Date2) );
       $servicevendu->datefinservice= $Date2 ; 
       $servicevendu->dateachat= $Date1; 
       $servicevendu->save();
@@ -947,7 +949,7 @@ class EmarketController extends Controller
 
     public function getarticleservice()
     {
-      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->where('datefinservice', '>=', date('Y-m-d H:i:s'))->orderBy('idvente','desc')->paginate(30);
+      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->where('datefinservice','>',date("Y/m/d-h:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
         
