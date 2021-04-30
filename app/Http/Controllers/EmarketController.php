@@ -549,7 +549,7 @@ class EmarketController extends Controller
     public function boostshowroom($id)
     {
       $list=[28,29,30];
-      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where([['idannonce','=',$id],['datefinservice','>',date("Y/m/d-h:i")]])->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
         $servicevendu['service']=$service;
@@ -562,7 +562,7 @@ class EmarketController extends Controller
     public function boostarticle($id)
     {
       $list=[21,23,24,25,26,27];
-      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where([['idannonce','=',$id],['datefinservice','>',date("Y/m/d-h:i")]])->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
         $servicevendu['service']=$service;
@@ -949,10 +949,12 @@ class EmarketController extends Controller
 
     public function getarticleservice()
     {
-      $list=[21,23,24,25,26,27];
+      $list=[21,23,24,25,26,27,28,29,30];
       $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
+        if($annonce){
+         
         
         $service = service::select('idservice','nomService')->where('idservice',$articl->idservice )->first();
         $img = imageannonce::where('idannonce',$annonce->idannonce)->first();
@@ -968,7 +970,7 @@ class EmarketController extends Controller
         $articl['service']=$service->nomService;
         $articl['image']=$img->urlimage;
         $articl['vues']=$file;
-        
+      }
     }
   //  $article=$article->paginate(15);
       return response()->json($servicevendu); 
