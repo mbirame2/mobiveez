@@ -762,7 +762,7 @@ class EmarketController extends Controller
     public function listoffer($id)
     {
      
-      $prix=  propositionprix::where('idannonce',$id)->orderBy('idproposition','desc')->paginate(30);
+      $prix=  propositionprix::where([['idannonce',$id],['statut','=',null]])->orderBy('idproposition','desc')->paginate(30);
       foreach($prix as $articl){
         $user = User::select( 'departement_id','localisation','prenom','nom','telephoneportable','email','codemembre')->where(
           'idmembre', $articl->idmembre)->first();
@@ -774,6 +774,15 @@ class EmarketController extends Controller
      
      
       return response()->json(['offre'=>$prix], 200); 
+    }
+// Rejeter une offre
+    public function statutoffer(Request $req)
+    {
+      $prix=  propositionprix::where('idproposition',$req->idproposition)->first();
+      $prix->statut=$req->statut;
+      $prix->save();
+      return response()->json(['result'=>'success'], 200); 
+
     }
 
     public function deleteoffer($id)

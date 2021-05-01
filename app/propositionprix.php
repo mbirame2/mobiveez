@@ -10,6 +10,6 @@ class propositionprix extends Model
     public $timestamps = false;
     protected $primaryKey = "idproposition";
     protected $fillable = [
-      'idmembre','idannonce','prixproposition','urlimageoffre','description','dateproposition','quantity'
+      'idmembre','idannonce','prixproposition','urlimageoffre','description','dateproposition','quantity','statut'
     ];
 }
