@@ -81,7 +81,7 @@ class EmarketController extends Controller
 
     public function allannonce()
     {
-      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->where('statut','!=','suppression')->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
@@ -102,7 +102,7 @@ class EmarketController extends Controller
   }
     public function proannonce($id)
     {
-      $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
@@ -445,7 +445,7 @@ class EmarketController extends Controller
     public function getboutique()
     {
    //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();
-      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','etatshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','!=','suppression')->orderBy('idshowroom','desc')->paginate(30);
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','etatshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
       foreach($boutique as $articl){
       //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
         //$articl['user']=$membre;
@@ -1298,7 +1298,7 @@ public function listefavoris($id)
    foreach($favoris as $test){
     $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','id_dep','titre','idannonce')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
    
-    $boutique =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->id_showroom]])->select('idmembre','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+    $boutique =boutique::where('idshowroom',$test->id_showroom)->select('idmembre','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
  
     if($annonce){
     $imageannonce = imageannonce::where('idannonce',$annonce->idannonce)->first();
@@ -1307,8 +1307,13 @@ public function listefavoris($id)
     $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
     $annonce['departement']=$dep->lib_dept;
     array_push($annonces, $annonce);
-   }else{
-    $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$boutique->idmembre)->first();
+   }else {
+     if($boutique->idmembre){
+      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$boutique->idmembre)->first();
+
+     }else{
+       $user=null;
+     }
     $dep= departement::select('lib_dept')->where('id_dept', $boutique->id_dep)->first();
     $boutique['departement']=$dep->lib_dept;
     $boutique['idfavoris']=$test->idfavoris;
