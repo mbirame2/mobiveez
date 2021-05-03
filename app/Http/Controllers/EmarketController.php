@@ -102,7 +102,7 @@ class EmarketController extends Controller
   }
     public function proannonce($id)
     {
-      $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','statut','localisation','idmembre','idannonce','referenceannonce')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
@@ -121,7 +121,7 @@ class EmarketController extends Controller
           $articl['idannonceshowroom']=null;
           $articl['idshowroom']=null;
         }
-        $prix=  propositionprix::where('idannonce',$articl->idannonce)->count();
+        $prix=  propositionprix::where([['idannonce',$articl->idannonce],['statut','=',null]])->count();
         $articl['total_offer']=$prix;
         $articl['image']=$membre;
         
