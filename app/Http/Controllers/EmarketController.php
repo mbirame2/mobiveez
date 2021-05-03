@@ -767,7 +767,7 @@ class EmarketController extends Controller
      
       $prix=  propositionprix::where([['idannonce',$id],['statut','=',null]])->orderBy('idproposition','desc')->paginate(30);
       foreach($prix as $articl){
-        $user = User::select( 'departement_id','localisation','prenom','nom','telephoneportable','email','codemembre')->where(
+        $user = User::select( 'departement_id','localisation','profil','prenom','nom','telephoneportable','email','codemembre')->where(
           'idmembre', $articl->idmembre)->first();
        #   return $user->departement_id;
           $dep=departement::where('id_dept',$user['departement_id'])->first(); 
