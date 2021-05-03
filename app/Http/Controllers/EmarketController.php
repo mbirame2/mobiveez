@@ -81,7 +81,7 @@ class EmarketController extends Controller
 
     public function allannonce()
     {
-      $article = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->where('statut','!=','suppression')->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
@@ -91,7 +91,10 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
-        $articl['image']=$membre->urlimage;
+        if($membre){
+          $articl['image']=$membre->urlimage;
+        }
+       
         $articl['vues']=$file;
      //   $articl['url']="api.iveez.com/api/image/{imagename}";   
     }
@@ -169,7 +172,7 @@ class EmarketController extends Controller
       $annonce->titre=$req->input('title');
       $annonce->troc='non';
       $annonce->statutvente='en vente';
-      $annonce->statut='acceptee';
+      $annonce->statut='en attente';
       $annonce->localisation=$req->input('localisation');
       $annonce->description=$req->input('description');
       $annonce->dateannonce=date("Y-m-d H:i:s");
@@ -442,7 +445,7 @@ class EmarketController extends Controller
     public function getboutique()
     {
    //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();
-      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','etatshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','!=','suppression')->orderBy('idshowroom','desc')->paginate(30);
       foreach($boutique as $articl){
       //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
         //$articl['user']=$membre;
@@ -657,7 +660,7 @@ class EmarketController extends Controller
         $boutique=boutique::where('idshowroom', $req->input('idshowroom') )->first(); 
       }else{
         $boutique= new boutique;
-        $boutique->etatshowroom="acceptee";
+        $boutique->etatshowroom="en attente";
       }
       
       $boutique->idmembre=auth('api')->user()->idmembre;
