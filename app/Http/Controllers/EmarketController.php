@@ -169,7 +169,7 @@ class EmarketController extends Controller
       $annonce->titre=$req->input('title');
       $annonce->troc='non';
       $annonce->statutvente='en vente';
-      $annonce->statut='en attente';
+      $annonce->statut='acceptee';
       $annonce->localisation=$req->input('localisation');
       $annonce->description=$req->input('description');
       $annonce->dateannonce=date("Y-m-d H:i:s");
@@ -657,7 +657,7 @@ class EmarketController extends Controller
         $boutique=boutique::where('idshowroom', $req->input('idshowroom') )->first(); 
       }else{
         $boutique= new boutique;
-        $boutique->etatshowroom="en attente";
+        $boutique->etatshowroom="acceptee";
       }
       
       $boutique->idmembre=auth('api')->user()->idmembre;
