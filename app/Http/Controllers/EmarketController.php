@@ -45,7 +45,7 @@ class EmarketController extends Controller
 {
     public function oneannonce($id)
     {
-      $annonce =annonce::with('departement')->where([['statut','acceptee'],['idannonce',$id]])->select('titre','prix','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','statut','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
@@ -396,7 +396,7 @@ class EmarketController extends Controller
 
     public function oneboutique($id)
     {
-      $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+      $annonce =boutique::where('idshowroom',$id)->select('idmembre','descriptionshowroom','etatshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
       $user=User::select('prenom','nom' ,'codemembre','email')->where('idmembre',$annonce->idmembre)->first();
 
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
