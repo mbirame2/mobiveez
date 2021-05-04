@@ -1310,10 +1310,10 @@ public function listefavoris($id)
    }else if($boutique) {
      if($boutique){
       $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$boutique->idmembre)->first();
-      if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
-        $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
-        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->idshowroom).'_showrooms.txt'))){
-          $file=File::get(storage_path('app/public/compteur/'.strtolower($annonce->idshowroom).'_biens_showrooms.txt'));
+      if(File::exists(storage_path('app/public/compteur/'.$boutique->idshowroom.'_showrooms.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$boutique->idshowroom.'_showrooms.txt'));
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($boutique->idshowroom).'_showrooms.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($boutique->idshowroom).'_biens_showrooms.txt'));
           }else {
           $file=0;
         }
