@@ -1308,7 +1308,7 @@ public function listefavoris($id)
     $annonce['departement']=$dep->lib_dept;
     array_push($annonces, $annonce);
    }else {
-     if($boutique->idmembre){
+     if($boutique){
       $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$boutique->idmembre)->first();
 
      }else{
