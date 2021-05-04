@@ -1298,7 +1298,7 @@ public function listefavoris($id)
    foreach($favoris as $test){
     $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','id_dep','titre','idannonce')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
    
-    $boutique =boutique::where('idshowroom',$test->id_showroom)->select('idmembre','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+    $boutique =boutique::where('idshowroom',$test->id_showroom)->select('idmembre','idshowroom','heuredebut','heurefin','descriptionshowroom','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
  
     if($annonce){
     $imageannonce = imageannonce::where('idannonce',$annonce->idannonce)->first();
@@ -1310,13 +1310,20 @@ public function listefavoris($id)
    }else if($boutique) {
      if($boutique){
       $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$boutique->idmembre)->first();
-
+      if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
+        }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->idshowroom).'_showrooms.txt'))){
+          $file=File::get(storage_path('app/public/compteur/'.strtolower($annonce->idshowroom).'_biens_showrooms.txt'));
+          }else {
+          $file=0;
+        }
      }else{
        $user=null;
      }
     $dep= departement::select('lib_dept')->where('id_dept', $boutique->id_dep)->first();
     $boutique['departement']=$dep->lib_dept;
     $boutique['idfavoris']=$test->idfavoris;
+    $boutique['vues']=$file;
     $boutique['proprietaire']=$user;
     array_push($showrooms, $boutique);
    }
