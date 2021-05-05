@@ -143,6 +143,8 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($article); 
     }
+
+
     public function annonce(Request $req){
       $validator = Validator::make($req->all(), [ 
         'city' => 'required', 
@@ -291,6 +293,126 @@ class EmarketController extends Controller
 
     }
   }
+
+
+
+
+  
+  public function updateannonce(Request $req){
+    
+    $annonce= annonce::where('idannonce',$req->input('idannonce'))->first(); 
+    //$ss=souscategorie::where('id_souscat',$req->input('subcategory'))->first(); 
+    $annonce->idsouscategorie=$req->input('subcategory');
+    $annonce->prix=$req->input('price');
+  
+    $annonce->typeannonce=$req->input('publish_type');
+    $annonce->paiementtranche=$req->input('payment_type');
+    $dept=departement::where('lib_dept',$req->input('city'))->first(); 
+    $annonce->departement()->associate($dept);
+    $annonce->titre=$req->input('title');
+    $annonce->localisation=$req->input('localisation');
+    $annonce->description=$req->input('description');
+    $details=[];
+    
+
+    if($req->input('categorie')==9){
+      $habillement= habillement::where('id',$req->input('idhabillement'))->first(); 
+      $habillement->type=$req->input('clothing_type');     
+      $habillement->marque=$req->input('brand');  
+      $habillement->modele=$req->input('model');  
+      $habillement->couleur=$req->input('color');  
+      $habillement->taille=$req->input('size'); 
+      $det=$habillement; 
+      $annonce->save();
+     
+      $habillement->annonce()->associate($annonce);
+      $habillement->save();
+      array_push($details, $habillement);
+    }else if($req->input('categorie')==1 ){
+      $immobilier=  immobilier::where('idimmobilier',$req->input('idimmobilier'))->first(); 
+      $immobilier->surface=$req->input('surface');     
+     
+      $immobilier->typeoperation=$req->input('type');   
+      $immobilier->nombrepiece=$req->input('n_rooms');  
+      $immobilier->datedisponibilite=$req->input('open_date');  
+      $immobilier->droitvisite=$req->input('visit_amount');  
+      $immobilier->montantdroit=$req->input('montant');  
+      $det=$immobilier;
+      $annonce->save();
+
+      $immobilier->idannonce=$req->input('idannonce');
+      $immobilier->save();
+      $annonce['immobilier']=$immobilier;
+    //  array_push($details, $immobilier);
+      array_push($details, $annonce);
+    } else if($req->input('categorie')==3 ){
+      $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
+      $marque=marque::where( 'idmarquevoiture', $req->input('brand'))->first(); 
+
+      $modele= new modele ;
+      $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
+      $modele->idmarquevoiture=$marque->idmarquevoiture;
+      $modele->save();
+      $a=modele::latest('idmodelevoiture')->first();
+
+      $automobile->vehicule_type=$req->input('vehicle_type'); 
+      $automobile->place=$req->input('place');
+     
+      $automobile->climatisation=$req->input('air_conditionning');
+      $automobile->typeoperation=$req->input('type');  
+      $automobile->couleur=$req->input('color');  
+      $automobile->kilometre=$req->input('mileage');  
+      $automobile->puissance=$req->input('power');  
+      $automobile->boite=$req->input('gearbox');  
+      $automobile->carburant=$req->input('fuel_type');  
+      $automobile->jante=$req->input('rim_type');  
+      $automobile->cylindre=$req->input('n_cylinders'); 
+
+      $automobile->idmodelevoiture=$a->idmodelevoiture;
+
+      $annonce->save();
+      //$det=$automobile;
+      $automobile->annonce()->associate($annonce);
+      $automobile->save();
+      $detail=$automobile;
+      
+     
+      array_push($details, $detail);
+    }else{
+      $annonce->save();
+      array_push($details, $annonce);
+    }
+
+    for($i=0;$i<$req->numberOfImages;$i++){
+      $iman= new imageannonce;
+      $img=$req->input('image'.$i);
+    
+      $base64_str = substr($img, strpos($img, ",")+1);
+      //var_dump($base64_str);die();
+      $data = base64_decode($base64_str);
+      $time=$req->idannonce+$i.'-'.time().'.png';
+      Storage::disk('annonce')->put($time, $data);
+      $iman->idannonce= $req->idannonce;  
+      $iman->urlimage="photo/".$time;  
+      $iman->parametre=$i; 
+      //array_push($details, $annonce);
+      $iman->save();
+     
+    //  array_push($details, $iman->urlimage);
+    
+    }
+  //  $url=$time;
+ 
+    return response()->json(['succes'=>"Modification de lannonce avec succes","code"=>200,
+   
+    
+    ]);            
+
+  
+}
+
+
+
 
     public function similarannonce($name)
     {

@@ -93,6 +93,9 @@ Route::group([
    'middleware' => 'auth:api',
 ],function($route){
    Route::post('/annonce',  ['as'=>'lo','uses'=>'EmarketController@annonce']);
+   
+   Route::post('/updateannonce',  ['as'=>'lo','uses'=>'EmarketController@updateannonce']);
+
    Route::post('/imageprofil',  ['as'=>'lo','uses'=>'EmarketController@imageprofil']);
    Route::post('/commander',  ['as'=>'lo','uses'=>'EmarketController@commander']);
    Route::post('/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);

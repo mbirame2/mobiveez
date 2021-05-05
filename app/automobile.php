@@ -9,6 +9,8 @@ class automobile extends Model
     protected $table="automobile";
   
     public $timestamps = false;
+    protected $primaryKey = "idautomobile";
+
     protected $fillable = [
       'couleur','kilometre','puissance','idmodelevoiture', 'boite','carburant','jante','cylindre','categorie','capacite','typeoperation','idannonce','vehicule_type','place','climatisation'
     ];
