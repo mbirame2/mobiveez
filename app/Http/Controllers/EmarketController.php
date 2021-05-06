@@ -68,15 +68,20 @@ class EmarketController extends Controller
         }else if($immobilier){
           $annonce['immobilier']=$immobilier;
         }else if($automobile){
-
-          $modele= modele::where( 'idmodelevoiture', $automobile->idmodelevoiture)->first() ;
-          $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
-          $automobile['modele']=$modele->designation_modelevoiture;
-          $automobile['idmodelevoiture']=$modele->idmodelevoiture;
-          $automobile['idmarquevoiture']=$marque->idmarquevoiture;
-
-          $automobile['marque']=$marque->designation_marquevoiture;
-
+          if($automobile->idmodelevoiture!=0){
+            $modele= modele::where( 'idmodelevoiture', $automobile->idmodelevoiture)->first() ;
+            $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
+            $automobile['modele']=$modele->designation_modelevoiture;
+            $automobile['idmodelevoiture']=$modele->idmodelevoiture;
+            $automobile['idmarquevoiture']=$modele->idmarquevoiture;
+  
+            $automobile['marque']=$marque->designation_marquevoiture;
+  
+          }else{
+            $automobile['idmodelevoiture']=$automobile['idmarquevoiture']=$automobile['marque']=$automobile['modele']=null;
+  
+          }
+         
           $annonce['automobile']=$automobile;
         }
       Storage::disk('vue')->put($annonce->referenceannonce.'_biens.txt', $file+1);
