@@ -72,6 +72,9 @@ class EmarketController extends Controller
           $modele= modele::where( 'idmodelevoiture', $automobile->idmodelevoiture)->first() ;
           $marque=marque::where( 'idmarquevoiture', $modele->idmarquevoiture)->first(); 
           $automobile['modele']=$modele->designation_modelevoiture;
+          $automobile['idmodelevoiture']=$modele->idmodelevoiture;
+          $automobile['idmarquevoiture']=$marque->idmarquevoiture;
+
           $automobile['marque']=$marque->designation_marquevoiture;
 
           $annonce['automobile']=$automobile;
