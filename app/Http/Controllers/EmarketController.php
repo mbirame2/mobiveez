@@ -308,41 +308,41 @@ class EmarketController extends Controller
     
     $annonce= annonce::where('idannonce',$req->input('idannonce'))->first(); 
     //$ss=souscategorie::where('id_souscat',$req->input('subcategory'))->first(); 
-    $annonce->idsouscategorie=$req->input('subcategory');
-    $annonce->prix=$req->input('price');
+    $annonce->idsouscategorie=$req->input('idsouscategorie');
+    $annonce->prix=$req->input('prix');
   
-    $annonce->typeannonce=$req->input('publish_type');
-    $annonce->paiementtranche=$req->input('payment_type');
-    $dept=departement::where('lib_dept',$req->input('city'))->first(); 
+    $annonce->typeannonce=$req->input('typeannonce');
+    $annonce->paiementtranche=$req->input('paiementtranche');
+    $dept=departement::where('lib_dept',$req->input('lib_dept'))->first(); 
     $annonce->departement()->associate($dept);
-    $annonce->titre=$req->input('title');
+    $annonce->titre=$req->input('titre');
     $annonce->localisation=$req->input('localisation');
     $annonce->description=$req->input('description');
     $details=[];
     
 
-    if($req->input('categorie')==9){
+    if($req->input('idcategorie')==9){
       $habillement= habillement::where('id',$req->input('idhabillement'))->first(); 
-      $habillement->type=$req->input('clothing_type');     
-      $habillement->marque=$req->input('brand');  
-      $habillement->modele=$req->input('model');  
-      $habillement->couleur=$req->input('color');  
-      $habillement->taille=$req->input('size'); 
+      $habillement->type=$req->input('type');     
+      $habillement->marque=$req->input('marque');  
+      $habillement->modele=$req->input('modele');  
+      $habillement->couleur=$req->input('couleur');  
+      $habillement->taille=$req->input('taille'); 
       $det=$habillement; 
       $annonce->save();
      
       $habillement->annonce()->associate($annonce);
       $habillement->save();
       array_push($details, $habillement);
-    }else if($req->input('categorie')==1 ){
+    }else if($req->input('idcategorie')==1 ){
       $immobilier=  immobilier::where('idimmobilier',$req->input('idimmobilier'))->first(); 
       $immobilier->surface=$req->input('surface');     
      
-      $immobilier->typeoperation=$req->input('type');   
-      $immobilier->nombrepiece=$req->input('n_rooms');  
-      $immobilier->datedisponibilite=$req->input('open_date');  
-      $immobilier->droitvisite=$req->input('visit_amount');  
-      $immobilier->montantdroit=$req->input('montant');  
+      $immobilier->typeoperation=$req->input('typeoperation');   
+      $immobilier->nombrepiece=$req->input('nombrepiece');  
+      $immobilier->datedisponibilite=$req->input('datedisponibilite');  
+      $immobilier->droitvisite=$req->input('droitvisite');  
+      $immobilier->montantdroit=$req->input('montantdroit');  
       $det=$immobilier;
       $annonce->save();
 
@@ -351,30 +351,28 @@ class EmarketController extends Controller
       $annonce['immobilier']=$immobilier;
     //  array_push($details, $immobilier);
       array_push($details, $annonce);
-    } else if($req->input('categorie')==3 ){
+    } else if($req->input('idcategorie')==3 ){
       $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
-      $marque=marque::where( 'idmarquevoiture', $req->input('brand'))->first(); 
+     // $marque=marque::where( 'idmarquevoiture', $req->input('idmarquevoiture'))->first(); 
 
-      $modele= new modele ;
-      $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
-      $modele->idmarquevoiture=$marque->idmarquevoiture;
+      $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); ;
+      $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('designation_modelevoiture');
+      $modele->idmarquevoiture=$req->input('idmarquevoiture');
       $modele->save();
-      $a=modele::latest('idmodelevoiture')->first();
 
-      $automobile->vehicule_type=$req->input('vehicle_type'); 
+      $automobile->vehicule_type=$req->input('vehicule_type'); 
       $automobile->place=$req->input('place');
      
-      $automobile->climatisation=$req->input('air_conditionning');
-      $automobile->typeoperation=$req->input('type');  
-      $automobile->couleur=$req->input('color');  
-      $automobile->kilometre=$req->input('mileage');  
-      $automobile->puissance=$req->input('power');  
-      $automobile->boite=$req->input('gearbox');  
-      $automobile->carburant=$req->input('fuel_type');  
-      $automobile->jante=$req->input('rim_type');  
-      $automobile->cylindre=$req->input('n_cylinders'); 
+      $automobile->climatisation=$req->input('climatisation');
+      $automobile->typeoperation=$req->input('typeoperation');  
+      $automobile->couleur=$req->input('couleur');  
+      $automobile->kilometre=$req->input('kilometre');  
+      $automobile->puissance=$req->input('puissance');  
+      $automobile->boite=$req->input('boite');  
+      $automobile->carburant=$req->input('carburant');  
+      $automobile->jante=$req->input('jante');  
+      $automobile->cylindre=$req->input('cylindre'); 
 
-      $automobile->idmodelevoiture=$a->idmodelevoiture;
 
       $annonce->save();
       //$det=$automobile;
