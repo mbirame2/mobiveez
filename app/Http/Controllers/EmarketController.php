@@ -778,15 +778,17 @@ class EmarketController extends Controller
     }
     public function getarticleboutique($id)
     {
+    
       $boutique = annoncesboutique::select('idannonceshowroom','idannonce')->where('idshowroom',$id)->orderBy('idannonceshowroom','desc')->paginate(30);
-      foreach($boutique as $article){
+      foreach($boutique as $k => $article ){
         $membre = annonce::select('titre','prix','localisation','idannonce','referenceannonce')->where([['idannonce',$article->idannonce],['statut','acceptee']])->first();
+        if($membre){
         $image = imageannonce::where('idannonce',$article->idannonce)->get();
               
         
         $article['image']=$image; 
         $file=0;
-        if($membre){
+       
           $article['articles']=$membre;  
           if(File::exists(storage_path('app/public/compteur/'.$membre->referenceannonce.'_biens.txt') )){
             $file=File::get(storage_path('app/public/compteur/'.$membre->referenceannonce.'_biens.txt'));
@@ -794,10 +796,12 @@ class EmarketController extends Controller
               $file=File::get(storage_path('app/public/compteur/'.strtolower($membre->referenceannonce).'_biens.txt'));
               }
               $article['articles']['vues']=$file;
-        }   
+             
+        }   else{
+          unset($boutique[$k]);
+        }
           
-           
-      
+
     }
    
   //  $article=$article->paginate(15);
