@@ -335,6 +335,7 @@ class EmarketController extends Controller
 
       }else if(! $req->input('idhabillement')){
         $habillement= new habillement;
+       
       }
       $habillement->type=$req->input('type');     
       $habillement->marque=$req->input('marque');  
@@ -346,15 +347,19 @@ class EmarketController extends Controller
      
       $habillement->annonce()->associate($annonce);
       $habillement->save();
+      automobile::where('idannonce',$req->input('idannonce'))->delete(); 
+      immobilier::where('idannonce',$req->input('idannonce'))->delete(); 
       array_push($details, $habillement);
     }else if($req->input('idcategorie')==1 ){
 
-      if ($req->input('idimmobilier')){
-        $immobilier=  immobilier::where('idimmobilier',$req->input('idimmobilier'))->first(); 
+          if ($req->input('idimmobilier')){
+            $immobilier=  immobilier::where('idimmobilier',$req->input('idimmobilier'))->first(); 
 
-      }else if(! $req->input('idimmobilier')){
-        $immobilier= new immobilier;
-      }
+          }else if(! $req->input('idimmobilier')){
+            $immobilier= new immobilier;
+          
+
+          }
       $immobilier->surface=$req->input('surface');     
      
       $immobilier->typeoperation=$req->input('typeoperation');   
@@ -367,19 +372,23 @@ class EmarketController extends Controller
 
       $immobilier->idannonce=$req->input('idannonce');
       $immobilier->save();
+      automobile::where('idannonce',$req->input('idannonce'))->delete(); 
+      habillement::where('idannonce',$req->input('idannonce'))->delete(); 
       $annonce['immobilier']=$immobilier;
     //  array_push($details, $immobilier);
       array_push($details, $annonce);
     } else if($req->input('idcategorie')==3 ){
 
-      if ($req->input('idautomobile')){
-        $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
-        $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
+          if ($req->input('idautomobile')){
+            $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
+            $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
 
-      }else if(! $req->input('idautomobile')){
-        $automobile= new automobile;
-        $modele= new modele; 
-      }
+          }else if(! $req->input('idautomobile')){
+            $automobile= new automobile;
+            $modele= new modele; 
+         
+
+          }
      // $marque=marque::where( 'idmarquevoiture', $req->input('idmarquevoiture'))->first(); 
 
      
@@ -405,6 +414,9 @@ class EmarketController extends Controller
       //$det=$automobile;
       $automobile->annonce()->associate($annonce);
       $automobile->save();
+      immobilier::where('idannonce',$req->input('idannonce'))->delete(); 
+      habillement::where('idannonce',$req->input('idannonce'))->delete(); 
+
       $detail=$automobile;
       
      
