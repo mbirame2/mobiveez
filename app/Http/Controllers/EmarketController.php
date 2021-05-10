@@ -330,7 +330,12 @@ class EmarketController extends Controller
     
 
     if($req->input('idcategorie')==9){
-      $habillement= habillement::where('id',$req->input('idhabillement'))->first(); 
+      if ($req->input('idhabillement')){
+        $habillement= habillement::where('id',$req->input('idhabillement'))->first(); 
+
+      }else if(! $req->input('idhabillement')){
+        $habillement= new habillement;
+      }
       $habillement->type=$req->input('type');     
       $habillement->marque=$req->input('marque');  
       $habillement->modele=$req->input('modele');  
@@ -343,7 +348,13 @@ class EmarketController extends Controller
       $habillement->save();
       array_push($details, $habillement);
     }else if($req->input('idcategorie')==1 ){
-      $immobilier=  immobilier::where('idimmobilier',$req->input('idimmobilier'))->first(); 
+
+      if ($req->input('idimmobilier')){
+        $immobilier=  immobilier::where('idimmobilier',$req->input('idimmobilier'))->first(); 
+
+      }else if(! $req->input('idimmobilier')){
+        $immobilier= new immobilier;
+      }
       $immobilier->surface=$req->input('surface');     
      
       $immobilier->typeoperation=$req->input('typeoperation');   
@@ -360,10 +371,16 @@ class EmarketController extends Controller
     //  array_push($details, $immobilier);
       array_push($details, $annonce);
     } else if($req->input('idcategorie')==3 ){
-      $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
+
+      if ($req->input('idautomobile')){
+        $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
+
+      }else if(! $req->input('idautomobile')){
+        $automobile= new automobile;
+      }
      // $marque=marque::where( 'idmarquevoiture', $req->input('idmarquevoiture'))->first(); 
 
-      $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
+      $modele= new modele; 
       $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('designation_modelevoiture');
       $modele->idmarquevoiture=$req->input('idmarquevoiture');
       $modele->save();
