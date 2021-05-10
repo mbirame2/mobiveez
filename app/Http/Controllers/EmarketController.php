@@ -45,7 +45,7 @@ class EmarketController extends Controller
 {
     public function oneannonce($id)
     {
-      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','statut','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
@@ -363,7 +363,7 @@ class EmarketController extends Controller
       $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
      // $marque=marque::where( 'idmarquevoiture', $req->input('idmarquevoiture'))->first(); 
 
-      $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); ;
+      $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
       $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('designation_modelevoiture');
       $modele->idmarquevoiture=$req->input('idmarquevoiture');
       $modele->save();
@@ -1032,7 +1032,7 @@ class EmarketController extends Controller
     
       foreach($panier as $articl){
         
-        $membre = annonce::select('localisation','idannonce','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
+        $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
         $articl['annonce']=$membre;
         $image = imageannonce::select('urlimage')->where('idannonce',$membre->idannonce)->first();
         $articl['annonce']['image']=$image;
@@ -1085,6 +1085,18 @@ class EmarketController extends Controller
       $result->save();
       return response()->json($result);            
     }
+
+    public function bloquer_commande($idannonce,$statut)
+    {
+     // $commande= new commande;
+      $result=annonce::where('idannonce','=',$idannonce)->first(); 
+ 
+        $result->bloquer_commande=$statut;
+      
+      $result->save();
+      return response()->json(['success'=>"Ok"], 200);            
+    }
+
     public function supprimercommande($id)
     {
        

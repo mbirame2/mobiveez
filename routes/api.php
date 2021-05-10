@@ -124,6 +124,8 @@ Route::group([
    Route::get('/listoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@listoffer']);
    Route::post('/statutoffer',  ['as'=>'lo','uses'=>'EmarketController@statutoffer']);
    Route::get('/deleteoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteoffer']);
+   
+   Route::get('/bloquer_commande/{idannonce}/{statut}',  ['as'=>'lo','uses'=>'EmarketController@bloquer_commande']);
 
    Route::get('/myoffers/{id}',  ['as'=>'lo','uses'=>'EmarketController@myoffers']);
 
