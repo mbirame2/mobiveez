@@ -783,17 +783,19 @@ class EmarketController extends Controller
         $membre = annonce::select('titre','prix','localisation','idannonce','referenceannonce')->where([['idannonce',$article->idannonce],['statut','acceptee']])->first();
         $image = imageannonce::where('idannonce',$article->idannonce)->get();
               
-        $article['articles']=$membre;  
+        
         $article['image']=$image; 
         $file=0;
         if($membre){
+          $article['articles']=$membre;  
           if(File::exists(storage_path('app/public/compteur/'.$membre->referenceannonce.'_biens.txt') )){
             $file=File::get(storage_path('app/public/compteur/'.$membre->referenceannonce.'_biens.txt'));
             }else if(File::exists(storage_path('app/public/compteur/'.strtolower($membre->referenceannonce).'_biens.txt'))){
               $file=File::get(storage_path('app/public/compteur/'.strtolower($membre->referenceannonce).'_biens.txt'));
               }
+              $article['articles']['vues']=$file;
         }   
-            $article['articles']['vues']=$file;
+          
            
       
     }
