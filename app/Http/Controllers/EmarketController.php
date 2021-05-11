@@ -778,9 +778,12 @@ class EmarketController extends Controller
     }
     public function getarticleboutique($id)
     {
-    
-      $boutique = annoncesboutique::select('idannonceshowroom','idannonce')->where('idshowroom',$id)->orderBy('idannonceshowroom','desc')->paginate(30);
-      foreach($boutique as $k => $article ){
+      $membre = annonce::select('idannonce')->where('statut','acceptee')->get();
+
+      $boutique = annoncesboutique::select('idannonceshowroom','idannonce')->where('idshowroom',$id)->whereIn('idannonce', $membre)->orderBy('idannonceshowroom','desc')->paginate(30);
+     
+      foreach($boutique as  $article ){
+        
         $membre = annonce::select('titre','prix','localisation','idannonce','referenceannonce')->where([['idannonce',$article->idannonce],['statut','acceptee']])->first();
         if($membre){
         $image = imageannonce::where('idannonce',$article->idannonce)->get();
@@ -797,13 +800,9 @@ class EmarketController extends Controller
               }
               $article['articles']['vues']=$file;
              
-        }   else{
-          unset($boutique[$k]);
-        }
-          
-
+        }  
     }
-   
+   // $boutique=json_encode($boutique);
   //  $article=$article->paginate(15);
       return response()->json($boutique); 
     }
@@ -1228,7 +1227,6 @@ class EmarketController extends Controller
       $query->whereIn('idannonce', $service);
       $query->where('statut', 'commandé');
      })->get();
-   //  return response()->json($services); 
     foreach($services as $articl){
      
         $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
@@ -1239,13 +1237,23 @@ class EmarketController extends Controller
         $articl['annonce']['client']=$user;
         $articl['annonce']['image']=$image['urlimage'];
         unset($articl['panier']);
-      //  $list['commande']['annonce']['image']=$image['urlimage'];
-      // // $list->push($membre);
-       
-     
+  
     }
-  //  $article=$article->paginate(15);
-      return response()->json($services); 
+    $proposition = propositionprix::whereIn('idannonce', $service)->where('statut', 'VALIDATED')->get();
+    foreach($proposition as $articl){
+     
+      $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
+      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+
+      $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
+      $articl['annonce']=$membre;
+      $articl['annonce']['client']=$user;
+      $articl['annonce']['image']=$image['urlimage'];
+      unset($articl['panier']);
+
+  }
+
+      return response()->json(['commande'=> $services,'proposition_prix'=> $proposition], 200 ); 
     }
 
     public function statutcompte($id)
