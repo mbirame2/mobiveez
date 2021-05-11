@@ -952,7 +952,11 @@ class EmarketController extends Controller
     public function statutoffer(Request $req)
     {
       $prix=  propositionprix::where('idproposition',$req->idproposition)->first();
-      $prix->statut=$req->statut;
+      if($req->statut){
+        $prix->statut=$req->statut;
+      } else if ($req->feedback){
+        $prix->feedback=$req->feedback;
+      }
       $prix->save();
       return response()->json(['result'=>'success'], 200); 
 
