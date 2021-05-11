@@ -1252,9 +1252,14 @@ class EmarketController extends Controller
       unset($articl['panier']);
 
   }
-    $data =[];
-    $data['commande']=$services;
-    $data['proposition_prix']=$proposition;
+   // $data =[];
+  //  $data = array_merge($services,$proposition);
+    //$data['commande']=$services;
+    //$data['proposition_prix']=$proposition;
+
+    $dados1 = json_encode($services); 
+    $dados2 = json_encode($proposition); 
+    $data = array_merge(json_decode($dados1, true),json_decode($dados2, true));
 
       return response()->json( $data); 
     }
