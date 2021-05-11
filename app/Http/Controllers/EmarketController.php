@@ -1252,8 +1252,11 @@ class EmarketController extends Controller
       unset($articl['panier']);
 
   }
+    $data =[];
+    $data['commande']=$services;
+    $data['proposition_prix']=$proposition;
 
-      return response()->json(['commande'=> $services,'proposition_prix'=> $proposition], 200 ); 
+      return response()->json( $data); 
     }
 
     public function statutcompte($id)
