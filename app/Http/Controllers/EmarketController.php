@@ -234,7 +234,7 @@ class EmarketController extends Controller
         $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
         $modele->idmarquevoiture=$marque->idmarquevoiture;
         $modele->save();
-        $a=modele::latest('idmodelevoiture')->first();
+       
 
         $automobile->vehicule_type=$req->input('vehicle_type'); 
         $automobile->place=$req->input('place');
@@ -248,7 +248,7 @@ class EmarketController extends Controller
         $automobile->carburant=$req->input('fuel_type');  
         $automobile->jante=$req->input('rim_type');  
         $automobile->cylindre=$req->input('n_cylinders'); 
-
+        $a=modele::latest('idmodelevoiture')->first();
         $automobile->idmodelevoiture=$a->idmodelevoiture;
         $annonce->save();
         //$det=$automobile;
@@ -381,19 +381,34 @@ class EmarketController extends Controller
 
           if ($req->input('idautomobile')){
             $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
-            $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
+          //  $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
 
-          }else if(! $req->input('idautomobile')){
+          } else  if ( !$req->input('idautomobile')) {
+          
             $automobile= new automobile;
-            $modele= new modele; 
+           
          
           }
+          if($req->input('idmodelevoiture')){
+            modele::where('idmodelevoiture',$req->input('idmodelevoiture'))->delete(); 
+
+          }
+
+          if($req->input('designation_modelevoiture')){
+            $modele= new modele; 
+            $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('designation_modelevoiture');
+            $modele->idmarquevoiture=$req->input('idmarquevoiture');
+            $modele->save();
+
+            $a=modele::latest('idmodelevoiture')->first();
+           $automobile->idmodelevoiture=$a->idmodelevoiture;
+          } 
+       
+          
      // $marque=marque::where( 'idmarquevoiture', $req->input('idmarquevoiture'))->first(); 
 
      
-      $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('designation_modelevoiture');
-      $modele->idmarquevoiture=$req->input('idmarquevoiture');
-      $modele->save();
+    
 
       $automobile->vehicule_type=$req->input('vehicule_type'); 
       $automobile->place=$req->input('place');
