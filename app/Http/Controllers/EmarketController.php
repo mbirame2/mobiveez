@@ -386,7 +386,6 @@ class EmarketController extends Controller
           } else  if ( !$req->input('idautomobile')) {
           
             $automobile= new automobile;
-           
          
           }
           if($req->input('idmodelevoiture')){
@@ -990,6 +989,11 @@ class EmarketController extends Controller
       foreach($prix as $articl){
  
           $annonce =annonce::where([['statut','acceptee'],['idannonce',$articl->idannonce]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+          $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$annonce->idannonce )->first();
+
+          if($boutique){
+           $annonce['idshowroom']=$boutique->idshowroom;
+          }
           $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce->idmembre)->first();
 
           $image = imageannonce::where('idannonce',$annonce->idannonce)->first();
@@ -1089,6 +1093,13 @@ class EmarketController extends Controller
         
         $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
         $articl['annonce']=$membre;
+
+        $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre->idannonce )->first();
+
+        if($boutique){
+          $articl['idshowroom']=$boutique->idshowroom;
+        }
+
         $image = imageannonce::select('urlimage')->where('idannonce',$membre->idannonce)->first();
         $articl['annonce']['image']=$image;
         $articl['url']="api.iveez.com/api/image/{imagename}";
@@ -1222,6 +1233,12 @@ class EmarketController extends Controller
     foreach($service as $articl){
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
      // return $membre;
+     $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre->idannonce )->first();
+
+     if($boutique){
+      $membre['idshowroom']=$boutique->idshowroom;
+     }
+
      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre->idmembre)->first();
 
       $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
@@ -1249,6 +1266,11 @@ class EmarketController extends Controller
     foreach($services as $articl){
      
         $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
+        $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre->idannonce )->first();
+
+        if($boutique){
+         $membre['idshowroom']=$boutique->idshowroom;
+        }
         $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$articl->panier->idmembre)->first();
 
         $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
