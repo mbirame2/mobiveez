@@ -10,10 +10,9 @@
     <body>
          
         <p>Bienvenue dans Iveez! </p>
-
-        {% if $details['body'] %}
+ 
         <h3>{{$details['body']}}</h3>
-        {% endif %}
+      
 
         <p>Merci.</p>
         
