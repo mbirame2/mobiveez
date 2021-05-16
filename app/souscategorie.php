@@ -11,7 +11,7 @@ class souscategorie extends Model
     protected $primaryKey = "id_souscat";
 
     protected $fillable = [
-        'lib_souscat', 'id_souscat','nom_souscat','lib_souscaten','id_cat'
+        'lib_souscat','nom_souscat','lib_souscaten','id_cat'
     ];
     public function categorie(){
         return $this->belongsTo('App\categorie','id_cat');

@@ -1284,6 +1284,11 @@ class EmarketController extends Controller
     foreach($proposition as $articl){
      
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
+      $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre->idannonce )->first();
+
+      if($boutique){
+       $membre['idshowroom']=$boutique->idshowroom;
+      }
       $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
 
       $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
@@ -1315,8 +1320,8 @@ class EmarketController extends Controller
     ];
     $user=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
     if($id==0){
-      // $schedule= new Schedule;
-    //   $schedule->command('statut:update')->();	
+   
+      
     $Date1=date("Y/m/d-h:i");
     $Date2 = date('Y/m/d-h:i', strtotime($Date1 . " + 3 day"));
     $user->DateDesactivation=$Date2;
@@ -1380,18 +1385,20 @@ class EmarketController extends Controller
     public function filter_article(Request $req)
     {
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
-  if($req->input('categorie')=='habillement'){
-    $list=habillement::select('idannonce')->get();
-  }else if($req->input('categorie')=='automobile'){
-    $list=automobile::select('idannonce')->get();
-  }else if($req->input('categorie')=='immobilier'){
-    $list=immobilier::select('idannonce')->get();
-  }else{
-    $list='';
+  if($req->input('categorie')){
+    $name=$req->input('categorie');
+   
+    $souscategorie=souscategorie::select('id_souscat')->where('id_cat',$name)->get();
   }
+  else{
+    $souscategorie='';
+  //  $souscategorie= souscategorie::select('id_souscat')->where('id_cat',$req->input('categorie'))->get(); 
   
+  }
+ 
+//return  $souscategorie;
 //var_dump($results);die();
-    $annonce= annonce::with('departement')->where(function ($query) use($req,$list) {
+    $annonce= annonce::with('departement')->where(function ($query) use($req,$souscategorie) {
     $query->Where( 'statut','acceptee');
       $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
       $query->Where( 'localisation', 'LIKE','%'.$req->input('localisation').'%');
@@ -1404,8 +1411,9 @@ class EmarketController extends Controller
       }else if(!$req->input('prix_max') && $req->input('prix_min')){
         $query->Where( 'prix','>=',$req->input('prix_min'));
       }
-    if($list!=''){
-      $query->whereIn('idannonce', $list);
+  
+    if($souscategorie!=''){
+      $query->whereIn('idsouscategorie', $souscategorie);
     }
     
     //  $query->orwhere($field, 'like',  '%' . $string .'%');
@@ -1426,7 +1434,10 @@ class EmarketController extends Controller
       }else {
       $file=0;
     }
-    $articl['image']=$membre->urlimage;
+    if ($membre){
+      $articl['image']=$membre->urlimage;
+    }
+   
     $articl['vues']=$file;
  //   $articl['url']="api.iveez.com/api/image/{imagename}";   
 }
@@ -1454,6 +1465,8 @@ public function listegestionnaire($id)
      
   //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
     $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->idshowroom]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+    $user=User::select('prenom','nom','num_whatsapp','codemembre','localisation','profil','email','telephoneportable')->where('idmembre',$annonce->idmembre)->first();
+
     $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
     $dep=departement::where('id_dept',$annonce->id_dep)->first(); 
     if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
@@ -1465,6 +1478,7 @@ public function listegestionnaire($id)
     $test['categorie']=$cat;
     $test['departement']=$dep->lib_dept;
     $test['showroom']=$annonce;
+    $test['showroom']['proprietaire']=$user;
     $test['idgestionnaire']=$annonce->idmembre;
     
   }

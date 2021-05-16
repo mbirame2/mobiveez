@@ -46,4 +46,7 @@ class User extends Authenticatable
         return $this->belongsTo('App\departement','departement_id');
     }
 
+    public function AauthAcessToken(){
+        return $this->hasMany('\App\OauthAccessToken');
+    }
 }

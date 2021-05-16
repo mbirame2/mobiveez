@@ -18,18 +18,18 @@ Route::group([
    'prefix'=>'auth',
    'middleware' => 'cors',
 ],function($route){
-   Route::get('/sendmail/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
-   Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
-   
-   Route::post('/checkuser',  ['as'=>'lo','uses'=>'AuthentificationController@checkuser']); 
-   Route::post('/contact',  ['as'=>'lo','uses'=>'AuthentificationController@contact']); 
+      Route::get('/sendmail/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
+      Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
+      
+      Route::post('/checkuser',  ['as'=>'lo','uses'=>'AuthentificationController@checkuser']); 
+      Route::post('/contact',  ['as'=>'lo','uses'=>'AuthentificationController@contact']); 
 
-   Route::post('/changepassword',  ['as'=>'lo','uses'=>'AuthentificationController@changepassword']); 
-    Route::post('/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);
-    Route::post('/register',  ['as'=>'register','uses'=>'AuthentificationController@register']);
-    Route::get('/me',      ['as'=>'log','uses'=>'AuthentificationController@me']);
-    Route::post('/logout', ['as'=>'logout','uses'=>'AuthentificationController@logout']); 
-    Route::post('/updateuser', ['as'=>'logout','uses'=>'AuthentificationController@updateuser']); 
+      Route::post('/changepassword',  ['as'=>'lo','uses'=>'AuthentificationController@changepassword']); 
+      Route::post('/login',  ['as'=>'login', 'middleware' => 'cors','uses'=>'AuthentificationController@login']);
+      Route::post('/register',  ['as'=>'register','uses'=>'AuthentificationController@register']);
+      Route::get('/me',      ['as'=>'log','uses'=>'AuthentificationController@me']);
+      Route::post('/logout', ['as'=>'logout','uses'=>'AuthentificationController@logout']); 
+      Route::post('/updateuser', ['as'=>'logout','uses'=>'AuthentificationController@updateuser']); 
 
 });
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
@@ -38,8 +38,8 @@ Route::get('/listemarque',      ['as'=>'log','middleware' => 'cors','uses'=>'Ema
 
 Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteimage']);
 Route::get('/image/{filename}/{photo}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@images']);
- Route::get('error', function () {
-    return response()->json(['error'=>"Pas acces"], 401);            
+Route::get('error', function () {
+   return response()->json(['error'=>"Pas acces"], 401);            
 
    })->name('error');
 

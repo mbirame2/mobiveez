@@ -6,6 +6,8 @@ use App\Mail\ContactUser;
 
 use App\Services\SendEmailService;
 use App\User;
+use App\OauthAccessToken;
+
 use App\departement;
 use App\particulier;
 use App\professionnel;
@@ -278,7 +280,12 @@ class AuthentificationController extends Controller
     public function logout()
     {
 
-        auth()->logout();
+     //   if (Auth::check()) {
+          //  return auth('api')->user()->idmembre;
+    Auth::logout();
+    
+    OauthAccessToken::where("user_id", auth('api')->user()->idmembre)->delete(); 
+     //    }
         return response()->json([
             'message' => 'Successfully logged out',
             'status' => 200
