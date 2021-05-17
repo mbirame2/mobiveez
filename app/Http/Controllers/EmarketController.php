@@ -1494,15 +1494,25 @@ public function deletegestionnaire($id)
   return response()->json(['success'=>"supprime avec succés"], 200); 
 }
 
+public function gestionnaireconnected($id,$value)
+{
+  $gestionnaire= gestionnaire::where('id_gestionnaire',$id)->first(); 
+  $gestionnaire->is_connected= $value;
+  $gestionnaire->save();
+ 
+  return response()->json(['success'=>"Modifier avec succés"], 200); 
+}
+
 public function gestionnaireshowroom($id)
 {
-  $gestionnaire= gestionnaire::select('idmembre','id_gestionnaire')->where('idshowroom',$id)->get(); 
+  $gestionnaire= gestionnaire::select('idmembre','id_gestionnaire','is_connected')->where('idshowroom',$id)->get(); 
  $gest=[];
   foreach($gestionnaire as $test){
   $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
   $dept=departement::where('id_dept',$user->departement_id)->first(); 
   $user['id_gestionnaire']=$test->id_gestionnaire;
   $user['idmembre']=$test->idmembre;
+  $user['is_connected']=$test->is_connected;
   $user['departement']=$dept->lib_dept;
   unset($user['departement_id']);
   array_push($gest, $user);

@@ -126,6 +126,8 @@ Route::group([
    Route::get('/deleteoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteoffer']);
    
    Route::get('/bloquer_commande/{idannonce}/{statut}',  ['as'=>'lo','uses'=>'EmarketController@bloquer_commande']);
+   
+   Route::get('/gestionnaireconnected/{id}/{value}',  ['as'=>'lo','uses'=>'EmarketController@gestionnaireconnected']);
 
    Route::get('/myoffers/{id}',  ['as'=>'lo','uses'=>'EmarketController@myoffers']);
 
