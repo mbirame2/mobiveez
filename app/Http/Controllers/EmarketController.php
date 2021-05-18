@@ -166,7 +166,6 @@ class EmarketController extends Controller
         'price' => 'required', 
         'payment_type' => 'required', 
         'title' => 'required', 
-        'description' => 'required', 
         'publish_type' => 'required', 
     ]); 
       
