@@ -1201,7 +1201,7 @@ class EmarketController extends Controller
     }
     public function listeservice()
     {
-      $list=[21,23,24,25,26,27];
+      $list=[21,23,24,25,26,27,28,29,30];
       $service = service::whereIn('idService',$list)->get();
     
   //  $article=$article->paginate(15);
