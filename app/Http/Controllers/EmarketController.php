@@ -256,9 +256,14 @@ class EmarketController extends Controller
         $automobile->annonce()->associate($annonce);
         $automobile->save();
         $detail=$automobile;
-        
+        if($modele){
           $detail['model']=$modele->designation_modelevoiture;
+         
+        }
+        if($marque){
           $detail['brand']=$marque->designation_marquevoiture;
+        }
+          
       
        
         array_push($details, $detail);
@@ -591,7 +596,7 @@ class EmarketController extends Controller
 
     public function showroomsuser($id)
     {
-      $annonces =boutique::where([['etatshowroom','acceptee'],['idmembre',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->get();  
+      $annonces =boutique::where([['etatshowroom','!=','suppression'],['idmembre',$id]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','etatshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->get();  
      
       foreach($annonces as $annonce){
        // $list=[28,29,30];
@@ -829,15 +834,7 @@ class EmarketController extends Controller
       return response()->json($boutique); 
     }
     public function boutique(Request $req){
-      $validator = Validator::make($req->all(), [ 
-        'nomshowroom' => 'required', 
-       
-    ]); 
-      
-          //var_dump(auth('api')->user()->id_professionnel);die();
-    if ($validator->fails()) { 
-        return response()->json(['error'=>$validator->errors()], 401);            
-    }else{
+    
       
      
       if($req->input('idshowroom')){
@@ -876,7 +873,7 @@ class EmarketController extends Controller
       $boutique->save();
       return response()->json(['success'=>"Enregistrement de la boutique avec succés",'showroom'=>$boutique], 200);            
 
-    }}
+    }
 
     public function search_boutique($name)
     {
