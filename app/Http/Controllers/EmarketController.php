@@ -228,12 +228,15 @@ class EmarketController extends Controller
       } else if($req->input('categorie')==3 ){
         $automobile= new automobile;
         $marque=marque::where( 'idmarquevoiture', $req->input('brand'))->first(); 
-
-        $modele=new modele ;
-        $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
-        $modele->idmarquevoiture=$marque->idmarquevoiture;
-        $modele->save();
-       
+        if( $marque){
+          $modele=new modele ;
+          $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
+          $modele->idmarquevoiture=$marque->idmarquevoiture;
+          $modele->save();
+          $a=modele::latest('idmodelevoiture')->first();
+          $automobile->idmodelevoiture=$a->idmodelevoiture;
+        }
+        
 
         $automobile->vehicule_type=$req->input('vehicle_type'); 
         $automobile->place=$req->input('place');
@@ -247,8 +250,7 @@ class EmarketController extends Controller
         $automobile->carburant=$req->input('fuel_type');  
         $automobile->jante=$req->input('rim_type');  
         $automobile->cylindre=$req->input('n_cylinders'); 
-        $a=modele::latest('idmodelevoiture')->first();
-        $automobile->idmodelevoiture=$a->idmodelevoiture;
+      
         $annonce->save();
         //$det=$automobile;
         $automobile->annonce()->associate($annonce);
@@ -828,7 +830,6 @@ class EmarketController extends Controller
     }
     public function boutique(Request $req){
       $validator = Validator::make($req->all(), [ 
-        'id_dep' => 'required', 
         'nomshowroom' => 'required', 
        
     ]); 
