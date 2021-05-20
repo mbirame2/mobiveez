@@ -235,8 +235,11 @@ class EmarketController extends Controller
       //  array_push($details, $immobilier);
         array_push($details, $annonce);
       } else if($req->input('categorie')==3 ){
+        $modele=null;
+        $marque=null;
         $automobile= new automobile;
         $marque=marque::where( 'idmarquevoiture', $req->input('brand'))->first(); 
+        
         if( $marque){
           $modele=new modele ;
           $modele->designation_modelevoiture=$modele->designation_modelevoitureen=$modele->designation_modelevoitureeng=$req->input('model');
@@ -265,7 +268,7 @@ class EmarketController extends Controller
         $automobile->annonce()->associate($annonce);
         $automobile->save();
         $detail=$automobile;
-        if($modele){
+        if($modele!=null){
           $detail['model']=$modele->designation_modelevoiture;
          
         }
