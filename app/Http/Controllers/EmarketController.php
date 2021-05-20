@@ -60,6 +60,15 @@ class EmarketController extends Controller
         $annonce['vues']=$file;
         $annonce['proprietaire']=$user;
        
+        $annoncesboutique=  annoncesboutique::select("idshowroom")->where('idannonce',$annonce->idannonce)->first();
+        #return $annoncesboutique;
+        if($annoncesboutique){
+           $annonce['idshowroom']=$annoncesboutique->idshowroom;
+        }else{
+           
+          $annonce['idshowroom']=null;
+        }
+
         $habillement=habillement::where('idannonce',$annonce->idannonce)->first();
         $immobilier=immobilier::where('idannonce',$annonce->idannonce)->first();
         $automobile=automobile::where('idannonce',$annonce->idannonce)->first();
