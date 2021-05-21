@@ -527,16 +527,19 @@ class EmarketController extends Controller
  //   return $user;
      $annonce=annonce::select('titre','prix','localisation','idannonce','idmembre','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->where(function ($query) use($name,$list,$user) {
       //  $query->orWhere('description', 'LIKE', '%' . $name . '%');
+  //    $orderByClause  = "CASE WHEN title = '".$name."' THEN 0 ELSE 1 END,";
+    //  $query->orderByRaw($orderByClause);
+  //  $query->orderByRaw("FIELD(titre,'%'.strtolower($name).'%')");
       $query->whereRaw('LOWER(titre) like ?', '%'.strtolower($name).'%');
+        $query->orwhereRaw( 'LOWER(description) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
-        $query->orwhereRaw('LOWER(description) like ?', '%'.strtolower($name).'%');
-        
+
         $query->orwhereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(referenceannonce) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(typeannonce) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(paiementtranche) like ?', '%'.strtolower($name).'%');
 
- 
+       
         
         if($list){
           $query->orWhereIn('idsouscategorie', $list);
@@ -544,10 +547,11 @@ class EmarketController extends Controller
         if($user){
           $query->orWhereIn('idmembre', $user);
         }
-       
+       // $query->orderByRaw("FIELD(titre , '$name' ) ");
       })->orwhereHas('departement', function ($query) use ($name) {
         $query->whereRaw('LOWER(lib_dept) like ?', '%'.strtolower($name).'%');
-      })->paginate(30);
+      })->orderByRaw("FIELD(titre , '$name' ) ")->paginate(30);
+      
 
      foreach($annonce as $articl){
       $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
@@ -1183,7 +1187,9 @@ class EmarketController extends Controller
     public function getarticleservice()
     {
       $list=[21,23,24,25,26,27,28,29,30];
-      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
+      $annonce = annonce::select('idannonce')->where('statut','acceptee')->get();
+
+      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = annonce::select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->where([['idannonce',$articl->idannonce],['statut','acceptee']])->first();
         if($annonce){
@@ -1204,6 +1210,7 @@ class EmarketController extends Controller
         $articl['image']=$img->urlimage;
         $articl['vues']=$file;
       }
+     
     }
   //  $article=$article->paginate(15);
       return response()->json($servicevendu); 
