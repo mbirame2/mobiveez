@@ -858,9 +858,10 @@ class EmarketController extends Controller
       }else{
         $boutique= new boutique;
         $boutique->etatshowroom="en attente";
+        $boutique->idmembre=auth('api')->user()->idmembre;
       }
       
-      $boutique->idmembre=auth('api')->user()->idmembre;
+     
       
       $boutique->id_dep=$req->input('id_dep');
       $boutique->localisation=$req->input('localisation');
@@ -1052,6 +1053,14 @@ class EmarketController extends Controller
 
     public function ajout_panier($id)
     {
+      $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
+      if ($panier) {
+          return response()->json([
+              "status"=>403,
+              "message"=> "Article déja dans le panier"
+        ]);
+      }
+      
       $panier= new panier;
       $panier->idmembre=auth('api')->user()->idmembre;
       $panier->idannonce=$id;
