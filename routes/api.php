@@ -134,7 +134,6 @@ Route::group([
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    
    Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
-   
 
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
    Route::get('/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
@@ -158,7 +157,7 @@ Route::group([
     Route::get('/listevente/{id}',  ['as'=>'lo','uses'=>'EmarketController@listevente']);
 
     
-    Route::get('/payepourmoi/{id}',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
+    Route::post('/payepourmoi',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
     Route::get('/liste_categorie',  ['as'=>'lo','uses'=>'EmarketController@liste_categorie']);

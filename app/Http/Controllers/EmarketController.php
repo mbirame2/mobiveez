@@ -950,7 +950,7 @@ class EmarketController extends Controller
       $prix->dateproposition=date("Y-m-d H:i:s");
      }
       
-     $prix->quantity=$req->quantity;
+      $prix->quantity=$req->quantity;
       $prix->idannonce=$req->idannonce;
       $prix->urlimageoffre=$req->urlimageoffre;
       $prix->description=$req->description;
@@ -1109,7 +1109,7 @@ class EmarketController extends Controller
     }
     public function liste_panier($id)
     {
-      $panier =panier::select('idannonce','idpanier')->where([['idmembre','=',$id],['statut','!=','commandé']])->get();
+      $panier =panier::select('idannonce','idpanier','quantite')->where([['idmembre','=',$id],['statut','!=','commandé']])->get();
     
       foreach($panier as $articl){
         
@@ -1232,22 +1232,13 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($service); 
     }
-    public function payepourmoi($id)
+    public function payepourmoi(Request $req)
     {
-      $notification= new notification;
-      $notification->idmembre=$id;
-      $user =auth('api')->user();
-      $notification->date=date("Y-m-d H:i:s");
-      $notification->message=$user->prenom.' '.$user->nom." vous sollicite pour le paiement de sa commande sur iveez ";
-      $notification->save();
-
-      $notification= new notification;
-      $notification->idmembre=$user>idmembre;
-      $notification->date=date("Y-m-d H:i:s");
-      $notification->message="Demande envoyée avec succés, vous recevrez une notification en cas de retour.";
-      $notification->save();
+      $result=panier::where('idpanier','=',$req->idpanier)->first(); 
+      $result->quantite= $req->quantite;
+      $result->save();
   //  $article=$article->paginate(15);
-      return response()->json(['success'=>"Succés de la commande"], 200); 
+      return response()->json(['success'=>"Enregisté avec succés"], 200); 
     }
     public function listecommande($id)
     {
@@ -1585,7 +1576,7 @@ public function listefavoris($id)
   $annonces=[];
   $showrooms=[];
    foreach($favoris as $test){
-    $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','id_dep','titre','idannonce')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
+    $annonce = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','id_dep','titre','idannonce','bloquer_commande')->where([['idannonce',$test->id_annonce],['statut','acceptee']])->first();
    
     $boutique =boutique::where('idshowroom',$test->id_showroom)->select('idmembre','idshowroom','heuredebut','heurefin','descriptionshowroom','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
  
