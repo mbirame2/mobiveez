@@ -892,6 +892,30 @@ class EmarketController extends Controller
 
     }
 
+
+    public function filter_boutique(Request $req)
+    {
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where([['etatshowroom','acceptee'],['idcategorieshowroom',$req->id_cat]])->get();
+
+
+      foreach($annonce as $ann){
+        $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$ann->idmembre)->first();
+        $ann['proprietaire']=$user;
+        $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $ann->idcategorieshowroom)->first();
+        $ann['categorie']=$cat;
+       if(File::exists(storage_path('app/public/compteur/'.$ann->idshowroom.'_showrooms.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$ann->idshowroom.'_showrooms.txt'));
+        }else{
+          $file=0;
+        }
+        $ann['vues']=$file;
+      }
+  
+        return response($annonce); 
+
+    }
+
+
     public function search_boutique($name)
     {
       $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->first(); 
@@ -1234,9 +1258,13 @@ class EmarketController extends Controller
     }
     public function payepourmoi(Request $req)
     {
-      $result=panier::where('idpanier','=',$req->idpanier)->first(); 
-      $result->quantite= $req->quantite;
+      foreach($req->panier as $reqpanier){
+       
+      //  $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'])->first();
+      $result=panier::where('idpanier','=',$reqpanier['idpanier'])->first(); 
+      $result->quantite= $reqpanier['quantite'] ;
       $result->save();
+      }
   //  $article=$article->paginate(15);
       return response()->json(['success'=>"Enregisté avec succés"], 200); 
     }

@@ -158,6 +158,8 @@ Route::group([
 
     
     Route::post('/payepourmoi',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
+    Route::post('/filter_boutique',  ['as'=>'lo','uses'=>'EmarketController@filter_boutique']);
+
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
     Route::get('/liste_categorie',  ['as'=>'lo','uses'=>'EmarketController@liste_categorie']);
