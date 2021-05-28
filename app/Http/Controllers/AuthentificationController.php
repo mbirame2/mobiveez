@@ -93,7 +93,7 @@ class AuthentificationController extends Controller
             $article = User::where('pays',$input['country'])->where('typecompte',"professionnel")->get();  
             $article = count($article)+1;
 
-            $code=$request->country.strval(date("y"))."Pr".strval($article);
+            $code=$request->countryCode.strval(date("y"))."Pr".strval($article);
             $co->DateInscription=date("Y-m-d h:i:sa");
             $co->codemembre=$code;
             $co->societe=$request->company;
