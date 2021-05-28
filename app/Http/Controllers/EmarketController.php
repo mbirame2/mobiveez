@@ -1193,10 +1193,7 @@ class EmarketController extends Controller
  
         $result->quantite=$req->input('quantite');
         $result->adresse=$req->input('adresse');
-        if( $req->input('datereceptioncommande')){
-          $result->datereceptioncommande=$req->input('datereceptioncommande');
-
-        }
+       
         $result->save();
       return response()->json($result);            
     }
@@ -1402,6 +1399,10 @@ class EmarketController extends Controller
       } else if($req->statut=='DELIVERED'){
         $commande->statut=$req->statut;
         $commande->adresse=$req->adresse;
+       
+        $commande->datereceptioncommande=$req->datereceptioncommande;
+
+        
         $commande->save();
       }  else if($req->statut=='VALIDATED'){
         $commande->statut=$req->statut;
