@@ -1270,7 +1270,7 @@ class EmarketController extends Controller
     }
     public function listecommande($id)
     {
-      $service = commande::select('idcommande','idpanier','motif','feedback','statut','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
+      $service = commande::select('idcommande','idpanier','motif','feedback','statut','datereceptioncommande','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
         $query->where('idmembre', $id);
         $query->where('statut', 'commandé');
     })->get();
@@ -1303,7 +1303,7 @@ class EmarketController extends Controller
   
     $service = annonce::select('idannonce')->where([['idmembre',$id],['statut','acceptee']])->get();
    // $idannonce=$articl->idannonce;
-    $services = commande::select('idcommande','idpanier','motif','feedback','statut','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
+    $services = commande::select('idcommande','idpanier','motif','feedback','statut','adresse','datereceptioncommande','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use ($service) {
       $query->whereIn('idannonce', $service);
       $query->where('statut', 'commandé');
      })->get();
@@ -1572,7 +1572,7 @@ public function gestionnaireshowroom($id)
 
 public function onecommande($id)
 {
-  $service = commande::select('idcommande','idpanier','datecommande','reference','quantite','statut')->where('idcommande',$id)->whereHas('panier', function ($query) use($id) {
+  $service = commande::select('idcommande','datereceptioncommande','idpanier','datecommande','reference','quantite','statut')->where('idcommande',$id)->whereHas('panier', function ($query) use($id) {
  
     $query->where('statut', 'commandé');
 })->first();
