@@ -200,7 +200,7 @@ class EmarketController extends Controller
       $annonce->localisation=$req->input('localisation');
       $annonce->description=$req->input('description');
       $annonce->dateannonce=date("Y-m-d H:i:s");
-      $annonce->idmembre=auth('api')->user()->idmembre;
+      $annonce->idmembre=$req->input('idmembre');
       $details=[];
       
 
@@ -1193,8 +1193,11 @@ class EmarketController extends Controller
  
         $result->quantite=$req->input('quantite');
         $result->adresse=$req->input('adresse');
-      
-      $result->save();
+        if( $req->input('datereceptioncommande')){
+          $result->datereceptioncommande=$req->input('datereceptioncommande');
+
+        }
+        $result->save();
       return response()->json($result);            
     }
 
