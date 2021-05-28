@@ -1400,7 +1400,7 @@ class EmarketController extends Controller
         $commande->statut=$req->statut;
         $commande->adresse=$req->adresse;
        
-        $commande->datereceptioncommande=$req->datereceptioncommande;
+        $commande->datereceptioncommande=date("Y/m/d-h:i");
 
         
         $commande->save();
