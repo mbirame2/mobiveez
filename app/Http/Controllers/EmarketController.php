@@ -313,6 +313,7 @@ class EmarketController extends Controller
         $iman->visibilite=0; 
        
         $iman->save();
+        $details['idshowroom']=$req->input('idshowroom'); 
        // array_push($details, $iman);
       }
       Storage::disk('vue')->put($a->referenceannonce.'_biens.txt', 0);
@@ -849,6 +850,12 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($boutique); 
     }
+    public function getusercredit($id)
+    {
+      $user=User::select( 'compte')->where('idmembre', $id)->first(); 
+  //  $article=$article->paginate(15);
+      return response()->json($user); 
+    }
     public function boutique(Request $req){
     
       
@@ -1234,7 +1241,7 @@ class EmarketController extends Controller
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
         }else if(File::exists(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'))){
           $file=File::get(storage_path('app/public/compteur/'.strtolower($annonce->referenceannonce).'_biens.txt'));
-          }else {
+        }else {
           $file=0;
         }
         
