@@ -1219,7 +1219,7 @@ class EmarketController extends Controller
 
     public function getarticleservice()
     {
-      $list=[21,23,24,25,26,27,28,29,30];
+      $list=[21,23,24,25,26,27];
       $annonce = annonce::select('idannonce')->where('statut','acceptee')->get();
 
       $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
@@ -1527,7 +1527,6 @@ public function listegestionnaire($id)
     $test['departement']=$dep->lib_dept;
     $test['showroom']=$annonce;
     $test['showroom']['proprietaire']=$user;
-    $test['idgestionnaire']=$annonce->idmembre;
     
   }
  
@@ -1548,7 +1547,7 @@ public function gestionnaireconnected($id,$value)
   $gestionnaire->is_connected= $value;
   $gestionnaire->save();
  
-  return response()->json(['success'=>"Modifier avec succés"], 200); 
+  return response()->json(['success'=>"Enregistré avec succés"], 200); 
 }
 
 public function gestionnaireshowroom($id)
