@@ -47,6 +47,8 @@ class AuthentificationController extends Controller
             'phone' => 'required', 
             'password' => 'required', 
             'accountType' => 'required', 
+            'email' => 'required', 
+            'address' => 'required', 
             'country' => 'required', 
             
          

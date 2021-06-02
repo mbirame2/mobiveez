@@ -959,11 +959,11 @@ class EmarketController extends Controller
     
     public function ajout_credit(Request $req)
     {
-      $user =User::find(auth('api')->user()->idmembre);
+      $user =User::find($req->idmembre);
       $user->compte =$user->compte+$req->credit;  
       $user->save(); 
       $transaction= new transaction;
-      $transaction->id_membre=auth('api')->user()->idmembre;
+      $transaction->id_membre=$req->idmembre;
       $transaction->type="achat";
       $transaction->date=date("Y-m-d H:i:s");
       $transaction->description=$req->credit.",".$user->compte;
