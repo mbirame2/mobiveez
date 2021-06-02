@@ -777,7 +777,7 @@ class EmarketController extends Controller
     
     public function buyboostarticle(Request $req)
     {
-      $result=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
+      $result=User::where('idmembre','=',$req->idmembre)->first(); 
       if($result->compte < $req->credit){
         return response()->json(['message'=>"Credit insuffisant",'code'=>401], 200); 
       }else {
