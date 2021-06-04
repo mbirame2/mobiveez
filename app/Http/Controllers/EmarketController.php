@@ -188,7 +188,7 @@ class EmarketController extends Controller
       $annonce->prix=$req->input('price');
       $article = annonce::all();  
       $artic= count($article)+1;
-      $annonce->referenceannonce=auth('api')->user()->codemembre.'-'.$artic;
+      $annonce->referenceannonce=$req->input('codemembre').'-'.$artic;
       $annonce->typeannonce=$req->input('publish_type');
       $annonce->paiementtranche=$req->input('payment_type');
       $dept=departement::where('lib_dept',$req->input('city'))->first(); 
@@ -313,9 +313,10 @@ class EmarketController extends Controller
         $iman->visibilite=0; 
        
         $iman->save();
-        $details['idshowroom']=$req->input('idshowroom'); 
+        
        // array_push($details, $iman);
       }
+      $details['idshowroom']=$req->input('idshowroom'); 
       Storage::disk('vue')->put($a->referenceannonce.'_biens.txt', 0);
 
       return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
