@@ -669,9 +669,9 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($boutique); 
     }
-    public function getnotification()
+    public function getnotification($id)
     {
-      $notifications = notification::where('id_receiver',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+      $notifications = notification::where('id_receiver',$id)->orderBy('idnotification','desc')->get(); 
       foreach($notifications as $notification){
         $notification['data']=json_decode($notification->data);
         $notification['timestamp']=json_decode($notification->timestamp);

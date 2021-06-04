@@ -144,7 +144,7 @@ Route::group([
     Route::get('/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
     Route::get('/proshowrooms/{id}',  ['as'=>'lo','uses'=>'EmarketController@showroomsuser']); 
     Route::get('/getboutique',  ['as'=>'lo','uses'=>'EmarketController@getboutique']); 
-    Route::get('/getnotification',  ['as'=>'lo','uses'=>'EmarketController@getnotification']); 
+    Route::get('/getnotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@getnotification']); 
     Route::get('/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
     Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@ajout_panier']); 
     Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@delete_panier']); 
