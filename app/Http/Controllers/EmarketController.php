@@ -1141,7 +1141,7 @@ class EmarketController extends Controller
     }
     public function liste_panier($id)
     {
-      $panier =panier::select('idannonce','idpanier','quantite')->where([['idmembre','=',$id],['statut','!=','commandé']])->get();
+      $panier =panier::select('idannonce','idpanier','quantite')->where([['idmenu','=',null],['idmembre','=',$id],['statut','!=','commandé']])->get();
     
       foreach($panier as $articl){
         

@@ -138,6 +138,50 @@ public function restauration(Request $req){
 
 }
 
+public function ajout_panier($id)
+{
+  $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idmenu",$id],["statut",'!=',"commandé"]])->first(); 
+  if ($panier) {
+      return response()->json([
+          "status"=>403,
+          "message"=> "Plat déja dans le panier"
+    ]);
+  }
+  $panier= new panier;
+  $panier->idmembre=auth('api')->user()->idmembre;
+  $panier->idmenu=$id;
+  $panier->statut='';
+  $panier->date=date("Y-m-d H:i:s");
+  $panier->save();
+
+ 
+  return response()->json(['success'=>"Ajout panier avec succés",'idpanier'=>$panier->idpanier], 200); 
+}
+
+public function delete_panier($id)
+{
+   
+  $result=panier::where('idmenu','=',$id)->delete(); 
+ 
+  return response()->json(['success'=>"Supprimer avec succés"], 200); 
+}
+  public function liste_panier($id)
+  {
+  $panier =panier::select('idmenu','idpanier','quantite')->where([['idannonce','=',null],['idmembre','=',$id],['statut','!=','commandé']])->get();
+
+  foreach($panier as $articl){
+    
+    $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
+  //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
+    $articl['plat']=$article;
+
+  } 
+  if($panier->isEmpty()){
+
+  $panier=0;
+  }
+  return response()->json($panier); 
+  }
 
 
       /////////LES CONTROLLEURS DE GET METHODE/////////////////
@@ -188,6 +232,34 @@ public function restauration(Request $req){
    //   $articl['url']="api.iveez.com/api/image/{imagename}";   
   }
   return response()->json($article); 
+}
+
+
+public function mesrestaurants($id)
+{
+  
+  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
+  foreach($article as $articl){
+//    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
+//       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
+
+    if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
+    $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
+    }else {
+      $file=0;
+    }
+    $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
+
+    $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+   $articl['codemembre']=$user->codemembre;
+   $articl['photorestauration']=$membre;
+
+   $articl['departement']=$dept->lib_dept;
+    $articl['vues']=$file;
+ //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+}
+return response()->json($article); 
 }
 
 

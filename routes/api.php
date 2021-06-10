@@ -175,7 +175,10 @@ Route::group([
    Route::post('/restauration',  ['as'=>'lo','uses'=>'RestaurantController@restauration']);
    Route::get('/getplat',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
    Route::get('/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
+   Route::get('/mesrestaurants/{id}',  ['as'=>'lo','uses'=>'RestaurantController@mesrestaurants']);
 
-   
+   Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@ajout_panier']); 
+   Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@delete_panier']); 
+   Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@liste_panier']);  
 });
 
