@@ -59,9 +59,13 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public/compteur'),
         ],
-        'plat' => [
+        'menu' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/plat'),
+            'root' => storage_path('app/public/menu'),
+        ],
+        'photorestauration' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/photorestauration'),
         ],
         'public' => [
             'driver' => 'local',

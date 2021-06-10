@@ -28,319 +28,226 @@ class ApiController extends Controller
 {
 
 
-
-      public function plat(Request $req){
-        $validator = Validator::make($req->all(), [ 
-          'prix' => 'required', 
-          'dureepreparation' => 'required', 
-       
-      ]); 
-        
-            //var_dump(auth('api')->user()->id_professionnel);die();
-      if ($validator->fails()) { 
-          return response()->json(['error'=>$validator->errors()], 401);            
-      }else{
-        
-        $annonce= new plat;
-        
-        $annonce->prix=$req->input('prix');
-        $annonce->dureepreparation=$req->input('dureepreparation');
-        $annonce->lundi=$req->input('lundi');
-        $annonce->mardi=$req->input('mardi');
-        $annonce->mercredi=$req->input('mercredi');
-        $annonce->jeudi=$req->input('jeudi');
-        $annonce->vendredi=$req->input('vendredi');
-        $annonce->samedi=$req->input('samedi');
-        $annonce->dimanche=$req->input('dimanche');
-        $annonce->plat=$req->input('plat');
-        $annonce->description=$req->input('description');
-        $article = restauration::where('idrestauration',$req->input('idrestauration'))->first();
-        #var_dump($article);die();
-        $annonce->restauration()->associate($article);
-        $img=$req->input('photo');
-        
-        $base64_str = substr($img, strpos($img, ",")+1);
-        //var_dump($base64_str);die();
-        $data = base64_decode($base64_str);
-        $time=$annonce->idmenu.'-'.time().'.png';
-        Storage::disk('plat')->put($time, $data);
-        $annonce->photo=$time;
-        $annonce->save();
-        return response()->json(['succés'=>"Enregistrement du plat avec succés"], 200);            
-
-      }}
-
-
-      public function chambre(Request $req){
-        $validator = Validator::make($req->all(), [ 
-          'titre' => 'required', 
-          'prix_nuitee' => 'required', 
-          'service_chambre' => 'required', 
-          'type_lit'=> 'required',
-          'capacite' => 'required', 
-          'description' => 'required', 
-          'statut' => 'required', 
-      ]); 
-        
-            //var_dump(auth('api')->user()->id_professionnel);die();
-      if ($validator->fails()) { 
-          return response()->json(['error'=>$validator->errors()], 401);            
-      }else{
-        
-        $annonce= new chambre;
-        if($req->hasFile('photo1') ){
-          $image_name = $req->file('photo1')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo1')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo1')->storeAs('public/images/chambre',$fileNameToStore);
-          $annonce->photo1= $fileNameToStore;
-        }
-        if($req->hasFile('photo2') ){
-          $image_name = $req->file('photo2')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo2')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo2')->storeAs('public/images/chambre',$fileNameToStore);
-          $annonce->photo2= $fileNameToStore;
-        }
-        if($req->hasFile('photo3') ){
-          $image_name = $req->file('photo3')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo3')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo3')->storeAs('public/images/chambre',$fileNameToStore);
-          $annonce->photo3= $fileNameToStore;
-        }
-        if($req->hasFile('photo4') ){
-          $image_name = $req->file('photo4')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo4')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo4')->storeAs('public/images/chambre',$fileNameToStore);
-          $annonce->photo4= $fileNameToStore;
-        }
-        $annonce->titre=$req->input('titre');
-        $annonce->prix_nuitee=$req->input('prix_nuitee');
-        $annonce->service_chambre=$req->input('service_chambre');
-        $annonce->type_lit=$req->input('type_lit');
-        $annonce->capacite=$req->input('capacite');
-        $annonce->description=$req->input('description');
-        $annonce->statut=$req->input('statut');
-        $annonce->user()->associate(auth('api')->user());
-      
-        $annonce->save();
-        return response()->json(['succés'=>"Enregistrement du chambre avec succés"], 200);            
-
-      }}
-
-
-      public function vehicule(Request $req){
-        $validator = Validator::make($req->all(), [ 
-          'marque' => 'required', 
-          'modele' => 'required', 
-          'prix' => 'required', 
-          'type_vehicule'=> 'required',
-          'couleur' => 'required', 
-          'type_vitesse' => 'required', 
-          'statut' => 'required', 
-          'carburant' => 'required', 
-          'kilometre' => 'required', 
-          'capacite' => 'required', 
-          'climatisation' => 'required', 
-          'autre_specification' => 'required', 
-          'description' => 'required',
-          'statut' => 'required',
-      ]); 
-        
-            //var_dump(auth('api')->user()->id_professionnel);die();
-      if ($validator->fails()) { 
-          return response()->json(['error'=>$validator->errors()], 401);            
-      }else{
-        
-        $annonce= new vehicule;
-        if($req->hasFile('photo1') ){
-          $image_name = $req->file('photo1')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo1')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo1')->storeAs('public/vehicule/photo',$fileNameToStore);
-          $annonce->photo1= $fileNameToStore;
-        }
-        if($req->hasFile('photo2') ){
-          $image_name = $req->file('photo2')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo2')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo2')->storeAs('public/images/vehicule',$fileNameToStore);
-          $annonce->photo2= $fileNameToStore;
-        }
-        if($req->hasFile('photo3') ){
-          $image_name = $req->file('photo3')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo3')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo3')->storeAs('public/images/vehicule',$fileNameToStore);
-          $annonce->photo3= $fileNameToStore;
-        }
-        if($req->hasFile('photo4') ){
-          $image_name = $req->file('photo4')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo4')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo4')->storeAs('public/images/vehicule',$fileNameToStore);
-          $annonce->photo4= $fileNameToStore;
-        }
-        $annonce->marque=$req->input('marque');
-        $annonce->modele=$req->input('modele');
-        $annonce->prix=$req->input('prix');
-        $annonce->type_vehicule=$req->input('type_vehicule');
-        $annonce->couleur=$req->input('couleur');
-        $annonce->type_vitesse=$req->input('type_vitesse');
-        $annonce->carburant=$req->input('carburant');
-        $annonce->kilometre=$req->input('kilometre');
-        $annonce->capacite=$req->input('capacite');
-        $annonce->climatisation=$req->input('climatisation');
-        $annonce->autre_specification=$req->input('autre_specification');
-        $annonce->description=$req->input('description');
-        $annonce->statut=$req->input('statut');
-        $annonce->user()->associate(auth('api')->user());
-      
-        $annonce->save();
-        return response()->json(['succés'=>"Enregistrement du vehicule avec succés"], 200);            
-
-      }}
-
-      public function images ($filename,$photo)
-      {
-          $path = public_path('storage')."/".$filename.'/'. $photo;
-          $file = File::get($path);
-          $response = Response($file, 200);
-          $response->header('Content-Type', 'image/jpeg');
-          return $response;
-      
-      }
-      
-      public function evenement(Request $req){
-        $validator = Validator::make($req->all(), [ 
-          'adresse' => 'required', 
-          'frequence' => 'required', 
-          'horaire' => 'required', 
-          'num_autorisation'=> 'required',
-          'information_supplementaire' => 'required', 
-          'description' => 'required', 
-          'prix' => 'required', 
-          'statut' => 'required', 
-         
-      ]); 
-        
-            //var_dump(auth('api')->user()->id_professionnel);die();
-      if ($validator->fails()) { 
-          return response()->json(['error'=>$validator->errors()], 401);            
-      }else{
-        
-        $annonce= new evenement;
-        if($req->hasFile('photo1') ){
-          $image_name = $req->file('photo1')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo1')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo1')->storeAs('public/images/evenement',$fileNameToStore);
-          $annonce->photo1= $fileNameToStore;
-        }
-        if($req->hasFile('photo2') ){
-          $image_name = $req->file('photo2')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo2')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo2')->storeAs('public/images/vehicule',$fileNameToStore);
-          $annonce->photo2= $fileNameToStore;
-        }
-        if($req->hasFile('photo3') ){
-          $image_name = $req->file('photo3')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo3')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo3')->storeAs('public/images/vehicule',$fileNameToStore);
-          $annonce->photo3= $fileNameToStore;
-        }
-        if($req->hasFile('photo4') ){
-          $image_name = $req->file('photo4')->getClientOriginalName();
-          $filename = pathinfo($image_name,PATHINFO_FILENAME);
-          $image_ext = $req->file('photo4')->getClientOriginalExtension();
-          $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
-          $path =  $req->file('photo4')->storeAs('public/images/vehicule',$fileNameToStore);
-          $annonce->photo4= $fileNameToStore;
-        }
-        $annonce->adresse=$req->input('adresse');
-        $annonce->frequence=$req->input('frequence');
-        $annonce->horaire=$req->input('horaire');
-        $annonce->num_autorisation=$req->input('num_autorisation');
-        $annonce->information_supplementaire=$req->input('information_supplementaire');
-        $annonce->description=$req->input('description');
-        $annonce->prix=$req->input('prix');
-        $annonce->statut=$req->input('statut');
-       
-        $annonce->user()->associate(auth('api')->user());
-      
-        $annonce->save();
-        return response()->json(['succés'=>"Enregistrement de l'evenement avec succés"], 200);            
-
-      }}
-
-
-      public function commande_plat(Request $req){
-        $validator = Validator::make($req->all(), [ 
-          'id_plat' => 'required', 
-          'nombre_plat' => 'required', 
-          'type' => 'required', 
-          'date' => 'required', 
-         
-      ]); 
-        
-            //var_dump(auth('api')->user()->id_professionnel);die();
-      if ($validator->fails()) { 
-          return response()->json(['error'=>$validator->errors()], 401);            
-      }else{
-        
-        $annonce= new commande_plat;
-
-        $annonce->nombre_plat=$req->input('nombre_plat');
-        $annonce->type=$req->input('type');
-        $annonce->adresse_livraison=$req->input('adresse_livraison');
-        $annonce->date=$req->input('date');
-        $annonce->accompagnement=$req->input('accompagnement');
-        $annonce->besoin_particulier=$req->input('besoin_particulier');
-        $annonce->disponible="non";
-       
-        $annonce->user()->associate(auth('api')->user());
-        if($req->input('destinataire')){
-          $article = User::where('id',$req->input('destinataire'))->first();
-          $annonce->destinataire()->associate($article);
-        }
-        $article = plat::where('id',$req->input('id_plat'))->first();
-        $annonce->plat()->associate($article);
-    
-        $annonce->save();
-        return response()->json(['succés'=>"Enregistrement du plat avec succés"], 200);            
-
-      }}
-
-
-
-
-
-
-
-      /////////LES CONTROLLEURS DE GET METHODE/////////////////
-      public function getplat()
-    {
-      $article = plat::with(['restauration'])->get();
-      return response()->json($article); 
-    }
-
- 
    
+
+    public function chambre(Request $req){
+      $validator = Validator::make($req->all(), [ 
+        'titre' => 'required', 
+        'prix_nuitee' => 'required', 
+        'service_chambre' => 'required', 
+        'type_lit'=> 'required',
+        'capacite' => 'required', 
+        'description' => 'required', 
+        'statut' => 'required', 
+    ]); 
+      
+          //var_dump(auth('api')->user()->id_professionnel);die();
+    if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+    }else{
+      
+      $annonce= new chambre;
+      if($req->hasFile('photo1') ){
+        $image_name = $req->file('photo1')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo1')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo1')->storeAs('public/images/chambre',$fileNameToStore);
+        $annonce->photo1= $fileNameToStore;
+      }
+      if($req->hasFile('photo2') ){
+        $image_name = $req->file('photo2')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo2')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo2')->storeAs('public/images/chambre',$fileNameToStore);
+        $annonce->photo2= $fileNameToStore;
+      }
+      if($req->hasFile('photo3') ){
+        $image_name = $req->file('photo3')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo3')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo3')->storeAs('public/images/chambre',$fileNameToStore);
+        $annonce->photo3= $fileNameToStore;
+      }
+      if($req->hasFile('photo4') ){
+        $image_name = $req->file('photo4')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo4')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo4')->storeAs('public/images/chambre',$fileNameToStore);
+        $annonce->photo4= $fileNameToStore;
+      }
+      $annonce->titre=$req->input('titre');
+      $annonce->prix_nuitee=$req->input('prix_nuitee');
+      $annonce->service_chambre=$req->input('service_chambre');
+      $annonce->type_lit=$req->input('type_lit');
+      $annonce->capacite=$req->input('capacite');
+      $annonce->description=$req->input('description');
+      $annonce->statut=$req->input('statut');
+      $annonce->user()->associate(auth('api')->user());
+    
+      $annonce->save();
+      return response()->json(['succés'=>"Enregistrement du chambre avec succés"], 200);            
+
+    }}
+
+
+    public function vehicule(Request $req){
+      $validator = Validator::make($req->all(), [ 
+        'marque' => 'required', 
+        'modele' => 'required', 
+        'prix' => 'required', 
+        'type_vehicule'=> 'required',
+        'couleur' => 'required', 
+        'type_vitesse' => 'required', 
+        'statut' => 'required', 
+        'carburant' => 'required', 
+        'kilometre' => 'required', 
+        'capacite' => 'required', 
+        'climatisation' => 'required', 
+        'autre_specification' => 'required', 
+        'description' => 'required',
+        'statut' => 'required',
+    ]); 
+      
+          //var_dump(auth('api')->user()->id_professionnel);die();
+    if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+    }else{
+      
+      $annonce= new vehicule;
+      if($req->hasFile('photo1') ){
+        $image_name = $req->file('photo1')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo1')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo1')->storeAs('public/vehicule/photo',$fileNameToStore);
+        $annonce->photo1= $fileNameToStore;
+      }
+      if($req->hasFile('photo2') ){
+        $image_name = $req->file('photo2')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo2')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo2')->storeAs('public/images/vehicule',$fileNameToStore);
+        $annonce->photo2= $fileNameToStore;
+      }
+      if($req->hasFile('photo3') ){
+        $image_name = $req->file('photo3')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo3')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo3')->storeAs('public/images/vehicule',$fileNameToStore);
+        $annonce->photo3= $fileNameToStore;
+      }
+      if($req->hasFile('photo4') ){
+        $image_name = $req->file('photo4')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo4')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo4')->storeAs('public/images/vehicule',$fileNameToStore);
+        $annonce->photo4= $fileNameToStore;
+      }
+      $annonce->marque=$req->input('marque');
+      $annonce->modele=$req->input('modele');
+      $annonce->prix=$req->input('prix');
+      $annonce->type_vehicule=$req->input('type_vehicule');
+      $annonce->couleur=$req->input('couleur');
+      $annonce->type_vitesse=$req->input('type_vitesse');
+      $annonce->carburant=$req->input('carburant');
+      $annonce->kilometre=$req->input('kilometre');
+      $annonce->capacite=$req->input('capacite');
+      $annonce->climatisation=$req->input('climatisation');
+      $annonce->autre_specification=$req->input('autre_specification');
+      $annonce->description=$req->input('description');
+      $annonce->statut=$req->input('statut');
+      $annonce->user()->associate(auth('api')->user());
+    
+      $annonce->save();
+      return response()->json(['succés'=>"Enregistrement du vehicule avec succés"], 200);            
+
+    }}
+
+    public function images ($filename,$photo)
+    {
+        $path = public_path('storage')."/".$filename.'/'. $photo;
+        $file = File::get($path);
+        $response = Response($file, 200);
+        $response->header('Content-Type', 'image/jpeg');
+        return $response;
+    
+    }
+    
+    public function evenement(Request $req){
+      $validator = Validator::make($req->all(), [ 
+        'adresse' => 'required', 
+        'frequence' => 'required', 
+        'horaire' => 'required', 
+        'num_autorisation'=> 'required',
+        'information_supplementaire' => 'required', 
+        'description' => 'required', 
+        'prix' => 'required', 
+        'statut' => 'required', 
+       
+    ]); 
+      
+          //var_dump(auth('api')->user()->id_professionnel);die();
+    if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+    }else{
+      
+      $annonce= new evenement;
+      if($req->hasFile('photo1') ){
+        $image_name = $req->file('photo1')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo1')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo1')->storeAs('public/images/evenement',$fileNameToStore);
+        $annonce->photo1= $fileNameToStore;
+      }
+      if($req->hasFile('photo2') ){
+        $image_name = $req->file('photo2')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo2')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo2')->storeAs('public/images/vehicule',$fileNameToStore);
+        $annonce->photo2= $fileNameToStore;
+      }
+      if($req->hasFile('photo3') ){
+        $image_name = $req->file('photo3')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo3')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo3')->storeAs('public/images/vehicule',$fileNameToStore);
+        $annonce->photo3= $fileNameToStore;
+      }
+      if($req->hasFile('photo4') ){
+        $image_name = $req->file('photo4')->getClientOriginalName();
+        $filename = pathinfo($image_name,PATHINFO_FILENAME);
+        $image_ext = $req->file('photo4')->getClientOriginalExtension();
+        $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+        $path =  $req->file('photo4')->storeAs('public/images/vehicule',$fileNameToStore);
+        $annonce->photo4= $fileNameToStore;
+      }
+      $annonce->adresse=$req->input('adresse');
+      $annonce->frequence=$req->input('frequence');
+      $annonce->horaire=$req->input('horaire');
+      $annonce->num_autorisation=$req->input('num_autorisation');
+      $annonce->information_supplementaire=$req->input('information_supplementaire');
+      $annonce->description=$req->input('description');
+      $annonce->prix=$req->input('prix');
+      $annonce->statut=$req->input('statut');
+     
+      $annonce->user()->associate(auth('api')->user());
+    
+      $annonce->save();
+      return response()->json(['succés'=>"Enregistrement de l'evenement avec succés"], 200);            
+
+    }}
+
+
 
     public function getdepartement($id)
     {

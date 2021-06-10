@@ -10,7 +10,7 @@ class panier extends Model
     protected $primaryKey = "idpanier";
     public $timestamps = false;
     protected $fillable = [
-      'idmembre','idannonce','date','statut','quantite'
+      'idmembre','idannonce','date','statut','quantite','idmenu'
     ];
 
     public function annonce(){

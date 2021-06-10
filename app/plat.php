@@ -13,9 +13,11 @@ class plat extends Model
      */
     protected $table="menu";
     public $timestamps = false;
+    protected $primaryKey = "idmenu";
 
+    
     protected $fillable = [
-        'photo', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'dureepreparation','plat','description'
+        'photo', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'dureepreparation','plat','description','statut','accompagnements','categorie_plat','bloquer_commande'
     ];
 
     public function restauration(){

@@ -43,35 +43,7 @@ Route::get('error', function () {
 
    })->name('error');
 
-//endpoint des particuliers
-Route::group([
-    'prefix'=>'part',
-    'middleware' => 'cors',
-    'middleware' => 'auth:api',
- ],function($route){
-     Route::post('/annonce',  ['as'=>'lo','uses'=>'ApiController@annonce']);
-     Route::post('/commande_plat',  ['as'=>'lo','uses'=>'ApiController@commande_plat']);
-     Route::get('/getplat',  ['as'=>'lo','uses'=>'ApiController@getplat']);
-    
-     Route::get('/chambre',  ['as'=>'lo','uses'=>'ApiController@getchambre']); 
-     Route::get('/vehicule',  ['as'=>'lo','uses'=>'ApiController@getvehicule']); 
-     Route::get('/evenement',  ['as'=>'lo','uses'=>'ApiController@getevenement']); 
- });
 
-//endpoint des professionnelles
-Route::group([
-    'prefix'=>'pro',
-    'middleware' => 'cors',
-    'middleware' => 'auth:api',
- ],function($route){
-    Route::post('/annonce',  ['as'=>'lo','uses'=>'ApiController@annonce']);
-     Route::post('/plat',  ['as'=>'lo','uses'=>'ApiController@plat']);
-     Route::post('/chambre',  ['as'=>'lo','uses'=>'ApiController@chambre']); 
-     Route::post('/vehicule',  ['as'=>'lo','uses'=>'ApiController@vehicule']); 
-     Route::post('/evenement',  ['as'=>'lo','uses'=>'ApiController@evenement']); 
-
-
- });
  Route::group([
     'prefix'=>'backoffice',
     'middleware' => 'cors',
@@ -85,7 +57,13 @@ Route::group([
 
  });
  
- ////////e-market////////////
+
+ /*
+
+  ////////  E MARKET  ////////////
+
+
+ */
 
  Route::group([
    'prefix'=>'emarket',
@@ -177,3 +155,27 @@ Route::group([
 
 
 });
+
+/////////////////////////////////////////////////////////////
+
+
+/*
+
+  ////////  RESTAURANT  ////////////
+
+
+ */
+
+Route::group([
+   'prefix'=>'restaurant',
+   'middleware' => 'cors',
+   'middleware' => 'auth:api',
+],function($route){
+   Route::post('/plat',  ['as'=>'lo','uses'=>'RestaurantController@plat']);
+   Route::post('/restauration',  ['as'=>'lo','uses'=>'RestaurantController@restauration']);
+   Route::get('/getplat',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
+   Route::get('/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
+
+   
+});
+
