@@ -11,6 +11,6 @@ class favoris extends Model
     protected $primaryKey = "idfavoris";
 
     protected $fillable = [
-        'id_membre', 'id_annonce' ,'id_showroom'
+        'id_membre', 'id_annonce' ,'id_showroom','id_menu','id_restauration'
     ];
 }

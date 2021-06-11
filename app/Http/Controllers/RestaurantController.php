@@ -9,6 +9,8 @@ use App\departement;
 use App\panier;
 use App\restauration;
 use App\imagerestauration;
+use App\favoris;
+
 use File;
 
 use Illuminate\Support\Facades\Storage;
@@ -167,7 +169,7 @@ public function delete_panier($id)
 }
   public function liste_panier($id)
   {
-  $panier =panier::select('idmenu','idpanier','quantite')->where([['idannonce','=',null],['idmembre','=',$id],['statut','!=','commandé']])->get();
+  $panier =panier::select('idmenu','idpanier','quantite')->where([['idmenu','!=',null],['idmembre','=',$id],['statut','!=','commandé']])->get();
 
   foreach($panier as $articl){
     
@@ -193,6 +195,12 @@ public function delete_panier($id)
     //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
    //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
 
+      $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+      if($result){
+        $articl['idpanier']=$result->idpanier;
+      }else{
+        $articl['idpanier']=null;
+      }
         if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
         }else {
@@ -211,9 +219,6 @@ public function delete_panier($id)
     
     $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
     foreach($article as $articl){
-  //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
- //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
-
       if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
       $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
       }else {
@@ -239,32 +244,163 @@ public function mesrestaurants($id)
 {
   
   $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
-  foreach($article as $articl){
-//    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
-//       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
+      foreach($article as $articl){
+    //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
+    //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
 
-    if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
-    $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
-    }else {
-      $file=0;
+        if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
+        }else {
+          $file=0;
+        }
+        $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
+
+        $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+      $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+      $articl['codemembre']=$user->codemembre;
+      $articl['photorestauration']=$membre;
+
+      $articl['departement']=$dept->lib_dept;
+        $articl['vues']=$file;
     }
-    $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
-
-    $dept=departement::where('id_dept',$articl->id_dep)->first(); 
-   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
-   $articl['codemembre']=$user->codemembre;
-   $articl['photorestauration']=$membre;
-
-   $articl['departement']=$dept->lib_dept;
-    $articl['vues']=$file;
- //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+  return response()->json($article); 
 }
+
+public function platrestaurant($id)
+{
+  $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
+      foreach($article as $articl){
+        
+        $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+        if($result){
+          $articl['idpanier']=$result->idpanier;
+        }else{
+          $articl['idpanier']=null;
+        }
+        if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
+        }else {
+          Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
+          $file=0;
+        }
+      
+        $articl['vues']=$file;
+    //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+    }
 return response()->json($article); 
 }
 
+public function oneplat($id)
+{
+  $articl = plat::select('photo','idmenu','statut','description','accompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
+
+  $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+    if($result){
+      $articl['idpanier']=$result->idpanier;
+    }else{
+      $articl['idpanier']=null;
+    }
+      $article = restauration::select('idmembre','idrestauration','statut')->where('idrestauration',$articl->idrestauration)->first();
+      $user = User::select('idmembre','codemembre')->where('idmembre',$article->idmembre)->first();
+      $articl['codemembre']=$user->codemembre;
+
+      if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
+      $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
+      }else {
+        Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
+        $file=0;
+      }
+      $articl['accompagnements']=json_decode($articl['accompagnements']);
+
+      $articl['vues']=$file;
+      Storage::disk('vue')->put($articl->idmenu.'_menu.txt', $file+1);
+
+ //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+//}
+return response()->json($articl); 
+}
+
+public function onerestaurant($id)
+{
+  
+  $articl = restauration::select('adresse','description','typecuisine','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$id)->first();
+   
+        if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
+        $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
+        }else {
+          $file=0;
+        }
+        $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
+
+        $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+      $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+      $articl['codemembre']=$user->codemembre;
+      $articl['photorestauration']=$membre;
+
+      $articl['departement']=$dept->lib_dept;
+        $articl['vues']=$file;
+        Storage::disk('vue')->put($articl->idrestauration.'_restauration.txt', $file+1);
+    return response()->json($articl); 
+}
 
 
 
+
+/////////////////////FAVORISS////////////////////
+public function deletefavoris($id)
+{
+  $favoris= favoris::where('idfavoris',$id)->delete(); 
+
+ 
+  return response()->json(['success'=>"supprime avec succés"], 200); 
+}
+public function listefavoris($id)
+{
+  $favoris= favoris::where('id_membre',$id)->get(); 
+  $annonces=[];
+  $showrooms=[];
+   foreach($favoris as $test){
+    $annonce = plat::select('photo','idmenu','statut', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$test->id_menu)->first();
+
+   
+    $boutique = restauration::select('adresse','idmembre','idrestauration','statut')->where('idrestauration',$id)->first();
+
+ 
+    if($annonce){
+      $result=panier::where([["idmembre", $id],['idmenu','=',$annonce->idmenu]])->first(); 
+        if($result){
+          $annonce['idpanier']=$result->idpanier;
+        }else{
+          $annonce['idpanier']=null;
+        }
+    $annonce['idfavoris']=$test->idfavoris;
+    
+    array_push($annonces, $annonce);
+   }else if($boutique) {
+    $user = User::select('codemembre')->where('idmembre',$boutique->idmembre)->first();
+    $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$boutique->idrestauration)->first();
+    $boutique['photorestauration']=$membre->urlimagerestauration;
+    $boutique['idfavoris']=$test->idfavoris;
+    $boutique['codemembre']=$user->codemembre;
+    array_push($showrooms, $boutique);
+   }
+
+  }
+  return response()->json(['menu'=>$annonces,'restauration'=>$showrooms], 200);
+
+}
+
+public function addfavoris(Request $req)
+{
+  $favoris= new favoris;
+  $favoris->id_membre=$req->id_membre;
+  $favoris->id_menu=$req->id_menu;
+  $favoris->id_restauration=$req->id_restauration;
+  $favoris->save();
+  $favoris['code']=200;
+  return response($favoris); 
+}
+//////////////////////////////////////////
 
 
 

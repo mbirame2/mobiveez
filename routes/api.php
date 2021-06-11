@@ -177,8 +177,21 @@ Route::group([
    Route::get('/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
    Route::get('/mesrestaurants/{id}',  ['as'=>'lo','uses'=>'RestaurantController@mesrestaurants']);
 
+   Route::get('/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
+   Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatvip']);
+   Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationvip']);
+
+   Route::get('/oneplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@oneplat']);
+   Route::get('/onerestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@onerestaurant']);
+
    Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@ajout_panier']); 
    Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@delete_panier']); 
    Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@liste_panier']);  
+
+   Route::get('/listefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listefavoris']);
+   Route::get('/deletefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deletefavoris']);
+
+   Route::post('/addfavoris',  ['as'=>'lo','uses'=>'RestaurantController@addfavoris']);
+
 });
 
