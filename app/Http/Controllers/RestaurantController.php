@@ -10,6 +10,8 @@ use App\panier;
 use App\restauration;
 use App\imagerestauration;
 use App\favoris;
+use App\reservationtable;
+use App\commandereservationtable;
 
 use File;
 
@@ -66,13 +68,69 @@ class RestaurantController extends Controller
        
         $annonce->save();
         unset($annonce['restauration']);
-        unset($annonce['accompagnements']);
-        $annonce['accompagnements']=json_decode($annonce['accompagnements']);
+     
 
         $annonce['code']=200;
         Storage::disk('vue')->put($num.'_menu.txt', 0);
 
         return response()->json($annonce);            
+
+}
+
+public function reservationtable(Request $req)
+{
+  $a=reservationtable::latest('idreservationtable')->first();
+  $idreservationtable=$a->idreservationtable +1 ;
+  $panier= new reservationtable;
+  $panier->idmembre=$req->input('idmembre');
+  $panier->idrestauration=$req->input('idrestauration');
+  $panier->titre=$req->input('titre');
+  $panier->invite=$req->input('listeinvites');
+  $panier->nombrepersonne=$req->input('nombreplaces');
+  $panier->heurearrivee=$req->input('heurereservation');
+  $panier->besoins=$req->input('besoins');
+  $panier->datereservation=$req->input('datereservation');
+  $panier->referencereservationtable=auth('api')->user()->codemembre."r".$idreservationtable.date("dmY");
+  $panier->statut='AWAITING';
+
+  $panier->save();
+
+ 
+  return response()->json(['idrestauration'=> $req->input('idrestauration') ,'idreservationtable'=>$panier->idreservationtable,'statut'=> $panier->statut], 200); 
+}
+
+public function listereservationtable($id){
+
+  $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwhere([['invite', 'LIKE','%'.$id.'%' ],['statut','!=','REJECTED']])->orderBy('idreservationtable','desc')->get();
+  foreach($reservationtable as $articl){
+    $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
+    $articl['photo']=$membre->urlimagerestauration;
+    $invite = explode(', ', $articl['invite']);
+    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invite)->get();
+    $articl['listeinvites']=$user;
+    $commande = commandereservationtable::select( 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
+    foreach($commande as $command){
+      $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
+      $command['photo']=$article['photo'];
+      $command['prix']=$article['prix'];
+      $command['plat']=$article['plat'];
+    }
+    $articl['listecommandes']=$commande;
+
+  }
+  return response($reservationtable); 
+
+}
+public function declineinvitation($idreservation,$idmembre){
+  $reservationtable=reservationtable::where('idreservationtable',$idreservation)->first();
+  $invite = explode(', ', $reservationtable['invite']);
+  if (($key = array_search($idmembre, $invite)) !== false) {
+    unset($invite[$key]);
+  }
+  $invite = implode(', ', $invite);
+  $reservationtable->invite=$invite;
+  $reservationtable->save();
+return response()->json(['message'=>'success'], 200);
 
 }
 
@@ -310,7 +368,7 @@ public function oneplat($id)
         Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
         $file=0;
       }
-      $articl['accompagnements']=json_decode($articl['accompagnements']);
+  //    $articl['accompagnements']=json_decode($articl['accompagnements']);
 
       $articl['vues']=$file;
       Storage::disk('vue')->put($articl->idmenu.'_menu.txt', $file+1);
