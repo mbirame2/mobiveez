@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\plat;
 use App\User;
+use App\service;
 use App\departement;
+use App\servicevendu;
 use App\panier;
 use App\restauration;
 use App\imagerestauration;
@@ -391,11 +393,14 @@ public function onerestaurant($id)
         $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
 
         $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+        $articl['departement']=$dept->lib_dept;
+
+        $articl['typecuisine'] = explode(', ', $articl['typecuisine']);
+
       $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
       $articl['photorestauration']=$membre;
 
-      $articl['departement']=$dept->lib_dept;
         $articl['vues']=$file;
         Storage::disk('vue')->put($articl->idrestauration.'_restauration.txt', $file+1);
     return response()->json($articl); 
@@ -462,10 +467,55 @@ public function addfavoris(Request $req)
 
 
 
+public function listeservice()
+{
+  $list=[31,32,33,34,35,36,697,698,699];
+  $service = service::whereIn('idService',$list)->get();
+
+//  $article=$article->paginate(15);
+  return response()->json($service); 
+}
+
+public function getplatservice()
+{
+  $list=[697,698,699];
+  $annonce = plat::select('idmenu')->where('statut','acceptee')->get();
+  $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
+  foreach($servicevendu as $articl){
+    $annonce = plat::select('photo','idmenu', 'prix','idrestauration','bloquer_commande','plat')->where('idmenu',$articl->idannonce)->first();
+    $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$annonce['idmenu']]])->first(); 
+    if($result){
+      $annonce['idpanier']=$result->idpanier;
+    }else{
+      $annonce['idpanier']=null;
+    }
+    $articl['plat']=$annonce;
+    unset($articl['idannonce']);
+  }
+
+  return response()->json($servicevendu); 
+}
 
 
+public function getrestaurationservice()
+{
+  $list=[31,32,33,34,35,36];
+  $annonce = restauration::select('idrestauration')->where('statut','acceptee')->get();
+  $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
+  foreach($servicevendu as $articl){
+    $annonce = restauration::select('adresse','id_dep','designation', 'fermeture','idrestauration','ouverture','typerestauration')->where('idrestauration',$articl->idannonce)->first();
+    $membre = imagerestauration::where('idrestauration',$annonce->idrestauration)->first();
+    $annonce['photorestauration']=$membre->urlimagerestauration;
+    
+    unset($articl['idannonce']);
+    $dept=departement::where('id_dept',$annonce->id_dep)->first(); 
+    $annonce['departement']=$dept->lib_dept;
 
+    $articl['restauration']=$annonce;
+  }
 
+  return response()->json($servicevendu); 
+}
 
 
   public function commande_plat(Request $req){
