@@ -375,7 +375,8 @@ return response()->json($article);
 public function oneplat($id)
 {
   $articl = plat::select('photo','idmenu','statut','description','accompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
-
+  $favoris= favoris::where('id_menu',$articl['idmenu'])->first(); 
+  $articl['idfavoris']=$favoris['idfavoris'];
   $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
     if($result){
       $articl['idpanier']=$result->idpanier;
@@ -383,9 +384,10 @@ public function oneplat($id)
       $articl['idpanier']=null;
     }
       $article = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$articl->idrestauration)->first();
+      $articl['designation']=$article->designation;
       $user = User::select('idmembre','codemembre')->where('idmembre',$article->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
-      $articl['designation']=$article->designation;
+      
       if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
       $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
       }else {
@@ -459,7 +461,8 @@ public function listefavoris($id)
           $annonce['idpanier']=null;
         }
     $annonce['idfavoris']=$test->idfavoris;
-    
+    $article = restauration::select('designation')->where('idrestauration',$annonce['idrestauration'])->first();
+    $annonce['designation']=$article['designation'];
     array_push($annonces, $annonce);
    }else if($boutique) {
     $user = User::select('codemembre')->where('idmembre',$boutique->idmembre)->first();
