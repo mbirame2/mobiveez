@@ -310,6 +310,8 @@ public function delete_panier($id)
 
 public function mesrestaurants($id)
 {
+  $list=[31,32,33,34,35,36];
+
   $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
       foreach($article as $articl){
     //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
@@ -329,6 +331,12 @@ public function mesrestaurants($id)
 
       $articl['departement']=$dept->lib_dept;
         $articl['vues']=$file;
+        $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
+      $service = service::where('idService',$servicevendu['idservice'])->first();
+      $service['dateachat']=$servicevendu['dateachat'];
+      $service['datefinservice']=$servicevendu['datefinservice'];
+      if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
+
     }
   return response()->json($article); 
 }
