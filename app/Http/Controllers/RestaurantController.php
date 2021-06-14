@@ -300,7 +300,7 @@ public function delete_panier($id)
       $service = service::where('idService',$servicevendu['idservice'])->first();
       $service['dateachat']=$servicevendu['dateachat'];
       $service['datefinservice']=$servicevendu['datefinservice'];
-      if($servicevendu){$articl['service']=$service;}
+      if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
 
    //   $articl['url']="api.iveez.com/api/image/{imagename}";   
   }
@@ -357,7 +357,7 @@ public function platrestaurant($id)
         $service = service::where('idService',$servicevendu['idservice'])->first();
         $service['dateachat']=$servicevendu['dateachat'];
         $service['datefinservice']=$servicevendu['datefinservice'];
-        if($servicevendu){$articl['service']=$service;}
+        if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
         
     //   $articl['url']="api.iveez.com/api/image/{imagename}";   
     }
