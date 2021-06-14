@@ -450,7 +450,7 @@ public function listefavoris($id)
     $annonce = plat::select('photo','idmenu','statut', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$test->id_menu)->first();
 
    
-    $boutique = restauration::select('adresse','idmembre','idrestauration','statut')->where('idrestauration',$id)->first();
+    $boutique = restauration::select('adresse','idmembre','idrestauration','statut')->where('idrestauration',$test['id_restauration'])->first();
 
  
     if($annonce){
