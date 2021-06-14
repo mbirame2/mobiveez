@@ -236,7 +236,7 @@ public function delete_panier($id)
     $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
   //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
     $articl['plat']=$article;
-    $restauration = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$article->idrestauration)->first();
+    $restauration = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$article['idrestauration'])->first();
     $articl['plat']['designation']=$restauration['designation'];
   } 
   if($panier->isEmpty()){
