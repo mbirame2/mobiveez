@@ -110,11 +110,13 @@ Route::get('error', function () {
 
    Route::get('/myoffers/{id}',  ['as'=>'lo','uses'=>'EmarketController@myoffers']);
 
-   Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    
    Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
 
+   Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
+   Route::get('/getnotification/{id}/{module}',  ['as'=>'lo','uses'=>'EmarketController@getnotification']); 
+
    Route::get('/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
     Route::post('/verify_contact',  ['as'=>'lo','uses'=>'EmarketController@verify_contact']);
     Route::get('/search_article/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 
@@ -122,7 +124,6 @@ Route::get('error', function () {
     Route::get('/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
     Route::get('/proshowrooms/{id}',  ['as'=>'lo','uses'=>'EmarketController@showroomsuser']); 
     Route::get('/getboutique',  ['as'=>'lo','uses'=>'EmarketController@getboutique']); 
-    Route::get('/getnotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@getnotification']); 
     Route::get('/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
     Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@ajout_panier']); 
     Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@delete_panier']); 
