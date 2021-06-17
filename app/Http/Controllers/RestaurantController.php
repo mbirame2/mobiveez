@@ -312,7 +312,7 @@ public function mesrestaurants($id)
 {
   $list=[31,32,33,34,35,36];
 
-  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','acceptee'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
+  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
       foreach($article as $articl){
     //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
     //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
@@ -424,7 +424,8 @@ public function onerestaurant($id)
       $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
       $articl['photorestauration']=$membre;
-
+      $favoris= favoris::where('id_restauration',$articl['idrestauration'])->first(); 
+      $articl['idfavoris']=$favoris['idfavoris'];
         $articl['vues']=$file;
         Storage::disk('vue')->put($articl->idrestauration.'_restauration.txt', $file+1);
     return response()->json($articl); 
@@ -514,6 +515,8 @@ public function getplatservice()
     }else{
       $annonce['idpanier']=null;
     }
+    $article = restauration::select('designation')->where('idrestauration',$annonce['idrestauration'])->first();
+    $annonce['designation']=$article['designation'];
     $articl['plat']=$annonce;
     unset($articl['idannonce']);
   }
