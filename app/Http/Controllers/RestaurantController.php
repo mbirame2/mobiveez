@@ -540,7 +540,9 @@ public function getrestaurationservice()
   $annonce = restauration::select('idrestauration')->where('statut','acceptee')->get();
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
-    $annonce = restauration::select('adresse','id_dep','designation', 'fermeture','idrestauration','ouverture','typerestauration')->where('idrestauration',$articl->idannonce)->first();
+    $annonce = restauration::select('adresse','idmembre','id_dep','designation', 'fermeture','idrestauration','ouverture','typerestauration')->where('idrestauration',$articl->idannonce)->first();
+    $user = User::select('idmembre','codemembre')->where('idmembre',$annonce->idmembre)->first();
+    $annonce['codemembre']= $user->codemembre;
     $membre = imagerestauration::where('idrestauration',$annonce->idrestauration)->first();
     $annonce['photorestauration']=$membre->urlimagerestauration;
     
