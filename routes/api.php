@@ -197,8 +197,18 @@ Route::group([
    
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
+   Route::get('/typecuisine',  ['as'=>'lo','uses'=>'RestaurantController@typecuisine']);
+   Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']); 
+   Route::get('/search_restaurant/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
+   Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleteimage']);
+   Route::get('/boostplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@boostplat']);
+   Route::get('/boostrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@boostrestaurant']);
+   Route::get('/deleteplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleteplat']);
+   Route::get('/deleterestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleterestaurant']);
+   Route::get('/bloquer_commande/{idannonce}/{statut}',  ['as'=>'lo','uses'=>'RestaurantController@bloquer_commande']);
 
-   
+   Route::post('/buyboostrestauration',  ['as'=>'lo','uses'=>'RestaurantController@buyboostrestauration']);
+
    Route::get('/listefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listefavoris']);
    Route::get('/deletefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deletefavoris']);
 

@@ -12,9 +12,10 @@ use App\panier;
 use App\restauration;
 use App\imagerestauration;
 use App\favoris;
+use App\typecuisine;
+
 use App\reservationtable;
 use App\commandereservationtable;
-
 use File;
 
 use Illuminate\Support\Facades\Storage;
@@ -502,6 +503,14 @@ public function listeservice()
   return response()->json($service); 
 }
 
+public function typecuisine()
+{
+  $service = typecuisine::get();
+
+//  $article=$article->paginate(15);
+  return response()->json($service); 
+}
+
 public function getplatservice()
 {
   $list=[697,698,699];
@@ -544,7 +553,168 @@ public function getrestaurationservice()
 
   return response()->json($servicevendu); 
 }
+public function searchrestaurant($name)
+{
+  $list=[31,32,33,34,35,36];
 
+  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->where(function ($query) use($name) {
+    $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
+    $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
+    $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
+    })->paginate(30);
+
+  foreach($article as $articl){
+    if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
+    $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
+    }else {
+      Storage::disk('vue')->put($articl->idrestauration.'_restauration.txt', 0);
+      $file=0;
+    }
+    $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
+
+    $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+   $articl['codemembre']=$user->codemembre;
+   $articl['photorestauration']=$membre->urlimagerestauration;
+
+   $articl['departement']=$dept->lib_dept;
+    $articl['vues']=$file;
+    $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
+    $service = service::where('idService',$servicevendu['idservice'])->first();
+    $service['dateachat']=$servicevendu['dateachat'];
+    $service['datefinservice']=$servicevendu['datefinservice'];
+    if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
+
+ //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+}
+return response()->json($article); 
+
+
+}
+public function searchplat($name)
+{
+  $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->where(function ($query) use($name) {
+    $query->whereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
+    $query->orwhereRaw('LOWER(plat) like ?', '%'.strtolower($name).'%');
+    })->paginate(30);
+
+
+  foreach($article as $articl){
+//    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
+//       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
+
+  $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+  if($result){
+    $articl['idpanier']=$result->idpanier;
+  }else{
+    $articl['idpanier']=null;
+  }
+    if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
+    $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
+    }else {
+      Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
+      $file=0;
+    }
+   
+    $articl['vues']=$file;
+ //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+}
+return response()->json($article); 
+}
+
+public function deleteimage($filename,$id)
+{
+ // $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+  $image = imagerestauration::where('urlimagerestauration',$filename.'/'.$id)->delete();
+  Storage::disk('photorestauration')->delete($id);
+//  $article=$article->paginate(15);
+  return response()->json(['success'=>"Suppression de l'image avec succés"], 200); 
+}
+
+public function boostplat($id)
+{
+  $list=[697,698,699];
+  $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+  foreach($servicevendus as $servicevendu){
+    $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
+    $servicevendu['service']=$service;
+    
+  }
+//  $article=$article->paginate(15);
+
+  return response()->json($servicevendus); 
+}
+
+public function boostrestaurant($id)
+{
+  $list=[31,32,33,34,35,36];
+  $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+  foreach($servicevendus as $servicevendu){
+    $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
+    $servicevendu['service']=$service;
+    
+  }
+//  $article=$article->paginate(15);
+
+  return response()->json($servicevendus); 
+}
+
+public function deleteplat($id)
+{
+  $annonce = plat::where('idmenu','=',$id)->first(); ; 
+  $annonce->statut='suppression';
+  $annonce->save();
+//  $article=$article->paginate(15);
+
+  return response()->json(['success'=>"Suppression du plat avec succés"], 200); 
+}
+
+public function deleterestaurant($id)
+{
+  $annonce = restauration::where('idrestauration','=',$id)->first(); ; 
+  $annonce->statut='suppression';
+  $annonce->save();
+//  $article=$article->paginate(15);
+
+  return response()->json(['success'=>"Suppression du restaurant avec succés"], 200); 
+}
+
+public function bloquer_commande($idannonce,$statut)
+    {
+     // $commande= new commande;
+      $result=plat::where('idmenu','=',$idannonce)->first(); 
+ 
+        $result->bloquer_commande=$statut;
+      
+      $result->save();
+      return response()->json(['success'=>"Ok"], 200);            
+    }
+
+public function buyboostrestauration(Request $req)
+    {
+      $result=User::where('idmembre','=',$req->idmembre)->first(); 
+      if($result->compte < $req->credit){
+        return response()->json(['message'=>"Credit insuffisant",'code'=>401], 200); 
+      }else {
+      $result->compte= $result->compte - $req->credit;
+      $result->save();
+
+      $servicevendu = new servicevendu;
+      $servicevendu->idannonce= $req->idrestauration; 
+      $servicevendu->etatvente= 'en attente'; 
+      $servicevendu->idservice= $req->idservice; 
+      $Date1=date("Y/m/d-H:i");
+      $Date2 = date('Y/m/d-H:i', strtotime($Date1 . " + ".$req->days." day"));
+      //$Date1=gmdate('Y/m/d-h:i', strtotime($Date1) );
+      //$Date2=gmdate('Y/m/d-h:i', strtotime($Date2) );
+      $servicevendu->datefinservice= $Date2 ; 
+      $servicevendu->dateachat= $Date1; 
+      $servicevendu->save();
+
+    
+      return response()->json(['success'=>"Enregistré avec succes"], 200); 
+      }
+    }
 
   public function commande_plat(Request $req){
     $validator = Validator::make($req->all(), [ 
