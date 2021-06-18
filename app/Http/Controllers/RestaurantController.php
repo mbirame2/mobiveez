@@ -9,6 +9,8 @@ use App\service;
 use App\departement;
 use App\servicevendu;
 use App\panier;
+use App\specialite;
+
 use App\restauration;
 use App\imagerestauration;
 use App\favoris;
@@ -157,7 +159,6 @@ public function restauration(Request $req){
   $annonce->fermeture=$req->input('fermeture');
   $annonce->id_dep=$req->input('id_dep');
   $annonce->ouverture=$req->input('ouverture');
-  $annonce->typecuisine=$req->input('typecuisine');
   $annonce->typerestauration=$req->input('typerestauration');
   $annonce->idmembre=$req->input('idmembre');
 
@@ -191,9 +192,20 @@ public function restauration(Request $req){
   $user = User::select('idmembre','codemembre')->where('idmembre',$req->input('idmembre'))->first();
 
   Storage::disk('vue')->put($num.'_restauration.txt', 0);
-  $annonce['typecuisine']=json_decode($annonce['typecuisine']);
 
-  $annonce['departement']=$dept->lib_dept;
+  if($req->input('typecuisine')){
+    $typecuisine = $req->input('typecuisine');
+    $dept=specialite::where('idrestauration',$annonce->idrestauration)->delete(); 
+
+    foreach($typecuisine as $type){
+      $iman= new specialite;
+      $iman->idrestauration= $annonce->idrestauration;  
+      $iman->idtypecuisine=$type;
+      $iman->save();
+    }
+    $annonce['typecuisine']= $typecuisine;
+  }
+  $annonce['departement']=$dept['lib_dept'];
   $annonce['codemembre']=$user->codemembre;
 
   $annonce['code']=200;
@@ -408,7 +420,7 @@ return response()->json($articl);
 public function onerestaurant($id)
 {
   
-  $articl = restauration::select('adresse','description','typecuisine','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$id)->first();
+  $articl = restauration::select('adresse','description','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$id)->first();
    
         if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
@@ -420,11 +432,14 @@ public function onerestaurant($id)
         $dept=departement::where('id_dept',$articl->id_dep)->first(); 
         $articl['departement']=$dept->lib_dept;
 
-        $articl['typecuisine'] = explode(', ', $articl['typecuisine']);
+     //   $articl['typecuisine'] = explode(', ', $articl['typecuisine']);
 
       $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
       $articl['photorestauration']=$membre;
+      $specialite= specialite::select('idtypecuisine')->where('idrestauration',$articl['idrestauration'])->get(); 
+      $type=typecuisine::whereIn('idtypecuisine',$specialite)->get();
+      $articl['typecuisine']=$type;
       $favoris= favoris::where('id_restauration',$articl['idrestauration'])->first(); 
       $articl['idfavoris']=$favoris['idfavoris'];
         $articl['vues']=$file;

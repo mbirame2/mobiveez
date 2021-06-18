@@ -15,7 +15,7 @@ class restauration extends Model
     public $timestamps = false;
     protected $primaryKey = "idrestauration";
     protected $fillable = [
-        'idhebergement', 'idmembre','id_dep','typerestauration', 'designation', 'description', 'adresse', 'siteweb', 'telephone', 'capacite', 'ouverture','fermeture','tauxreduction','statut','typecuisine'
+        'idhebergement', 'idmembre','id_dep','typerestauration', 'designation', 'description', 'adresse', 'siteweb', 'telephone', 'capacite', 'ouverture','fermeture','tauxreduction','statut'
     ];
 
     public function membre(){
