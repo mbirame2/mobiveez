@@ -214,5 +214,13 @@ Route::group([
 
    Route::post('/addfavoris',  ['as'=>'lo','uses'=>'RestaurantController@addfavoris']);
 
+
+   Route::post('/addgestionnaire',  ['as'=>'lo','uses'=>'RestaurantController@addgestionnaire']);
+   Route::get('/listegestionnaire/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listegestionnaire']);
+   Route::get('/deletegestionnaire/{id}',  ['as'=>'lo','uses'=>'EmarketController@deletegestionnaire']);
+   Route::get('/gestionnairerestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@gestionnairerestaurant']);
+   Route::get('/gestionnaireconnected/{id}/{value}',  ['as'=>'lo','uses'=>'EmarketController@gestionnaireconnected']);
+
+
 });
 

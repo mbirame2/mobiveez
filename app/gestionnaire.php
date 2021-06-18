@@ -11,6 +11,6 @@ class gestionnaire extends Model
     protected $primaryKey = "id_gestionnaire";
 
     protected $fillable = [
-        'idmembre', 'idshowroom' ,'date','is_connected'
+        'idmembre', 'idshowroom' ,'date','is_connected','idrestauration'
     ];
 }

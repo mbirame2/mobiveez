@@ -1516,7 +1516,7 @@ class EmarketController extends Controller
 
 public function listegestionnaire($id)
 {
-  $gestionnaire= gestionnaire::where('idmembre',$id)->get(); 
+  $gestionnaire= gestionnaire::where([['idmembre',$id],['idshowroom','!=',null]])->get(); 
    foreach($gestionnaire as $test){
      
   //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();

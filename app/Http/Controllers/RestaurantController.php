@@ -15,7 +15,7 @@ use App\restauration;
 use App\imagerestauration;
 use App\favoris;
 use App\typecuisine;
-
+use App\gestionnaire;
 use App\reservationtable;
 use App\commandereservationtable;
 use File;
@@ -732,6 +732,81 @@ public function buyboostrestauration(Request $req)
       return response()->json(['success'=>"Enregistré avec succes"], 200); 
       }
     }
+
+
+     //////////////////GESTIONNAIRE
+
+  public function addgestionnaire(Request $req)
+  {
+    $gestionnaire= new gestionnaire;
+    $gestionnaire->idmembre=$req->input('idgestionnaire');
+    $gestionnaire->date=date("Y-m-d H:i:s");
+    $gestionnaire->idrestauration= $req->input('idrestauration');
+    $gestionnaire->save();
+    return response(['success'=>"ajouter avec succés"], 200); 
+  }
+  
+  public function listegestionnaire($id)
+  {
+    $gestionnaire= gestionnaire::where([['idmembre',$id],['idrestauration','!=',null]])->get(); 
+     foreach($gestionnaire as $test){
+       
+    //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
+    $articl = restauration::select('adresse','description','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$test->idrestauration)->first();
+   
+    if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
+    $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
+    }else {
+      $file=0;
+    }
+    $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
+
+    $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+    $articl['departement']=$dept->lib_dept;
+
+ 
+  $articl['photorestauration']=$membre;
+  $specialite= specialite::select('idtypecuisine')->where('idrestauration',$articl['idrestauration'])->get(); 
+  $type=typecuisine::whereIn('idtypecuisine',$specialite)->get();
+  $articl['typecuisine']=$type;
+  $favoris= favoris::where('id_restauration',$articl['idrestauration'])->first(); 
+  $articl['idfavoris']=$favoris['idfavoris'];
+    $articl['vues']=$file;
+
+
+ //   $annonce =boutique::where([['etatshowroom','acceptee'],['idshowroom',$test->idshowroom]])->select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
+      $user=User::select('prenom','nom','num_whatsapp','codemembre','localisation','profil','email','telephoneportable')->where('idmembre',$articl->idmembre)->first();
+  
+  
+    
+      $test['restauration']=$articl;
+      $test['restauration']['proprietaire']=$user;
+      
+    }
+   
+    return response($gestionnaire); 
+  }
+  
+  
+  public function gestionnairerestaurant($id)
+  {
+    $gestionnaire= gestionnaire::select('idmembre','id_gestionnaire','is_connected')->where('idrestauration',$id)->get(); 
+   $gest=[];
+    foreach($gestionnaire as $test){
+    $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
+    $dept=departement::where('id_dept',$user->departement_id)->first(); 
+    $user['id_gestionnaire']=$test->id_gestionnaire;
+    $user['idmembre']=$test->idmembre;
+    $user['is_connected']=$test->is_connected;
+    $user['departement']=$dept->lib_dept;
+    unset($user['departement_id']);
+    array_push($gest, $user);
+    }
+  
+    return response()->json($gest); 
+  }
+
+  
 
   public function commande_plat(Request $req){
     $validator = Validator::make($req->all(), [ 
