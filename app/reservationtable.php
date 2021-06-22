@@ -10,6 +10,6 @@ class reservationtable extends Model
     public $timestamps = false;
     protected $primaryKey = "idreservationtable";
     protected $fillable = [
-        'idmembre', 'idrestauration', 'titre', 'invite','referencereservationtable', 'nombrepersonne', 'datearrivee' , 'heurearrivee' , 'besoins' , 'datereservation' , 'statut'
+        'idmembre', 'idrestauration', 'titre', 'invite','referencereservationtable', 'nombrepersonne', 'datearrivee' , 'heurearrivee' , 'besoins' , 'datereservation' , 'statut','motif','feedback'
     ];
 }

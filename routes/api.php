@@ -212,8 +212,9 @@ Route::group([
    Route::get('/listefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listefavoris']);
    Route::get('/deletefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deletefavoris']);
 
-   Route::post('/addfavoris',  ['as'=>'lo','uses'=>'RestaurantController@addfavoris']);
-
+   Route::post('/addfavoris',  ['as'=>'lo','uses'=>'RestaurantController@addfavoris']);   
+   
+   Route::post('/statutreservationtable',  ['as'=>'lo','uses'=>'RestaurantController@statutreservationtable']);
 
    Route::post('/addgestionnaire',  ['as'=>'lo','uses'=>'RestaurantController@addgestionnaire']);
    Route::get('/listegestionnaire/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listegestionnaire']);

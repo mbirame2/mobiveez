@@ -51,7 +51,7 @@ class RestaurantController extends Controller
         $annonce->vendredi=$req->input('vendredi');
         $annonce->samedi=$req->input('samedi');
         $annonce->dimanche=$req->input('dimanche');
-        $annonce->plat=$req->input('designation');
+        $annonce->plat=$req->input('plat');
         $annonce->description=$req->input('description');
         $article = restauration::select('idrestauration')->where('idrestauration',$req->input('idrestauration'))->first();
         #var_dump($article);die();
@@ -84,19 +84,31 @@ class RestaurantController extends Controller
 
 public function reservationtable(Request $req)
 {
-  $a=reservationtable::latest('idreservationtable')->first();
-  $idreservationtable=$a->idreservationtable +1 ;
-  $panier= new reservationtable;
-  $panier->idmembre=$req->input('idmembre');
-  $panier->idrestauration=$req->input('idrestauration');
+
+  if($req->input('idreservationtable')){
+    $panier= reservationtable::where('idreservationtable',$req->input('idreservationtable'))->first(); 
+
+  }
+  else{
+    $a=reservationtable::latest('idreservationtable')->first();
+    $idreservationtable=$a->idreservationtable +1 ;
+    $panier= new reservationtable;
+    $panier->referencereservationtable=auth('api')->user()->codemembre."r".$idreservationtable.date("dmY");
+    $panier->statut='AWAITING';
+    $panier->invite=$req->input('listeinvites');
+    $panier->idmembre=$req->input('idmembre');
+    $panier->idrestauration=$req->input('idrestauration');
+    $panier->besoins=$req->input('besoins');
+    $panier->nombrepersonne=$req->input('nombreplaces');
+
+  }
+
   $panier->titre=$req->input('titre');
-  $panier->invite=$req->input('listeinvites');
-  $panier->nombrepersonne=$req->input('nombreplaces');
+  $panier->feedback=$req->input('feedback');
+  $panier->motif=$req->input('motif');
   $panier->heurearrivee=$req->input('heurereservation');
-  $panier->besoins=$req->input('besoins');
   $panier->datereservation=$req->input('datereservation');
-  $panier->referencereservationtable=auth('api')->user()->codemembre."r".$idreservationtable.date("dmY");
-  $panier->statut='AWAITING';
+ // $panier->statut=$req->input('statut');
 
   $panier->save();
 
@@ -104,6 +116,16 @@ public function reservationtable(Request $req)
   return response()->json(['idrestauration'=> $req->input('idrestauration') ,'idreservationtable'=>$panier->idreservationtable,'statut'=> $panier->statut], 200); 
 }
 
+public function statutreservationtable(Request $req)
+{
+
+    $panier= reservationtable::where('idreservationtable',$req->input('idreservationtable'))->first(); 
+    $panier->statut=$req->input('statut');
+    $panier->save();
+  
+    return response()->json(['message'=>'success'], 200);
+
+}
 public function listereservationtable($id){
 
   $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwhere([['invite', 'LIKE','%'.$id.'%' ],['statut','!=','REJECTED']])->orderBy('idreservationtable','desc')->get();
@@ -651,7 +673,7 @@ public function deleteimage($filename,$id)
 public function boostplat($id)
 {
   $list=[697,698,699];
-  $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+  $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get();  
   foreach($servicevendus as $servicevendu){
     $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
     $servicevendu['service']=$service;
@@ -665,7 +687,7 @@ public function boostplat($id)
 public function boostrestaurant($id)
 {
   $list=[31,32,33,34,35,36];
-  $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+  $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); 
   foreach($servicevendus as $servicevendu){
     $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
     $servicevendu['service']=$service;
