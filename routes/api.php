@@ -196,6 +196,8 @@ Route::group([
    Route::get('/declineinvitation/{idreservation}/{idmembre}',  ['as'=>'lo','uses'=>'RestaurantController@declineinvitation']);  
    
    Route::get('/listereservationid/{cle}/{valeur}',  ['as'=>'lo','uses'=>'RestaurantController@listereservationid']);  
+   
+   Route::get('/onereservationtable/{id}',  ['as'=>'lo','uses'=>'RestaurantController@onereservationtable']); 
 
    Route::get('/addinvitetable/{idreservation}/{idmembre}',  ['as'=>'lo','uses'=>'RestaurantController@addinvitetable']);  
    Route::get('/removemenuontable/{idreservation}',  ['as'=>'lo','uses'=>'RestaurantController@removemenuontable']);  

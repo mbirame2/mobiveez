@@ -159,6 +159,30 @@ public function listereservationtable($id){
   return response($reservationtable); 
 
 }
+
+public function onereservationtable($id){
+
+  $articl=reservationtable::where('idreservationtable',$id)->first();
+ // foreach($reservationtable as $articl){
+    $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
+    $articl['photo']=$membre->urlimagerestauration;
+    $invite = explode(', ', $articl['invite']);
+    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invite)->get();
+    $articl['listeinvites']=$user;
+    $commande = commandereservationtable::select( 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
+    foreach($commande as $command){
+      $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
+      $command['photo']=$article['photo'];
+      $command['prix']=$article['prix'];
+      $command['plat']=$article['plat'];
+    }
+    $articl['listecommandes']=$commande;
+
+ // }
+  return response($articl); 
+
+}
+
 public function declineinvitation($idreservation,$idmembre){
   $reservationtable=reservationtable::where('idreservationtable',$idreservation)->first();
   $invite = explode(', ', $reservationtable['invite']);
