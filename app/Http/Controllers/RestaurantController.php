@@ -394,7 +394,7 @@ public function delete_panier($id)
       $dept=departement::where('id_dept',$articl->id_dep)->first(); 
      $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
      $articl['codemembre']=$user->codemembre;
-     $articl['photorestauration']=$membre->urlimagerestauration;
+     $articl['photorestauration']=$membre['urlimagerestauration'];
 
      $articl['departement']=$dept->lib_dept;
       $articl['vues']=$file;
