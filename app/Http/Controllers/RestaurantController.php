@@ -87,7 +87,6 @@ public function reservationtable(Request $req)
 
   if($req->input('idreservationtable')){
     $panier= reservationtable::where('idreservationtable',$req->input('idreservationtable'))->first(); 
-
   }
   else{
     $a=reservationtable::latest('idreservationtable')->first();
@@ -158,6 +157,38 @@ public function declineinvitation($idreservation,$idmembre){
   $reservationtable->invite=$invite;
   $reservationtable->save();
 return response()->json(['message'=>'success'], 200);
+
+}
+public function removemenuontable($idcommandereservationtable){
+  $commande = commandereservationtable::where('idcommandereservationtable',$idcommandereservationtable)->delete();
+  return response()->json(['message'=>'success'], 200);
+}
+public function addmenuontable(Request $req){
+  $reservationtable = new commandereservationtable;
+  $reservationtable->idmenu=$req->idmenu;
+  $reservationtable->idmembre=$req->idmembre;
+  $reservationtable->idreservationtable=$req->idreservationtable;
+  $reservationtable->quantite=$req->quantite;
+  $reservationtable->besoin=$req->besoin;
+  $reservationtable->save();
+  return response()->json(['message'=>'success'], 200);
+}
+
+public function addinvitetable($idreservation,$idmembre){
+  $reservationtable=reservationtable::where('idreservationtable',$idreservation)->first();
+  $invite = explode(', ', $reservationtable['invite']);
+ 
+  if( $reservationtable['nombrepersonne'] > count($invite) ){
+    array_push($invite, $idmembre);
+    $invite = implode(', ', $invite);
+    $reservationtable->invite=$invite;
+    $reservationtable->save();
+  
+    return response()->json(['message'=>'success'], 200);
+  } 
+    return response()->json(['error'=>'Le nombre d invités ne peut pas dépasser le nombre de places réservées '], 200);
+  
+ 
 
 }
 

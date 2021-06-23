@@ -195,6 +195,11 @@ Route::group([
    Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@liste_panier']);  
    Route::get('/declineinvitation/{idreservation}/{idmembre}',  ['as'=>'lo','uses'=>'RestaurantController@declineinvitation']);  
    
+   Route::get('/addinvitetable/{idreservation}/{idmembre}',  ['as'=>'lo','uses'=>'RestaurantController@addinvitetable']);  
+   Route::get('/removemenuontable/{idreservation}',  ['as'=>'lo','uses'=>'RestaurantController@removemenuontable']);  
+   Route::post('/addmenuontable',  ['as'=>'lo','uses'=>'RestaurantController@addmenuontable']);
+
+   
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
    Route::get('/typecuisine',  ['as'=>'lo','uses'=>'RestaurantController@typecuisine']);
