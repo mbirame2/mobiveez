@@ -125,6 +125,18 @@ public function statutreservationtable(Request $req)
     return response()->json(['message'=>'success'], 200);
 
 }
+public function listereservationid($cle, $valeur)
+{
+
+    $panier= reservationtable::select('idrestauration','titre','referencereservationtable','datereservation','heurearrivee','statut','idreservationtable','idmembre')->where($cle,$valeur)->get(); 
+    foreach($panier as $articl){
+      $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
+      $articl['photorestauration']=$membre->urlimagerestauration;
+    }
+  
+    return response()->json($panier);
+
+}
 public function listereservationtable($id){
 
   $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwhere([['invite', 'LIKE','%'.$id.'%' ],['statut','!=','REJECTED']])->orderBy('idreservationtable','desc')->get();
