@@ -10,7 +10,7 @@ use App\departement;
 use App\servicevendu;
 use App\panier;
 use App\specialite;
-
+use App\commanderestauration;
 use App\restauration;
 use App\imagerestauration;
 use App\favoris;
@@ -703,12 +703,7 @@ public function searchplat($name)
     $query->whereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(plat) like ?', '%'.strtolower($name).'%');
     })->paginate(30);
-
-
   foreach($article as $articl){
-//    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
-//       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
-
   $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
   if($result){
     $articl['idpanier']=$result->idpanier;
@@ -721,12 +716,33 @@ public function searchplat($name)
       Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
       $file=0;
     }
-   
     $articl['vues']=$file;
- //   $articl['url']="api.iveez.com/api/image/{imagename}";   
 }
 return response()->json($article); 
 }
+
+
+public function searchcategorieplat($name)
+{
+  $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->paginate(30);
+  foreach($article as $articl){
+  $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+  if($result){
+    $articl['idpanier']=$result->idpanier;
+  }else{
+    $articl['idpanier']=null;
+  }
+    if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
+    $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
+    }else {
+      Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
+      $file=0;
+    }
+    $articl['vues']=$file;
+}
+return response()->json($article); 
+}
+
 
 public function deleteimage($filename,$id)
 {
@@ -898,42 +914,95 @@ public function buyboostrestauration(Request $req)
   
 
   public function commande_plat(Request $req){
-    $validator = Validator::make($req->all(), [ 
-      'id_plat' => 'required', 
-      'nombre_plat' => 'required', 
-      'type' => 'required', 
-      'date' => 'required', 
-     
-  ]); 
-    
-        //var_dump(auth('api')->user()->id_professionnel);die();
-  if ($validator->fails()) { 
-      return response()->json(['error'=>$validator->errors()], 401);            
-  }else{
-    
-    $annonce= new commande_plat;
-
-    $annonce->nombre_plat=$req->input('nombre_plat');
-    $annonce->type=$req->input('type');
-    $annonce->adresse_livraison=$req->input('adresse_livraison');
-    $annonce->date=$req->input('date');
-    $annonce->accompagnement=$req->input('accompagnement');
-    $annonce->besoin_particulier=$req->input('besoin_particulier');
-    $annonce->disponible="non";
    
-    $annonce->user()->associate(auth('api')->user());
-    if($req->input('destinataire')){
-      $article = User::where('id',$req->input('destinataire'))->first();
-      $annonce->destinataire()->associate($article);
-    }
-    $article = plat::where('id',$req->input('id_plat'))->first();
-    $annonce->plat()->associate($article);
+    $array=[];
+      foreach($req->commande as $reqpanier){
+    $annonce= new commanderestauration;
+    $a=commanderestauration::latest('idcommanderestauration')->first();
+    $idcommanderestauration=$a->idcommanderestauration +1 ;
+
+    $annonce->referencecommande=auth('api')->user()->codemembre."-".$reqpanier['idmenu']."c".$idcommanderestauration.date("dmY");
+    $annonce->idmenu=$reqpanier['idmenu'];
+    $annonce->place=$reqpanier['place'];
+    $annonce->adresselivraison=$reqpanier['adresse'];
+    $annonce->idmembre=$reqpanier['idmembre'];
+    $annonce->quantite=$reqpanier['quantite'];
+    $annonce->besoin=$reqpanier['besoins'];
+    $annonce->datelivraison=$reqpanier['dateheure'];
+    $annonce->datecommande=date("Y/m/d-h:i");
+    $annonce->accompagnements=$reqpanier['accompagnements'];
+    $annonce->destinataire=$reqpanier['destinataire'];
 
     $annonce->save();
-    return response()->json(['succés'=>"Enregistrement du plat avec succés"], 200);            
+    array_push($array, $annonce->idcommanderestauration);
+      }
+      return response()->json(['idcommande'=>$array], 200);            
 
-  }}
+  }
+  public function modifiercommandeplat(Request $req)
+  {
+   // $commande= new commande;
+    $annonce=commanderestauration::where('idcommanderestauration','=',$req->input('idcommanderestauration'))->first(); 
 
+    $annonce->idmenu=$req->input('idmenu');
+    $annonce->adresselivraison=$req->input('adresse');
+    $annonce->idmembre=$req->input('idmembre');
+    $annonce->quantite=$req->input('quantite');
+    $annonce->besoin=$req->input('besoins');
+    $annonce->datelivraison=$req->input('dateheure');
+    $annonce->datecommande=$req->input('datecommande');
+    $annonce->accompagnements=$req->input('accompagnements');
+    $annonce->destinataire=$req->input('destinataire');
+      $annonce->save();
+    return response()->json($annonce);            
+  }
+  public function supprimercommandeplat($id)
+  {
+     
+    $result=commanderestauration::where('idcommanderestauration','=',$id)->delete(); 
+   
+    return response()->json(['success'=>"Suppression de la commande avec succés"], 200); 
+  }
 
+  public function listecommandeplat($cle,$valeur)
+  {
+    if($cle=="idmembre"){
+      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->where($cle,$valeur )->get();
+    }else if ($cle=="idrestauration"){
+      $article = plat::select('idmenu')->where($cle,$valeur )->get();
+      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->get();
+    }
+    foreach($service as $articl){
+      $article = plat::select('photo', 'prix','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
+      $articl['photo']=$article['photo'];
+      $articl['prix']=$article['prix'];
+      $articl['plat']=$article['plat'];
+      $articl['idrestauration']=$article['idrestauration'];
+
+    }
+  return response()->json($service); 
+
+}
+
+public function onecommandeplat($id)
+{
+
+    $articl = commanderestauration::where('idcommanderestauration', $id)->first();
+  
+    $article = plat::select('photo', 'prix','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
+    $restauration = restauration::select('designation')->where("idrestauration",$article['idrestauration'] )->first();
+    $user=User::select('prenom','nom','idmembre')->where('idmembre',$articl->idmembre)->first();
+
+    $articl['designation']=$restauration['designation'];
+    $articl['client']=$user;
+    $articl['photo']=$article['photo'];
+    $articl['prix']=$article['prix'];
+    $articl['plat']=$article['plat'];
+    $articl['idrestauration']=$article['idrestauration'];
+
+  
+return response()->json($articl); 
+
+}
 
 }

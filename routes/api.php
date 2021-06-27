@@ -202,12 +202,14 @@ Route::group([
    Route::get('/addinvitetable/{idreservation}/{idmembre}',  ['as'=>'lo','uses'=>'RestaurantController@addinvitetable']);  
    Route::get('/removemenuontable/{idreservation}',  ['as'=>'lo','uses'=>'RestaurantController@removemenuontable']);  
    Route::post('/addmenuontable',  ['as'=>'lo','uses'=>'RestaurantController@addmenuontable']);
-
    
+   Route::post('/commande_plat',  ['as'=>'lo','uses'=>'RestaurantController@commande_plat']);
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
    Route::get('/typecuisine',  ['as'=>'lo','uses'=>'RestaurantController@typecuisine']);
-   Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']); 
+   Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
+   Route::get('/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
+ 
    Route::get('/search_restaurant/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
    Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleteimage']);
    Route::get('/boostplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@boostplat']);
@@ -215,7 +217,10 @@ Route::group([
    Route::get('/deleteplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleteplat']);
    Route::get('/deleterestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleterestaurant']);
    Route::get('/bloquer_commande/{idannonce}/{statut}',  ['as'=>'lo','uses'=>'RestaurantController@bloquer_commande']);
+   
+   Route::get('/onecommandeplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@onecommandeplat']);
 
+   Route::get('/listecommandeplat/{cle}/{valaur}',  ['as'=>'lo','uses'=>'RestaurantController@listecommandeplat']);
    Route::post('/buyboostrestauration',  ['as'=>'lo','uses'=>'RestaurantController@buyboostrestauration']);
 
    Route::get('/listefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listefavoris']);
