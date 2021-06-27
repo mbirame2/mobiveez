@@ -222,6 +222,8 @@ Route::group([
 
    Route::get('/listecommandeplat/{cle}/{valaur}',  ['as'=>'lo','uses'=>'RestaurantController@listecommandeplat']);
    Route::post('/buyboostrestauration',  ['as'=>'lo','uses'=>'RestaurantController@buyboostrestauration']);
+   
+   Route::post('/modifiercommandeplat',  ['as'=>'lo','uses'=>'RestaurantController@modifiercommandeplat']);
 
    Route::get('/listefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listefavoris']);
    Route::get('/deletefavoris/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deletefavoris']);

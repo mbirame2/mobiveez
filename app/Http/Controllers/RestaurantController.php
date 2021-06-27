@@ -943,17 +943,19 @@ public function buyboostrestauration(Request $req)
   {
    // $commande= new commande;
     $annonce=commanderestauration::where('idcommanderestauration','=',$req->input('idcommanderestauration'))->first(); 
-
-    $annonce->idmenu=$req->input('idmenu');
-    $annonce->adresselivraison=$req->input('adresse');
-    $annonce->idmembre=$req->input('idmembre');
-    $annonce->quantite=$req->input('quantite');
-    $annonce->besoin=$req->input('besoins');
-    $annonce->datelivraison=$req->input('dateheure');
-    $annonce->datecommande=$req->input('datecommande');
-    $annonce->accompagnements=$req->input('accompagnements');
-    $annonce->destinataire=$req->input('destinataire');
+    if($req->input('statut')){
+      $annonce->statut=$req->input('statut');
       $annonce->save();
+    }else{
+    $annonce->adresselivraison=$req->input('adresse');
+    $annonce->quantite=$req->input('quantite');
+    $annonce->place=$req->input('place');
+    $annonce->feedback=$req->input('feedback');
+    $annonce->motif=$req->input('motif');
+
+    $annonce->datelivraison=$req->input('dateheure');
+    $annonce->save();
+    }
     return response()->json($annonce);            
   }
   public function supprimercommandeplat($id)
