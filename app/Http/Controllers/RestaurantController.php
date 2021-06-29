@@ -130,8 +130,8 @@ public function listereservationid($cle, $valeur)
 
     $panier= reservationtable::select('idrestauration','titre','referencereservationtable','datereservation','heurearrivee','statut','idreservationtable','idmembre')->where($cle,$valeur)->get(); 
     foreach($panier as $articl){
-      $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
-      $articl['photorestauration']=$membre->urlimagerestauration;
+      $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
+      $articl['photorestauration']=$membre['urlimagerestauration'];
     }
   
     return response()->json($panier);
@@ -489,7 +489,7 @@ public function oneplat($id)
       $articl['designation']=$article->designation;
       $user = User::select('idmembre','codemembre')->where('idmembre',$article->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
-      
+      $articl['idmembre']=$user->idmembre;
       if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
       $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
       }else {
