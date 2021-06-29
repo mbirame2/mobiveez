@@ -164,8 +164,8 @@ public function onereservationtable($id){
 
   $articl=reservationtable::where('idreservationtable',$id)->first();
  // foreach($reservationtable as $articl){
-    $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
-    $articl['photo']=$membre->urlimagerestauration;
+    $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
+    $articl['photo']=$membre['urlimagerestauration'];
     $invite = explode(', ', $articl['invite']);
     $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invite)->get();
     $articl['listeinvites']=$user;
