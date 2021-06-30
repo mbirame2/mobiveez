@@ -142,7 +142,9 @@ public function listereservationtable($id){
   $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwhere([['invite', 'LIKE','%'.$id.'%' ],['statut','!=','REJECTED']])->orderBy('idreservationtable','desc')->get();
   foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
-    $articl['photo']=$membre->urlimagerestauration;
+    $restauration = restauration::where('idrestauration',$articl->idrestauration)->first();
+    $articl['designation']=$restauration['designation'];
+    $articl['photo']=$membre['urlimagerestauration'];
     $invite = explode(', ', $articl['invite']);
     $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invite)->get();
     $articl['listeinvites']=$user;
