@@ -132,6 +132,8 @@ public function listereservationid($cle, $valeur)
     foreach($panier as $articl){
       $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
       $articl['photorestauration']=$membre['urlimagerestauration'];
+      $restauration = restauration::where('idrestauration',$articl['idrestauration'])->first();
+      $articl['designation']=$restauration['designation'];
     }
   
     return response()->json($panier);
@@ -926,14 +928,18 @@ public function buyboostrestauration(Request $req)
     $annonce->referencecommande=auth('api')->user()->codemembre."-".$reqpanier['idmenu']."c".$idcommanderestauration.date("dmY");
     $annonce->idmenu=$reqpanier['idmenu'];
     $annonce->place=$reqpanier['place'];
-    $annonce->adresselivraison=$reqpanier['adresse'];
+ //   $annonce->adresselivraison=$reqpanier['adresse'];
     $annonce->idmembre=$reqpanier['idmembre'];
     $annonce->quantite=$reqpanier['quantite'];
-    $annonce->besoin=$reqpanier['besoins'];
-    $annonce->datelivraison=$reqpanier['dateheure'];
+    if($reqpanier['besoins']){$annonce->besoin=$reqpanier['besoins'];}
+    if($reqpanier['dateheure']){$annonce->datelivraison=$reqpanier['dateheure'];}
+    if($reqpanier['accompagnements']){$annonce->accompagnements=$reqpanier['accompagnements'];}
+    if($reqpanier['destinataire']){$annonce->destinataire=$reqpanier['destinataire'];}
+    if($reqpanier['adresse']){$annonce->adresselivraison=$reqpanier['adresse'];}
+ //   $annonce->datelivraison=$reqpanier['dateheure'];
     $annonce->datecommande=date("Y/m/d-h:i");
-    $annonce->accompagnements=$reqpanier['accompagnements'];
-    $annonce->destinataire=$reqpanier['destinataire'];
+//    $annonce->accompagnements=$reqpanier['accompagnements'];
+  //  $annonce->destinataire=$reqpanier['destinataire'];
 
     $annonce->save();
     array_push($array, $annonce->idcommanderestauration);
@@ -995,7 +1001,7 @@ public function onecommandeplat($id)
   
     $article = plat::select('photo', 'prix','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
     $restauration = restauration::select('designation')->where("idrestauration",$article['idrestauration'] )->first();
-    $user=User::select('prenom','nom','idmembre')->where('idmembre',$articl->idmembre)->first();
+    $user=User::select('prenom','nom','idmembre','codemembre',"localisation")->where('idmembre',$articl->idmembre)->first();
 
     $articl['designation']=$restauration['designation'];
     $articl['client']=$user;
