@@ -937,7 +937,7 @@ public function buyboostrestauration(Request $req)
     if($reqpanier['destinataire']){$annonce->destinataire=$reqpanier['destinataire'];}
     if($reqpanier['adresse']){$annonce->adresselivraison=$reqpanier['adresse'];}
  //   $annonce->datelivraison=$reqpanier['dateheure'];
-    $annonce->datecommande=date("Y/m/d-h:i");
+    $annonce->datecommande=date("Y/m/d-H:i");
 //    $annonce->accompagnements=$reqpanier['accompagnements'];
   //  $annonce->destinataire=$reqpanier['destinataire'];
 
