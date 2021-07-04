@@ -185,6 +185,9 @@ Route::group([
    Route::get('/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatvip']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationvip']);
+   
+   Route::get('/supprimercommandeplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@supprimercommandeplat']);
+   Route::get('/supprimerrestauration/{id}',  ['as'=>'lo','uses'=>'RestaurantController@supprimerrestauration']);
 
    Route::get('/oneplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@oneplat']);
    Route::get('/onerestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@onerestaurant']);

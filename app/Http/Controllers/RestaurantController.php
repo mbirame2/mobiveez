@@ -971,8 +971,18 @@ public function buyboostrestauration(Request $req)
      
     $result=commanderestauration::where('idcommanderestauration','=',$id)->delete(); 
    
-    return response()->json(['success'=>"Suppression de la commande avec succés"], 200); 
+    return response()->json(['code'=>200]); 
   }
+
+  public function supprimerrestauration($id)
+  {
+     
+    $result=restauration::where('idrestauration','=',$id)->first(); 
+    $result->statut='suppression';
+    $result->save();
+    return response()->json(['code'=>200]); 
+  }
+
 
   public function listecommandeplat($cle,$valeur)
   {
