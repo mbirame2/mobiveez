@@ -196,7 +196,7 @@ Route::group([
    Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@ajout_panier']); 
    Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@delete_panier']); 
    Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'RestaurantController@liste_panier']);  
-   Route::get('/declineinvitation/{idreservation}/{idmembre}',  ['as'=>'lo','uses'=>'RestaurantController@declineinvitation']);  
+   Route::get('/statutinvitation/{idreservation}/{idmembre}/{statut}',  ['as'=>'lo','uses'=>'RestaurantController@statutinvitation']);  
    
    Route::get('/listereservationid/{cle}/{valeur}',  ['as'=>'lo','uses'=>'RestaurantController@listereservationid']);  
    

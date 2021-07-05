@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use File;
 use App\plat;
 use App\User;
-use App\service;
-use App\departement;
-use App\servicevendu;
 use App\panier;
-use App\specialite;
-use App\commanderestauration;
-use App\restauration;
-use App\imagerestauration;
 use App\favoris;
+use App\service;
+use App\specialite;
+use App\departement;
 use App\typecuisine;
 use App\gestionnaire;
-use App\reservationtable;
-use App\commandereservationtable;
-use File;
-
-use Illuminate\Support\Facades\Storage;
+use App\restauration;
+use App\servicevendu;
 use App\commande_plat;
+use App\invitereservationtable;
+use App\reservationtable;
+use App\imagerestauration;
+use Illuminate\Http\Request;
+use App\commanderestauration;
+
+use App\commandereservationtable;
+use Illuminate\Support\Facades\Storage;
 
 class RestaurantController extends Controller
 {
@@ -94,12 +95,20 @@ public function reservationtable(Request $req)
     $panier= new reservationtable;
     $panier->referencereservationtable=auth('api')->user()->codemembre."r".$idreservationtable.date("dmY");
     $panier->statut='AWAITING';
-    $panier->invite=$req->input('listeinvites');
+  //  $panier->invite=$req->input('listeinvites');
     $panier->idmembre=$req->input('idmembre');
     $panier->idrestauration=$req->input('idrestauration');
     $panier->besoins=$req->input('besoins');
     $panier->nombrepersonne=$req->input('nombreplaces');
 
+    $invite = explode(', ', $req->input('listeinvites'));
+    foreach($invite as $id){
+      $invitereservationtable = new invitereservationtable;
+      $invitereservationtable->idreservationtable=$idreservationtable;
+      $invitereservationtable->idmembre=$id;
+      $invitereservationtable->save();
+    }
+ 
   }
 
   $panier->titre=$req->input('titre');
@@ -141,14 +150,18 @@ public function listereservationid($cle, $valeur)
 }
 public function listereservationtable($id){
 
-  $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwhere([['invite', 'LIKE','%'.$id.'%' ],['statut','!=','REJECTED']])->orderBy('idreservationtable','desc')->get();
+  $invites=invitereservationtable::select( 'idreservationtable')->where('idmembre',$id )->get();
+
+
+  $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwherein('idreservationtable',  $invites)->orderBy('idreservationtable','desc')->get();
   foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
     $restauration = restauration::where('idrestauration',$articl->idrestauration)->first();
     $articl['designation']=$restauration['designation'];
     $articl['photo']=$membre['urlimagerestauration'];
-    $invite = explode(', ', $articl['invite']);
-    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invite)->get();
+    $invitereservationtable=invitereservationtable::select( 'idmembre')->where('idreservationtable',$articl->idreservationtable)->get();
+  //  $invite = explode(', ', $articl['invite']);
+    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invitereservationtable)->get();
     $articl['listeinvites']=$user;
     $commande = commandereservationtable::select( 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
     foreach($commande as $command){
@@ -170,8 +183,9 @@ public function onereservationtable($id){
  // foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
     $articl['photo']=$membre['urlimagerestauration'];
-    $invite = explode(', ', $articl['invite']);
-    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invite)->get();
+    $invitereservationtable=invitereservationtable::select( 'idmembre')->where('idreservationtable',$articl->idreservationtable)->get();
+    //  $invite = explode(', ', $articl['invite']);
+    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invitereservationtable)->get();
     $articl['listeinvites']=$user;
     $commande = commandereservationtable::select( 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
     foreach($commande as $command){
@@ -187,15 +201,10 @@ public function onereservationtable($id){
 
 }
 
-public function declineinvitation($idreservation,$idmembre){
-  $reservationtable=reservationtable::where('idreservationtable',$idreservation)->first();
-  $invite = explode(', ', $reservationtable['invite']);
-  if (($key = array_search($idmembre, $invite)) !== false) {
-    unset($invite[$key]);
-  }
-  $invite = implode(', ', $invite);
-  $reservationtable->invite=$invite;
-  $reservationtable->save();
+public function statutinvitation($idreservation,$idmembre,$statut){
+  $invitereservationtable=invitereservationtable::where([['idreservationtable',$idreservation],['idmembre',$idmembre]])->first();
+  $invitereservationtable->statut=$statut;
+  $invitereservationtable->save();
 return response()->json(['message'=>'success'], 200);
 
 }
