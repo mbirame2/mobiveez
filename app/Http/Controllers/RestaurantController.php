@@ -103,7 +103,7 @@ public function reservationtable(Request $req)
     $panier->idrestauration=$req->input('idrestauration');
     $panier->besoins=$req->input('besoins');
     $panier->nombrepersonne=$req->input('nombreplaces');
-
+if($req->input('listeinvites')){
     $invite = explode(', ', $req->input('listeinvites'));
     foreach($invite as $id){
       $invitereservationtable = new invitereservationtable;
@@ -111,7 +111,7 @@ public function reservationtable(Request $req)
       $invitereservationtable->idmembre=$id;
       $invitereservationtable->save();
     }
- 
+  }
   }
 
   $panier->titre=$req->input('titre');
