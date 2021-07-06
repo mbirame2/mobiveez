@@ -91,7 +91,10 @@ public function reservationtable(Request $req)
   }
   else{
     $a=reservationtable::latest('idreservationtable')->first();
-    $idreservationtable=$a->idreservationtable +1 ;
+    $idreservationtable=1;
+    if($a->idreservationtable){
+      $idreservationtable=$a->idreservationtable +1 ;
+    }
     $panier= new reservationtable;
     $panier->referencereservationtable=auth('api')->user()->codemembre."r".$idreservationtable.date("dmY");
     $panier->statut='AWAITING';
@@ -966,6 +969,9 @@ public function buyboostrestauration(Request $req)
     }else{
     $annonce->adresselivraison=$req->input('adresse');
     $annonce->quantite=$req->input('quantite');
+    $annonce->accompagnements=$req->input('accompagnements');
+
+    
     $annonce->place=$req->input('place');
     $annonce->feedback=$req->input('feedback');
     $annonce->motif=$req->input('motif');
