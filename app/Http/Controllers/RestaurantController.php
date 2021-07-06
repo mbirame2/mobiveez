@@ -92,7 +92,7 @@ public function reservationtable(Request $req)
   else{
     $a=reservationtable::latest('idreservationtable')->first();
     $idreservationtable=1;
-    if($a->idreservationtable){
+    if($a['idreservationtable']){
       $idreservationtable=$a->idreservationtable +1 ;
     }
     $panier= new reservationtable;
