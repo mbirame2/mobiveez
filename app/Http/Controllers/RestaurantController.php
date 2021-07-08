@@ -228,7 +228,7 @@ public function addmenuontable(Request $req){
 
 public function addinvitetable($idreservation,$idmembre){
   $invitereservationtable = new invitereservationtable;
-  $invitereservationtable->idreservationtable=$idreservationtable;
+  $invitereservationtable->idreservationtable=$idreservation;
   $invitereservationtable->idmembre=$idmembre;
   $invitereservationtable->save();
 
