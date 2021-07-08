@@ -227,21 +227,14 @@ public function addmenuontable(Request $req){
 }
 
 public function addinvitetable($idreservation,$idmembre){
-  $reservationtable=reservationtable::where('idreservationtable',$idreservation)->first();
-  $invite = explode(', ', $reservationtable['invite']);
- 
-  if( $reservationtable['nombrepersonne'] > count($invite) ){
-    array_push($invite, $idmembre);
-    $invite = implode(', ', $invite);
-    $reservationtable->invite=$invite;
-    $reservationtable->save();
+  $invitereservationtable = new invitereservationtable;
+  $invitereservationtable->idreservationtable=$idreservationtable;
+  $invitereservationtable->idmembre=$idmembre;
+  $invitereservationtable->save();
+
   
     return response()->json(['message'=>'success'], 200);
-  } 
-    return response()->json(['error'=>'Le nombre d invités ne peut pas dépasser le nombre de places réservées '], 200);
-  
  
-
 }
 
 public function restauration(Request $req){
