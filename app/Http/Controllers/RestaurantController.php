@@ -156,7 +156,7 @@ public function listereservationtable($id){
   $invites=invitereservationtable::select( 'idreservationtable')->where('idmembre',$id )->get();
 
 
-  $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['idmembre',$id]])->orwherein('idreservationtable',  $invites)->orderBy('idreservationtable','desc')->get();
+  $reservationtable=reservationtable::where([['statut','!=','REJECTED'],['statut','!=','DELETED'],['idmembre',$id]])->orwherein('idreservationtable',  $invites)->orderBy('idreservationtable','desc')->get();
   foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
     $restauration = restauration::where('idrestauration',$articl->idrestauration)->first();
