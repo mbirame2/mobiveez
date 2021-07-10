@@ -192,10 +192,21 @@ public function onereservationtable($id){
  // foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
     $articl['photo']=$membre['urlimagerestauration'];
-    $invitereservationtable=invitereservationtable::select( 'idmembre')->where('idreservationtable',$articl->idreservationtable)->get();
+
+    $invitereservationtable=invitereservationtable::select( 'idmembre', 'statut')->where('idreservationtable',$articl->idreservationtable)->get();
     //  $invite = explode(', ', $articl['invite']);
-    $user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invitereservationtable)->get();
-    $articl['listeinvites']=$user;
+    foreach($invitereservationtable as $invit){
+      $user = User::select('idmembre','prenom','nom','profil','codemembre')->where('idmembre',$invit['idmembre'])->first();
+      $invit['prenom']=$user['prenom'];
+      $invit['nom']=$user['nom'];
+      $invit['profil']=$user['profil'];
+      $invit['codemembre']=$user['codemembre'];
+    }
+      $articl['listeinvites']=$invitereservationtable;
+   // $invitereservationtable=invitereservationtable::select( 'idmembre')->where('idreservationtable',$articl->idreservationtable)->get();
+    //  $invite = explode(', ', $articl['invite']);
+    //$user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invitereservationtable)->get();
+    //$articl['listeinvites']=$user;
     $commande = commandereservationtable::select('idcommandereservationtable', 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
     foreach($commande as $command){
       $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
