@@ -206,6 +206,8 @@ Route::group([
    Route::get('/removemenuontable/{idreservation}',  ['as'=>'lo','uses'=>'RestaurantController@removemenuontable']);  
    Route::post('/addmenuontable',  ['as'=>'lo','uses'=>'RestaurantController@addmenuontable']);
    
+   Route::post('/filter_restaurant',  ['as'=>'lo','uses'=>'RestaurantController@filter_restaurant']);
+
    Route::post('/commande_plat',  ['as'=>'lo','uses'=>'RestaurantController@commande_plat']);
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);

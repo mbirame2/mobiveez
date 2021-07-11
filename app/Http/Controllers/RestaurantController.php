@@ -687,7 +687,7 @@ public function getrestaurationservice()
 }
 public function searchrestaurant($name)
 {
-  $list=[31,32,33,34,35,36];
+ 
 
   $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->where(function ($query) use($name) {
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
@@ -695,6 +695,7 @@ public function searchrestaurant($name)
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
     })->paginate(30);
 
+    $list=[31,32,33,34,35,36];
   foreach($article as $articl){
     if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
     $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
@@ -1050,4 +1051,55 @@ return response()->json($articl);
 
 }
 
+public function filter_restaurant(Request $req)
+{
+//  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
+if($req->input('codemembre')){
+$name=$req->input('codemembre');
+$idmembre=User::select('idmembre')->where('codemembre',$name)->get();
+}else{
+$idmembre='';
+}
+
+
+$annonce= restauration::where(function ($query) use($req,$idmembre) {
+  $query->where('adresse', 'LIKE', '%' . $req->input('adresse') . '%');
+  $query->Where( 'designation', 'LIKE','%'.$req->input('designation').'%');
+  $query->Where( 'id_dep', 'LIKE','%'.$req->input('id_dep').'%');
+  $query->Where( 'typerestauration', 'LIKE','%'.$req->input('typerestauration').'%');
+if($idmembre!=''){
+  $query->whereIn('idmembre', $idmembre);
+}
+})
+->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->paginate(30);
+
+
+$list=[31,32,33,34,35,36];
+foreach($annonce as $articl){
+  if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
+  $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
+  }else {
+    Storage::disk('vue')->put($articl->idrestauration.'_restauration.txt', 0);
+    $file=0;
+  }
+  $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
+
+  $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+ $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+ $articl['codemembre']=$user->codemembre;
+ $articl['photorestauration']=$membre->urlimagerestauration;
+
+ $articl['departement']=$dept->lib_dept;
+  $articl['vues']=$file;
+  $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
+  $service = service::where('idService',$servicevendu['idservice'])->first();
+  $service['dateachat']=$servicevendu['dateachat'];
+  $service['datefinservice']=$servicevendu['datefinservice'];
+  if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
+
+//   $articl['url']="api.iveez.com/api/image/{imagename}";   
+}
+return response()->json($annonce); 
+
+}
 }
