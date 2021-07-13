@@ -705,12 +705,12 @@ public function searchrestaurant($name)
     }
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
 
-    $dept=departement::where('id_dept',$articl->id_dep)->first(); 
-   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
-   $articl['codemembre']=$user->codemembre;
-   $articl['photorestauration']=$membre->urlimagerestauration;
+    $dept=departement::where('id_dept',$articl['id_dep'])->first(); 
+    $user = User::select('idmembre','codemembre')->where('idmembre',$articl['idmembre'])->first();
+    $articl['codemembre']=$user['codemembre'];
+    $articl['photorestauration']=$membre['urlimagerestauration'];
 
-   $articl['departement']=$dept->lib_dept;
+    $articl['departement']=$dept['lib_dept'];
     $articl['vues']=$file;
     $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
     $service = service::where('idService',$servicevendu['idservice'])->first();
@@ -1060,15 +1060,24 @@ $idmembre=User::select('idmembre')->where('codemembre',$name)->get();
 }else{
 $idmembre='';
 }
+if($req->input('idtypecuisine')){
+  $specialite= specialite::select('idrestauration')->whereIn('idtypecuisine',$req->input('idtypecuisine'))->get(); 
+}
 
 
-$annonce= restauration::where(function ($query) use($req,$idmembre) {
+$annonce= restauration::where(function ($query) use($req,$idmembre,$specialite) {
   $query->where('adresse', 'LIKE', '%' . $req->input('adresse') . '%');
+
+
+
   $query->Where( 'designation', 'LIKE','%'.$req->input('designation').'%');
   $query->Where( 'id_dep', 'LIKE','%'.$req->input('id_dep').'%');
   $query->Where( 'typerestauration', 'LIKE','%'.$req->input('typerestauration').'%');
 if($idmembre!=''){
   $query->whereIn('idmembre', $idmembre);
+}
+if($specialite){
+  $query->whereIn('idrestauration', $specialite);
 }
 })
 ->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->paginate(30);
