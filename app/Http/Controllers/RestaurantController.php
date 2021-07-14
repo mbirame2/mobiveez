@@ -1062,6 +1062,8 @@ $idmembre='';
 }
 if($req->input('idtypecuisine')){
   $specialite= specialite::select('idrestauration')->whereIn('idtypecuisine',$req->input('idtypecuisine'))->get(); 
+}else{
+  $specialite=null;
 }
 
 
