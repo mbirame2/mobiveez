@@ -505,7 +505,7 @@ return response()->json($article);
 
 public function oneplat($id)
 {
-  $articl = plat::select('photo','idmenu','statut','description','accompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
+  $articl = plat::select('photo','idmenu','prixpetit',  'prixmoyen',  'prixgrand','statut','description','accompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
   $favoris= favoris::where('id_menu',$articl['idmenu'])->first(); 
   $articl['idfavoris']=$favoris['idfavoris'];
   $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
