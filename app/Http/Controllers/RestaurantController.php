@@ -44,6 +44,9 @@ class RestaurantController extends Controller
         $annonce->accompagnements=$req->input('accompagnements');
 
         $annonce->prix=$req->input('prix');
+        $annonce->prixpetit=$req->input('prixpetit');
+        $annonce->prixmoyen=$req->input('prixmoyen');
+        $annonce->prixgrand=$req->input('prixgrand');
         $annonce->dureepreparation=$req->input('dureepreparation');
         $annonce->lundi=$req->input('lundi');
         $annonce->mardi=$req->input('mardi');
@@ -954,6 +957,7 @@ public function buyboostrestauration(Request $req)
  //   $annonce->adresselivraison=$reqpanier['adresse'];
     $annonce->idmembre=$reqpanier['idmembre'];
     $annonce->quantite=$reqpanier['quantite'];
+    $annonce->prixpizza=$reqpanier['prixpizza'];
     if($reqpanier['besoins']){$annonce->besoin=$reqpanier['besoins'];}
     if($reqpanier['dateheure']){$annonce->datelivraison=$reqpanier['dateheure'];}
     if($reqpanier['accompagnements']){$annonce->accompagnements=$reqpanier['accompagnements'];}
@@ -980,6 +984,7 @@ public function buyboostrestauration(Request $req)
     }else{
     $annonce->adresselivraison=$req->input('adresse');
     $annonce->quantite=$req->input('quantite');
+    $annonce->prixpizza=$req->input('prixpizza');
     $annonce->accompagnements=$req->input('accompagnements');
 
     
@@ -1063,7 +1068,7 @@ $idmembre='';
 if($req->input('idtypecuisine')){
   $specialite= specialite::select('idrestauration')->whereIn('idtypecuisine',$req->input('idtypecuisine'))->get(); 
 }else{
-  $specialite=null;
+  $specialite='';
 }
 
 
@@ -1078,7 +1083,7 @@ $annonce= restauration::where(function ($query) use($req,$idmembre,$specialite) 
 if($idmembre!=''){
   $query->whereIn('idmembre', $idmembre);
 }
-if($specialite){
+if($specialite!=''){
   $query->whereIn('idrestauration', $specialite);
 }
 })
