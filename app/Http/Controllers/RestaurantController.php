@@ -88,13 +88,18 @@ class RestaurantController extends Controller
 
 public function reservationtable(Request $req)
 {
+  
+  $a=reservationtable::latest('idreservationtable')->first();
+  $idreservationtable=1;
 
   if($req->input('idreservationtable')){
     $panier= reservationtable::where('idreservationtable',$req->input('idreservationtable'))->first(); 
+    if($a['idreservationtable']){
+      $idreservationtable=$a->idreservationtable ;
+    }
   }
   else{
-    $a=reservationtable::latest('idreservationtable')->first();
-    $idreservationtable=1;
+    
     if($a['idreservationtable']){
       $idreservationtable=$a->idreservationtable +1 ;
     }
@@ -118,7 +123,7 @@ public function reservationtable(Request $req)
       $invitereservationtable->save();
     }
   }
-  
+
   $panier->besoins=$req->input('besoins');
   $panier->nombrepersonne=$req->input('nombreplaces');
   $panier->titre=$req->input('titre');
