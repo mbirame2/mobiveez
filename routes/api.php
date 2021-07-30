@@ -246,3 +246,33 @@ Route::group([
 
 });
 
+
+
+/*
+
+  ////////  HOTEL  ////////////
+
+
+ */
+
+Route::group([
+   'prefix'=>'hotel',
+   'middleware' => 'cors',
+   'middleware' => 'auth:api',
+],function($route){
+
+   Route::post('/chambre',  ['uses'=>'HotelController@chambre']);
+   Route::post('/hebergement',  ['uses'=>'HotelController@hebergement']);
+   Route::post('/reserverhotel',  ['uses'=>'HotelController@reserverhotel']);
+   Route::post('/addfavoris',  ['uses'=>'HotelController@addfavoris']);
+
+   
+   Route::get('/getchambre',  ['uses'=>'HotelController@getchambre']);
+   Route::get('/gethotel',  ['uses'=>'HotelController@gethotel']);
+   Route::get('/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
+   Route::get('/chambreshotel/{id}',  ['uses'=>'HotelController@chambreshotel']);
+   Route::get('/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
+   Route::get('/deletefavoris/{id}',  ['uses'=>'HotelController@deletefavoris']);
+
+   
+});

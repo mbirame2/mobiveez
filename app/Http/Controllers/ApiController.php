@@ -31,20 +31,7 @@ class ApiController extends Controller
    
 
     public function chambre(Request $req){
-      $validator = Validator::make($req->all(), [ 
-        'titre' => 'required', 
-        'prix_nuitee' => 'required', 
-        'service_chambre' => 'required', 
-        'type_lit'=> 'required',
-        'capacite' => 'required', 
-        'description' => 'required', 
-        'statut' => 'required', 
-    ]); 
-      
-          //var_dump(auth('api')->user()->id_professionnel);die();
-    if ($validator->fails()) { 
-        return response()->json(['error'=>$validator->errors()], 401);            
-    }else{
+  
       
       $annonce= new chambre;
       if($req->hasFile('photo1') ){
@@ -91,7 +78,7 @@ class ApiController extends Controller
       $annonce->save();
       return response()->json(['succés'=>"Enregistrement du chambre avec succés"], 200);            
 
-    }}
+    }
 
 
     public function vehicule(Request $req){

@@ -12,10 +12,12 @@ class chambre extends Model
      * @var array
      */
     protected $table="chambre";
+    protected $primaryKey = "idchambre";
+
     public $timestamps = false;
 
     protected $fillable = [
-       'prix','typechambre','capacite','description','typelit','climatisation','douche','baignoire','televiseur','refrigerateur','minibar','eauminerale','balcon','selectionfilm','conditionannulation','ventilation','petitdejeuner'
+       'prix','idhebergement','typechambre','capacite','description','typelit','climatisation','douche','baignoire','televiseur','refrigerateur','minibar','eauminerale','balcon','selectionfilm','conditionannulation','ventilation','petitdejeuner'
     ];
 
 

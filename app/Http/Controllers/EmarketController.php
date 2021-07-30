@@ -1448,8 +1448,6 @@ class EmarketController extends Controller
   }
   else{
     $souscategorie='';
-  //  $souscategorie= souscategorie::select('id_souscat')->where('id_cat',$req->input('categorie'))->get(); 
-  
   }
  
 //return  $souscategorie;
