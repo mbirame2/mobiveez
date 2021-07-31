@@ -265,6 +265,7 @@ Route::group([
    Route::post('/hebergement',  ['uses'=>'HotelController@hebergement']);
    Route::post('/reserverhotel',  ['uses'=>'HotelController@reserverhotel']);
    Route::post('/addfavoris',  ['uses'=>'HotelController@addfavoris']);
+   Route::post('/statutreservation',  ['uses'=>'HotelController@statutreservation']);
 
    
    Route::get('/getchambre',  ['uses'=>'HotelController@getchambre']);
@@ -273,6 +274,10 @@ Route::group([
    Route::get('/chambreshotel/{id}',  ['uses'=>'HotelController@chambreshotel']);
    Route::get('/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
    Route::get('/deletefavoris/{id}',  ['uses'=>'HotelController@deletefavoris']);
+   
+   Route::get('/getreservationchambre/{id}',  ['uses'=>'HotelController@getreservationchambre']);
+   Route::get('/onereservationchambre/{id}',  ['uses'=>'HotelController@onereservationchambre']);
 
+   
    
 });

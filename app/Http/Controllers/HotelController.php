@@ -139,14 +139,20 @@ class HotelController extends Controller
 
       public function reserverhotel(Request $req){
   
-        $reserverhotel= new reserverhotel;
+        if($req->input('idreservationhebergement')){
+            $reserverhotel= reserverhotel::where('idreservationhebergement',$req->input('idreservationhebergement'))->first();     
+        }else{
+            $reserverhotel= new reserverhotel;
+            }
+        $reserverhotel->destinataire=$req->input('destinataire');
+
         $reserverhotel->idchambre=$req->input('idchambre');
         $reserverhotel->idmembre=$req->input('idmembre');
         $reserverhotel->arrivee=$req->input('arrivee');
         $reserverhotel->depart=$req->input('depart');
         $reserverhotel->besoins=$req->input('besoins');
         $reserverhotel->datereservation=$req->input('datereservation');
-        $reserverhotel->statut="en attente";            
+//        $reserverhotel->statut="en attente";            
         $reserverhotel->save();  
 
         return response()->json(['response'=>"success"], 200);            
@@ -164,6 +170,17 @@ class HotelController extends Controller
         return response($favoris); 
         }
 
+
+        public function statutreservation (Request $req)
+        {
+        $article = reserverhotel::where('idreservationhebergement',$req->idreservationhebergement)->first();
+
+        $article->motif=$req->motif;
+        $article->statut=$req->statut;
+        $article->save();
+        $article['code']=200;
+        return response($article); 
+        }
 
 
        /**
@@ -254,13 +271,58 @@ class HotelController extends Controller
            }
            return response()->json($article); 
        }
+
+       public function getreservationchambre($idmembre) {
+        //   $list=[31,32,33,34,35,36];
+       
+           $article = reserverhotel::select('idmembre','idchambre','datereservation','statut')->where('idmembre',$idmembre)->get();
+           foreach($article as $articl){
+              
+               $chambre = chambre::select('typechambre','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
+               $articl['typechambre']=$chambre['typechambre'];
+               $articl['prix']=$chambre['prix'];
+
+               $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
+               $articl['designation']=$hebergement['designation'];
+               
+               $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+               $articl['urlimagechambre']=$membre['urlimagechambre'];
+           
+              
+           }
+           return response()->json($article); 
+       }
+
+
+       public function onereservationchambre($idreservation) {
+        //   $list=[31,32,33,34,35,36];
+       
+           $articl = reserverhotel::where('idreservationhebergement',$idreservation)->first();
+           
+           $user = User::select('idmembre','codemembre','prenom','nom','localisation')->where('idmembre',$articl->destinataire)->first();
+           $articl['destinataire']=$user;
+
+               $chambre = chambre::select('typechambre','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
+               $articl['typechambre']=$chambre['typechambre'];
+               $articl['prix']=$chambre['prix'];
+
+               $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
+               $articl['designation']=$hebergement['designation'];
+               
+               $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+               $articl['urlimagechambre']=$membre['urlimagechambre'];
+           
+            
+           
+           return response()->json($articl); 
+       }
     
        public function onehotel($id) {
         //  $list=[31,32,33,34,35,36];
       
             $articl = hebergement::where('idhebergement',$id)->first();
             
-            $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+            $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->get();
             $articl['images']=$membre;
             $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
             $articl['codemembre']=$user->codemembre;        
