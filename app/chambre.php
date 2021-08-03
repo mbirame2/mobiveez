@@ -17,7 +17,7 @@ class chambre extends Model
     public $timestamps = false;
 
     protected $fillable = [
-       'prix','idhebergement','typechambre','capacite','description','typelit','climatisation','douche','baignoire','televiseur','refrigerateur','minibar','eauminerale','balcon','selectionfilm','conditionannulation','ventilation','petitdejeuner'
+       'prix','idhebergement','typechambre','capacite','description','typelit','climatisation','douche','baignoire','televiseur','refrigerateur','minibar','eauminerale','balcon','selectionfilm','conditionannulation','ventilation','petitdejeuner','bloquer_reservation'
     ];
 
 

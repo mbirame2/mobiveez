@@ -271,10 +271,18 @@ Route::group([
    Route::get('/getchambre',  ['uses'=>'HotelController@getchambre']);
    Route::get('/gethotel',  ['uses'=>'HotelController@gethotel']);
    Route::get('/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
+   Route::get('/bloquer_reservation/{id}/{statut}',  ['uses'=>'HotelController@bloquer_reservation']);
+   Route::get('/listefavoris/{id}',  ['uses'=>'HotelController@listefavoris']);
+
+   Route::get('/meshotels/{id}',  ['uses'=>'HotelController@meshotels']);
    Route::get('/chambreshotel/{id}',  ['uses'=>'HotelController@chambreshotel']);
    Route::get('/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
    Route::get('/deletefavoris/{id}',  ['uses'=>'HotelController@deletefavoris']);
-   
+   Route::get('/deleteimagechambre/{filename}/{id}',  ['uses'=>'HotelController@deleteimagechambre']);
+   Route::get('/deleteimagehebergement/{filename}/{id}',  ['uses'=>'HotelController@deleteimagehebergement']);
+   Route::get('/deletehotel/{id}',  ['uses'=>'HotelController@deletehotel']);
+   Route::get('/deletechambre/{id}',  ['uses'=>'HotelController@deletechambre']);
+
    Route::get('/getreservationchambre/{id}',  ['uses'=>'HotelController@getreservationchambre']);
    Route::get('/onereservationchambre/{id}',  ['uses'=>'HotelController@onereservationchambre']);
 

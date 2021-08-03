@@ -101,6 +101,7 @@ class HotelController extends Controller
         $hebergement->wifigratuit=$req->input('wifigratuit');
         $hebergement->restaurationinterne=$req->input('restaurationinterne');
         $hebergement->parking=$req->input('parking');
+        $hebergement->piscine=$req->input('piscine');
         $hebergement->navetteaeroport=$req->input('navetteaeroport');
         $hebergement->annulationgratuite=$req->input('annulationgratuite');
         $hebergement->installationpourenfant=$req->input('installationpourenfant');
@@ -192,7 +193,7 @@ class HotelController extends Controller
         public function getchambre() {
      //   $list=[31,32,33,34,35,36];
     
-        $article = chambre::select('idhebergement','idchambre','typechambre','prix','typelit')->orderBy('idchambre','desc')->paginate(30);
+        $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->orderBy('idchambre','desc')->paginate(30);
         foreach($article as $articl){
             $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
             $articl['idmembre']=$hebergement['idmembre'];
@@ -214,7 +215,7 @@ class HotelController extends Controller
     public function gethotel() {
       //  $list=[31,32,33,34,35,36];
     
-        $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->orderBy('idhebergement','desc')->paginate(30);
+        $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->orderBy('idhebergement','desc')->paginate(30);
         foreach($article as $articl){
            
             $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
@@ -253,7 +254,7 @@ class HotelController extends Controller
     public function chambreshotel($idhotel) {
         //   $list=[31,32,33,34,35,36];
        
-           $article = chambre::select('idhebergement','idchambre','typechambre','prix','typelit')->where('idhebergement',$idhotel)->orderBy('idchambre','desc')->paginate(30);
+           $article = chambre::select('idhebergement','bloquer_reservation','idchambre','typechambre','prix','typelit')->where('idhebergement',$idhotel)->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
                $articl['idmembre']=$hebergement['idmembre'];
@@ -278,7 +279,7 @@ class HotelController extends Controller
            $article = reserverhotel::select('idmembre','idchambre','datereservation','statut')->where('idmembre',$idmembre)->get();
            foreach($article as $articl){
               
-               $chambre = chambre::select('typechambre','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
+               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
                $articl['typechambre']=$chambre['typechambre'];
                $articl['prix']=$chambre['prix'];
 
@@ -302,7 +303,7 @@ class HotelController extends Controller
            $user = User::select('idmembre','codemembre','prenom','nom','localisation')->where('idmembre',$articl->destinataire)->first();
            $articl['destinataire']=$user;
 
-               $chambre = chambre::select('typechambre','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
+               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
                $articl['typechambre']=$chambre['typechambre'];
                $articl['prix']=$chambre['prix'];
 
@@ -352,6 +353,113 @@ class HotelController extends Controller
         return response()->json(['success'=>"supprime avec succés"], 200); 
         }
 
+
+        public function meshotels($id) {
+            //  $list=[31,32,33,34,35,36];
+          
+              $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where([['idmembre',$id],['statut','acceptee']])->orderBy('idhebergement','desc')->get();
+              foreach($article as $articl){
+                 
+                  $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+          
+                  $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+                  $articl['codemembre']=$user->codemembre;
+                  $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+              
+                 
+              //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+              }
+              return response()->json($article); 
+          }
+
+
+
+          public function deleteimagehebergement($filename,$id)
+          {
+           // $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+            $image = imagehebergement::where('urlimagehebergement',$filename.'/'.$id)->delete();
+            Storage::disk('photohebergement')->delete($id);
+        //  $article=$article->paginate(15);
+            return response()->json(['success'=>"Suppression de l'image avec succés"], 200); 
+          }
+
+          public function deleteimagechambre($filename,$id)
+          {
+           // $notification = notification::where('idmembre',auth('api')->user()->idmembre)->orderBy('idnotification','desc')->get(); 
+            $image = imagechambre::where('urlimagechambre',$filename.'/'.$id)->delete();
+            Storage::disk('chambre')->delete($id);
+        //  $article=$article->paginate(15);
+            return response()->json(['success'=>"Suppression de l'image avec succés"], 200); 
+          }
+
+          public function deletehotel($id)
+          {
+            $annonce = hebergement::where('idhebergement','=',$id)->first(); 
+            $annonce->statut='suppression';
+            $annonce->save();
+        //  $article=$article->paginate(15);
+         
+            return response()->json(['success'=>"Supprimer avec succés"], 200); 
+          }
+
+          public function deletechambre($id)
+          {
+            $annonce = chambre::where('idchambre','=',$id)->delete(); 
+
+            return response()->json(['success'=>"Supprimer avec succés"], 200); 
+          }
+
+
+          public function bloquer_reservation($idchambre,$statut)
+            {
+            // $commande= new commande;
+            $result=chambre::where('idchambre','=',$idchambre)->first(); 
+        
+                $result->bloquer_reservation=$statut;
+            
+            $result->save();
+            return response()->json(['success'=>"Ok"], 200);            
+            }
+
+
+            public function listefavoris($id)
+                {
+                $favoris= favoris::where('id_membre',$id)->get(); 
+                $hebergements=[];
+                $chambres=[];
+                foreach($favoris as $test){
+
+                    $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where([['idhebergement',$test['id_hebergement']],['statut','acceptee']])->first();
+                    $chambre = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('idchambre',$test['id_chambre'])->first();
+
+                    if($articl){
+                        $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+            
+                        $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+                        $articl['codemembre']=$user->codemembre;
+                        $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+                        $articl['idfavoris']=$test->idfavoris;
+                        array_push($hebergements, $articl);
+                    }else if ($chambre){
+                        $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
+                        $chambre['idmembre']=$hebergement['idmembre'];
+                        $chambre['adresse']=$hebergement['adresse'];
+                        
+                        $membre = imagechambre::where('idchambre',$chambre->idchambre)->first();
+                        $reserverhotel = reserverhotel::where('idchambre',$chambre->idchambre)->first();
+                        $chambre['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+                        $user = User::select('idmembre','codemembre')->where('idmembre',$chambre->idmembre)->first();
+                        $chambre['codemembre']=$user->codemembre;
+                        $chambre['urlimagechambre']=$membre['urlimagechambre'];
+                        $chambre['idfavoris']=$test->idfavoris;
+                        array_push($chambres, $chambre);
+                    
+                    }
+
+                }
+                return response()->json(['hebergement'=>$hebergements,'chambre'=>$chambres], 200);
+
+                }
 
 //////////////////////////////////////////
 
