@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use File;
 use App\User;
 use App\chambre;
 use App\favoris;
+use App\service;
 use App\hebergement;
 use App\imagechambre;
+use App\servicevendu;
 use App\reserverhotel;
 use App\imagehebergement;
-use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -184,7 +186,60 @@ class HotelController extends Controller
         }
 
 
-       /**
+        public function buyboosthotel(Request $req)
+            {
+            $result=User::where('idmembre','=',$req->idmembre)->first(); 
+            if($result->compte < $req->credit){
+                return response()->json(['message'=>"Credit insuffisant",'code'=>401], 200); 
+            }else {
+            $result->compte= $result->compte - $req->credit;
+            $result->save();
+
+            $servicevendu = new servicevendu;
+            if($req->idchambre){
+                $idannonce=$req->idchambre;
+            }else{
+                $idannonce=$req->idhebergement;
+            }
+            $servicevendu->idannonce= $idannonce; 
+            $servicevendu->etatvente= 'en attente'; 
+            $servicevendu->idservice= $req->idservice; 
+            $Date1=date("Y/m/d-H:i");
+            $Date2 = date('Y/m/d-H:i', strtotime($Date1 . " + ".$req->days." day"));
+            //$Date1=gmdate('Y/m/d-h:i', strtotime($Date1) );
+            //$Date2=gmdate('Y/m/d-h:i', strtotime($Date2) );
+            $servicevendu->datefinservice= $Date2 ; 
+            $servicevendu->dateachat= $Date1; 
+            $servicevendu->save();
+
+            
+            return response()->json(['success'=>"Enregistré avec succes"], 200); 
+            }
+            }
+
+
+            public function boostvip($module,$id)
+                {
+                    if($module=="chambre"){
+                        $list=[700,701,702];
+                    }else if ($module=="hotel"){
+                        $list=[43,44,45,46,47,48];
+                    }
+               
+                $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get();  
+                foreach($servicevendus as $servicevendu){
+                    $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
+                    $servicevendu['service']=$service;
+                    
+                }
+                //  $article=$article->paginate(15);
+
+                return response()->json($servicevendus); 
+                }
+
+
+
+    /**
      * 
      *  *****  REQUETE GET ***********
      */
@@ -461,6 +516,63 @@ class HotelController extends Controller
 
                 }
 
+
+        public function listeservice()
+            {
+            $list=[43,44,45,46,47,48,700,701,702];
+            $service = service::whereIn('idService',$list)->get();
+
+            //  $article=$article->paginate(15);
+            return response()->json($service); 
+            }
+
+
+        
+        public function getchambreservice() {
+            //   $list=[31,32,33,34,35,36];
+            $list=[43,44,45,46,47,48];
+                $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
+
+                foreach($servicevendu as $article){
+                    $articl = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('idchambre',$article['idannonce'])->first();
+                    $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
+                    $articl['idmembre']=$hebergement['idmembre'];
+                    $articl['adresse']=$hebergement['adresse'];
+                    
+                    $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+                    $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
+                    $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+                    $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+                    $articl['codemembre']=$user->codemembre;
+                    $articl['urlimagechambre']=$membre['urlimagechambre'];
+                
+                    $article['chambre']=$articl;
+                //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+                }
+                return response()->json($servicevendu); 
+            }
+
+        
+        public function gethotelservice() {
+            //  $list=[31,32,33,34,35,36];
+            $list=[700,701,702];
+            $annonce = hebergement::select('idhebergement')->where('statut','acceptee')->get();
+            $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
+           
+            foreach($servicevendu as $article){
+                $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('idhebergement',$article['idannonce'])->first();
+
+                $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+        
+                $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+                $articl['codemembre']=$user->codemembre;
+                $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+                $article['hebergement']=$articl;
+                
+            //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+            }
+            return response()->json($servicevendu); 
+        }
 //////////////////////////////////////////
 
 

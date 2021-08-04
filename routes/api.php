@@ -266,13 +266,19 @@ Route::group([
    Route::post('/reserverhotel',  ['uses'=>'HotelController@reserverhotel']);
    Route::post('/addfavoris',  ['uses'=>'HotelController@addfavoris']);
    Route::post('/statutreservation',  ['uses'=>'HotelController@statutreservation']);
-
+   Route::post('/buyboostchambre',  ['uses'=>'HotelController@buyboosthotel']);
+   Route::post('/buyboosthotel',  ['uses'=>'HotelController@buyboosthotel']);
+   
    
    Route::get('/getchambre',  ['uses'=>'HotelController@getchambre']);
    Route::get('/gethotel',  ['uses'=>'HotelController@gethotel']);
    Route::get('/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
    Route::get('/bloquer_reservation/{id}/{statut}',  ['uses'=>'HotelController@bloquer_reservation']);
    Route::get('/listefavoris/{id}',  ['uses'=>'HotelController@listefavoris']);
+   Route::get('/listeservice',  ['uses'=>'HotelController@listeservice']);
+   Route::get('/boostvip/{module}/{id}',  ['uses'=>'HotelController@boostvip']);
+   Route::get('/getchambreservice',  ['uses'=>'HotelController@getchambreservice']);
+   Route::get('/gethotelservice',  ['uses'=>'HotelController@gethotelservice']);
 
    Route::get('/meshotels/{id}',  ['uses'=>'HotelController@meshotels']);
    Route::get('/chambreshotel/{id}',  ['uses'=>'HotelController@chambreshotel']);
