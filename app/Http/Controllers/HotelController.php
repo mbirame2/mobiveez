@@ -7,7 +7,9 @@ use App\User;
 use App\chambre;
 use App\favoris;
 use App\service;
+use App\departement;
 use App\hebergement;
+use App\gestionnaire;
 use App\imagechambre;
 use App\servicevendu;
 use App\reserverhotel;
@@ -42,6 +44,7 @@ class HotelController extends Controller
         $chambre->televiseur=$req->input('televiseur');
         $chambre->refrigerateur=$req->input('refrigerateur');
         $chambre->minibar=$req->input('minibar');
+        $chambre->jacuzziprivee=$req->input('jacuzziprivee');
         $chambre->douche=$req->input('douche');
         $chambre->eauminerale=$req->input('eauminerale');
         $chambre->balcon=$req->input('balcon');
@@ -529,7 +532,7 @@ class HotelController extends Controller
 
         
         public function getchambreservice() {
-            //   $list=[31,32,33,34,35,36];
+
             $list=[43,44,45,46,47,48];
                 $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
 
@@ -576,5 +579,101 @@ class HotelController extends Controller
 //////////////////////////////////////////
 
 
+     //////////////////GESTIONNAIRE
+
+     public function addgestionnaire(Request $req)
+     {
+       $gestionnaire= new gestionnaire;
+       $gestionnaire->idmembre=$req->input('idgestionnaire');
+       $gestionnaire->date=date("Y-m-d H:i:s");
+       $gestionnaire->idhebergement= $req->input('idhebergement');
+       $gestionnaire->save();
+       return response(['success'=>"ajouter avec succés"], 200); 
+     }
+     
+     public function listegestionnaire($id)
+     {
+       $gestionnaire= gestionnaire::where([['idmembre',$id],['idhebergement','!=',null]])->get(); 
+
+       foreach($gestionnaire as $article){
+        $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('idhebergement',$article['idhebergement'])->first();
+
+        $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+        $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+        
+        $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+        $article['hebergement']=$articl;
+        $article['hebergement']['proprietaire']=$user;
+       
+        
+    //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+    }
+      
+       return response($gestionnaire); 
+     }
+     
+     
+     public function gestionnairehebergement($id)
+     {
+       $gestionnaire= gestionnaire::select('idmembre','idhebergement','is_connected')->where('idhebergement',$id)->get(); 
+       $gest=[];
+       foreach($gestionnaire as $test){
+       $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
+       $dept=departement::where('id_dept',$user->departement_id)->first(); 
+       $user['id_gestionnaire']=$test->id_gestionnaire;
+       $user['idmembre']=$test->idmembre;
+       $user['is_connected']=$test->is_connected;
+       $user['departement']=$dept->lib_dept;
+       unset($user['departement_id']);
+       array_push($gest, $user);
+       }
+     
+       return response()->json($gest); 
+     }
+
+     public function search_hotel($name) {
+        //  $list=[31,32,33,34,35,36];
+      
+          $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($name) {
+            $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
+            })->paginate(30);
+        foreach($article as $articl){
+             
+              $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+      
+              $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+              $articl['codemembre']=$user->codemembre;
+              $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+          
+             
+          //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+          }
+          return response()->json($article); 
+      }
+
+      public function search_chambre($name) {
+        //   $list=[31,32,33,34,35,36];
+       
+           $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where(function ($query) use($name) {
+            $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');
+            $query->orwhereRaw('LOWER(description) like ?', '%'.strtolower($name).'%');
+            })->paginate(30);
+           foreach($article as $articl){
+               $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
+               $articl['idmembre']=$hebergement['idmembre'];
+               $articl['adresse']=$hebergement['adresse'];
+               
+               $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+               $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
+               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+               $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+               $articl['codemembre']=$user->codemembre;
+               $articl['urlimagechambre']=$membre['urlimagechambre'];
+           
+              
+           //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+           }
+           return response()->json($article); 
+       }
 
 }

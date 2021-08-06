@@ -293,5 +293,14 @@ Route::group([
    Route::get('/onereservationchambre/{id}',  ['uses'=>'HotelController@onereservationchambre']);
 
    
+   Route::post('/addgestionnaire',  ['uses'=>'HotelController@addgestionnaire']);
+   Route::get('/listegestionnaire/{id}',  ['uses'=>'HotelController@listegestionnaire']);
+   Route::get('/deletegestionnaire/{id}',  ['uses'=>'EmarketController@deletegestionnaire']);
+   Route::get('/gestionnairehebergement/{id}',  ['uses'=>'HotelController@gestionnairehebergement']);
+   Route::get('/gestionnaireconnected/{id}/{value}',  ['uses'=>'EmarketController@gestionnaireconnected']);
+
+   Route::get('/search_hotel/{name}',  [ 'uses'=>'HotelController@search_hotel']);
+   Route::get('/search_chambre/{name}',  [ 'uses'=>'HotelController@search_chambre']);
+
    
 });
