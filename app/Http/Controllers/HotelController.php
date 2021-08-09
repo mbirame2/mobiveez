@@ -656,7 +656,6 @@ class HotelController extends Controller
        
            $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where(function ($query) use($name) {
             $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');
-            $query->orwhereRaw('LOWER(description) like ?', '%'.strtolower($name).'%');
             })->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
