@@ -11,6 +11,7 @@ use App\departement;
 use App\hebergement;
 use App\gestionnaire;
 use App\imagechambre;
+use App\restauration;
 use App\servicevendu;
 use App\reserverhotel;
 use App\imagehebergement;
@@ -111,11 +112,14 @@ class HotelController extends Controller
         $hebergement->annulationgratuite=$req->input('annulationgratuite');
         $hebergement->installationpourenfant=$req->input('installationpourenfant');
         $hebergement->animaldomestiqueaccepte=$req->input('animaldomestiqueaccepte');
-        $hebergement->statut="acceptee";
-
-              
+        $hebergement->statut="acceptee";         
         $hebergement->save();
         $num=$hebergement->idhebergement;
+        if($req->input('idrestauration')){
+            $article = restauration::where('idrestauration',$req->input('idrestauration'))->first();
+            $article->idhebergement=$num;
+            $article->save();
+        }
         for($i=0;$i<$req->numberOfImages;$i++){
             if($req->input('photohebergement'.$i)){
            
