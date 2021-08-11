@@ -165,7 +165,7 @@ class HotelController extends Controller
 //        $reserverhotel->statut="en attente";            
         $reserverhotel->save();  
 
-        return response()->json(['response'=>"success"], 200);            
+        return response()->json(['response'=>"success",'idreservationhebergement'=>$reserverhotel['idreservationhebergement']], 200);            
   
       }
 
