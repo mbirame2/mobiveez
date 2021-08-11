@@ -399,6 +399,8 @@ class HotelController extends Controller
             Storage::disk('vue')->put($id.'_hebergement.txt', 0);
             $file=0;
             }
+            $article = restauration::select('idrestauration')->where('idhebergement',$articl['idhebergement'])->first();
+            $articl['idrestauration']=$article['idrestauration'];
         
             $articl['vues']=$file;
             Storage::disk('vue')->put($id.'_hebergement.txt', $file+1);
