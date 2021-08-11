@@ -161,7 +161,7 @@ class HotelController extends Controller
         $reserverhotel->arrivee=$req->input('arrivee');
         $reserverhotel->depart=$req->input('depart');
         $reserverhotel->besoins=$req->input('besoins');
-        $reserverhotel->datereservation=$req->input('datereservation');
+        $reserverhotel->datereservation=date("Y-m-d H:i:s");
 //        $reserverhotel->statut="en attente";            
         $reserverhotel->save();  
 
