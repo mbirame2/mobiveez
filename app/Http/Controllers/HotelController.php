@@ -338,7 +338,7 @@ class HotelController extends Controller
        public function getreservationchambre($idmembre) {
         //   $list=[31,32,33,34,35,36];
        
-           $article = reserverhotel::select('idmembre','idchambre','datereservation','statut')->where('idmembre',$idmembre)->get();
+           $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut')->where('idmembre',$idmembre)->get();
            foreach($article as $articl){
               
                $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
@@ -421,7 +421,7 @@ class HotelController extends Controller
         public function meshotels($id) {
             //  $list=[31,32,33,34,35,36];
           
-              $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where([['idmembre',$id],['statut','acceptee']])->orderBy('idhebergement','desc')->get();
+              $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where([['idmembre',$id],['statut','acceptee']])->orderBy('idhebergement','desc')->get();
               foreach($article as $articl){
                  
                   $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
@@ -624,7 +624,7 @@ class HotelController extends Controller
        $gestionnaire= gestionnaire::select('idmembre','idhebergement','is_connected')->where('idhebergement',$id)->get(); 
        $gest=[];
        foreach($gestionnaire as $test){
-       $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
+       $user=User::select('prenom','nom','id_gestionnaire','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
        $dept=departement::where('id_dept',$user->departement_id)->first(); 
        $user['id_gestionnaire']=$test->id_gestionnaire;
        $user['idmembre']=$test->idmembre;
