@@ -65,14 +65,12 @@ class HotelController extends Controller
              $img=$req->input('photochambre'.$i);
              $iman= new imagechambre;
              $base64_str = substr($img, strpos($img, ",")+1);
-             //var_dump($base64_str);die();
              $data = base64_decode($base64_str);
              $time=$num+$i.'-'.time().'.png';
              Storage::disk('chambre')->put($time, $data);
              $iman->idchambre= $chambre->idchambre;  
              $iman->urlimagechambre="chambre/".$time;  
              $iman->parametreimagechambre=$i; 
-             //array_push($details, $annonce);
              $iman->save();
              $chambre['photochambre'.$i]=$iman->urlimagechambre;
             }
@@ -255,7 +253,7 @@ class HotelController extends Controller
         public function getchambre() {
      //   $list=[31,32,33,34,35,36];
     
-        $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->orderBy('idchambre','desc')->paginate(30);
+        $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->orderBy('idchambre','desc')->paginate(30);
         foreach($article as $articl){
             $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
             $articl['idmembre']=$hebergement['idmembre'];
@@ -316,7 +314,7 @@ class HotelController extends Controller
     public function chambreshotel($idhotel) {
         //   $list=[31,32,33,34,35,36];
        
-           $article = chambre::select('idhebergement','bloquer_reservation','idchambre','typechambre','prix','typelit')->where('idhebergement',$idhotel)->orderBy('idchambre','desc')->paginate(30);
+           $article = chambre::select('idhebergement','bloquer_reservation','idchambre','typechambre','prix','typelit','statut')->where('idhebergement',$idhotel)->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
                $articl['idmembre']=$hebergement['idmembre'];
@@ -341,7 +339,7 @@ class HotelController extends Controller
            $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut')->where('idmembre',$idmembre)->get();
            foreach($article as $articl){
               
-               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
+               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
                $articl['typechambre']=$chambre['typechambre'];
                $articl['prix']=$chambre['prix'];
 
@@ -365,7 +363,7 @@ class HotelController extends Controller
            $user = User::select('idmembre','codemembre','prenom','nom','localisation')->where('idmembre',$articl->destinataire)->first();
            $articl['destinataire']=$user;
 
-               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement')->where('idchambre',$articl->idchambre)->first();
+               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
                $articl['typechambre']=$chambre['typechambre'];
                $articl['prix']=$chambre['prix'];
 
@@ -461,15 +459,15 @@ class HotelController extends Controller
             $annonce = hebergement::where('idhebergement','=',$id)->first(); 
             $annonce->statut='suppression';
             $annonce->save();
-        //  $article=$article->paginate(15);
          
             return response()->json(['success'=>"Supprimer avec succés"], 200); 
           }
 
           public function deletechambre($id)
           {
-            $annonce = chambre::where('idchambre','=',$id)->delete(); 
-
+            $annonce = chambre::where('idchambre','=',$id)->first(); 
+            $annonce->statut='suppression';
+            $annonce->save();
             return response()->json(['success'=>"Supprimer avec succés"], 200); 
           }
 
@@ -494,7 +492,7 @@ class HotelController extends Controller
                 foreach($favoris as $test){
 
                     $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where([['idhebergement',$test['id_hebergement']],['statut','acceptee']])->first();
-                    $chambre = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('idchambre',$test['id_chambre'])->first();
+                    $chambre = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit','statut')->where('idchambre',$test['id_chambre'])->first();
 
                     if($articl){
                         $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
@@ -543,7 +541,7 @@ class HotelController extends Controller
                 $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
 
                 foreach($servicevendu as $article){
-                    $articl = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('idchambre',$article['idannonce'])->first();
+                    $articl = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit','statut')->where('idchambre',$article['idannonce'])->first();
                     $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
                     $articl['idmembre']=$hebergement['idmembre'];
                     $articl['adresse']=$hebergement['adresse'];
@@ -660,7 +658,7 @@ class HotelController extends Controller
       public function search_chambre($name) {
         //   $list=[31,32,33,34,35,36];
        
-           $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where(function ($query) use($name) {
+           $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->where(function ($query) use($name) {
             $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');
             })->paginate(30);
            foreach($article as $articl){
