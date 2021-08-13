@@ -275,7 +275,7 @@ class HotelController extends Controller
     public function gethotel() {
       //  $list=[31,32,33,34,35,36];
     
-        $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->orderBy('idhebergement','desc')->paginate(30);
+        $article = hebergement::select('idhebergement','id_dep','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->orderBy('idhebergement','desc')->paginate(30);
         foreach($article as $articl){
            
             $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
@@ -283,7 +283,9 @@ class HotelController extends Controller
             $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
             $articl['codemembre']=$user->codemembre;
             $articl['urlimagehebergement']=$membre['urlimagehebergement'];
-        
+            $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+            $articl['departement']=$dept->lib_dept;
+
            
         //   $articl['url']="api.iveez.com/api/image/{imagename}";   
         }
@@ -387,7 +389,9 @@ class HotelController extends Controller
             $articl['images']=$membre;
             $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
             $articl['codemembre']=$user->codemembre;        
-                
+            $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+            $articl['departement']=$dept->lib_dept;
+
             $favoris= favoris::where('id_hebergement',$id)->first(); 
             $articl['idfavoris']=$favoris['idfavoris'];
             
@@ -419,15 +423,17 @@ class HotelController extends Controller
         public function meshotels($id) {
             //  $list=[31,32,33,34,35,36];
           
-              $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where([['idmembre',$id],['statut','acceptee']])->orderBy('idhebergement','desc')->get();
+              $article = hebergement::select('idhebergement','id_dep','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where([['idmembre',$id],['statut','acceptee']])->orderBy('idhebergement','desc')->get();
               foreach($article as $articl){
                  
                   $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
-          
+
                   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                   $articl['codemembre']=$user->codemembre;
                   $articl['urlimagehebergement']=$membre['urlimagehebergement'];
-              
+                  $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+                  $articl['departement']=$dept->lib_dept;
+      
                  
               //   $articl['url']="api.iveez.com/api/image/{imagename}";   
               }
@@ -619,10 +625,10 @@ class HotelController extends Controller
      
      public function gestionnairehebergement($id)
      {
-       $gestionnaire= gestionnaire::select('idmembre','idhebergement','is_connected')->where('idhebergement',$id)->get(); 
+       $gestionnaire= gestionnaire::select('idmembre','idhebergement','is_connected','id_gestionnaire')->where('idhebergement',$id)->get(); 
        $gest=[];
        foreach($gestionnaire as $test){
-       $user=User::select('prenom','nom','id_gestionnaire','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
+       $user=User::select('prenom','nom','num_whatsapp','codemembre','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$test->idmembre)->first();
        $dept=departement::where('id_dept',$user->departement_id)->first(); 
        $user['id_gestionnaire']=$test->id_gestionnaire;
        $user['idmembre']=$test->idmembre;
