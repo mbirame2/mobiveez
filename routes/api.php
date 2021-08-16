@@ -290,6 +290,9 @@ Route::group([
    Route::get('/deletechambre/{id}',  ['uses'=>'HotelController@deletechambre']);
 
    Route::get('/getreservationchambre/{id}',  ['uses'=>'HotelController@getreservationchambre']);
+   
+   Route::get('/reservationsrecues/{id}',  ['uses'=>'HotelController@reservationsrecues']);
+
    Route::get('/onereservationchambre/{id}',  ['uses'=>'HotelController@onereservationchambre']);
 
    

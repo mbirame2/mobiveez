@@ -356,6 +356,29 @@ class HotelController extends Controller
            return response()->json($article); 
        }
 
+       public function reservationsrecues($idmembre) {
+        //   $list=[31,32,33,34,35,36];
+           $hebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
+           $idchambre = chambre::select('idchambre')->wherein('idhebergement',$hebergement)->get();
+
+           $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut')->wherein('idchambre',$idchambre)->get();
+           foreach($article as $articl){
+              
+               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
+               $articl['typechambre']=$chambre['typechambre'];
+               $articl['prix']=$chambre['prix'];
+
+               $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
+               $articl['designation']=$hebergement['designation'];
+               
+               $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+               $articl['urlimagechambre']=$membre['urlimagechambre'];
+           
+              
+           }
+           return response()->json($article); 
+       }
+
 
        public function onereservationchambre($idreservation) {
         //   $list=[31,32,33,34,35,36];
