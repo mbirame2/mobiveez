@@ -215,7 +215,10 @@ public function onereservationtable($id){
       $invit['codemembre']=$user['codemembre'];
     }
       $articl['listeinvites']=$invitereservationtable;
- 
+   // $invitereservationtable=invitereservationtable::select( 'idmembre')->where('idreservationtable',$articl->idreservationtable)->get();
+    //  $invite = explode(', ', $articl['invite']);
+    //$user = User::select('idmembre','prenom','nom','profil','codemembre')->whereIn('idmembre',$invitereservationtable)->get();
+    //$articl['listeinvites']=$user;
     $commande = commandereservationtable::select('idcommandereservationtable', 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
     foreach($commande as $command){
       $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
@@ -285,7 +288,7 @@ public function restauration(Request $req){
   $annonce->ouverture=$req->input('ouverture');
   $annonce->typerestauration=$req->input('typerestauration');
   $annonce->idmembre=$req->input('idmembre');
-  $annonce->idhebergement=$req->input('idhebergement');
+
   #var_dump($article);die();
   $annonce->save();
 

@@ -15,7 +15,7 @@ class hebergement extends Model
     protected $table="hebergement";
     protected $primaryKey = "idhebergement";
     public $timestamps = false;
-
+    
     protected $fillable = [
        'id_dep','idmembre','typehebergement','designation','description','adresse','siteweb','telephone','heurearrivee','heuredepart','nombreetoile','tauxreduction','wifigratuit','restaurationinterne','parking','navetteaeroport','annulationgratuite','installationpourenfant','animaldomestiqueaccepte','statut' ,'piscine'
     ];

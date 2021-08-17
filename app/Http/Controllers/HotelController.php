@@ -53,7 +53,7 @@ class HotelController extends Controller
         $chambre->conditionannulation=$req->input('conditionannulation');
         $chambre->ventilation=$req->input('ventilation');
         $chambre->petitdejeuner=$req->input('petitdejeuner');
-
+        $chambre->statut="en attente";  
         $chambre->idhebergement=$req->input('idhebergement');
 
         $chambre->save();
@@ -110,7 +110,7 @@ class HotelController extends Controller
         $hebergement->annulationgratuite=$req->input('annulationgratuite');
         $hebergement->installationpourenfant=$req->input('installationpourenfant');
         $hebergement->animaldomestiqueaccepte=$req->input('animaldomestiqueaccepte');
-        $hebergement->statut="acceptee";         
+        $hebergement->statut="en attente";         
         $hebergement->save();
         $num=$hebergement->idhebergement;
         if($req->input('idrestauration')){
@@ -380,6 +380,37 @@ class HotelController extends Controller
        }
 
 
+       public function reservationsencours($statut,$idmembre) {
+        //   $list=[31,32,33,34,35,36];
+            if($statut=="faites"){
+                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->where('idmembre',$idmembre)->where('depart','<',date("Y-m-d H:i:s"))->get();
+            }else if($statut=="recues"){
+                $hebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
+                $idchambre = chambre::select('idchambre')->wherein('idhebergement',$hebergement)->get();
+                //return $statut;
+                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->wherein('idchambre',$idchambre)->where('depart','<',date("Y-m-d H:i:s"))->get();
+            }
+            foreach($article as $articl){
+              
+               $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
+               $articl['typechambre']=$chambre['typechambre'];
+               $articl['prix']=$chambre['prix'];
+
+               $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
+               $articl['designation']=$hebergement['designation'];
+               $articl['idhebergement']=$hebergement['idhebergement'];
+               $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement['idmembre'])->first();
+               $articl['idmembre']=$user['idmembre'];
+               $articl['codemembre']=$user['codemembre'];
+               $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+               $articl['urlimagechambre']=$membre['urlimagechambre'];
+           
+              
+           }
+           return response()->json($article); 
+       }
+
+
        public function onereservationchambre($idreservation) {
         //   $list=[31,32,33,34,35,36];
        
@@ -565,8 +596,8 @@ class HotelController extends Controller
 
         
         public function getchambreservice() {
-
-            $list=[43,44,45,46,47,48];
+            $list=[700,701,702];
+           
                 $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
 
                 foreach($servicevendu as $article){
@@ -591,7 +622,7 @@ class HotelController extends Controller
         
         public function gethotelservice() {
             //  $list=[31,32,33,34,35,36];
-            $list=[700,701,702];
+            $list=[43,44,45,46,47,48];
             $annonce = hebergement::select('idhebergement')->where('statut','acceptee')->get();
             $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
            
@@ -707,5 +738,109 @@ class HotelController extends Controller
            }
            return response()->json($article); 
        }
+
+       public function filter_chambre(Request $req) {
+        //   $list=[31,32,33,34,35,36];
+       
+       //     if($req->input('idtypecuisine')){
+                $idhebergement= hebergement::select('idhebergement')->where(function ($query) use($req) {
+                    $query->where('adresse', 'LIKE', '%' . $req->input('adresse') . '%');
+                    $query->where('nombreetoile', 'LIKE', '%' . $req->input('nombreetoile') . '%');
+                    $query->where('id_dep', 'LIKE', '%' . $req->input('id_dep') . '%');
+                    $query->where('typehebergement', 'LIKE', '%' . $req->input('typehebergement') . '%');
+            })->get(); 
+
+             if(!$idhebergement){
+                $idhebergement='';
+            }
+
+            //return $req;
+
+           $article = chambre::where(function ($query) use($req,$idhebergement) {
+            $query->Where( 'statut','acceptee');
+            $query->where('typechambre', 'LIKE',  '%' . $req->input('typechambre') . '%'  );
+            $query->where('jacuzziprivee', 'LIKE',   '%' . $req->input('jacuzziprivee') . '%');
+            $query->where('petitdejeuner', 'LIKE',   '%' . $req->input('petitdejeuner') . '%' );
+            $query->where('balcon', 'LIKE',  '%' . $req->input('balcon') . '%'  );
+            $query->where('baignoire', 'LIKE',  '%' .  $req->input('baignoire') . '%'  );
+            $query->where('capacite', 'LIKE',   '%' . $req->input('capacite') . '%' );
+            $query->where('typelit', 'LIKE',  '%' .   $req->input('typelit') . '%'  );
+
+            
+            if($req->input('prixmin') && $req->input('prixmax')){
+                $query->Where( 'prix','>=',$req->input('prixmin'));
+                $query->Where( 'prix','<=',$req->input('prixmax'));
+              }else if($req->input('prixmax') && !$req->input('prixmin')){
+                $query->Where( 'prix','<=',$req->input('prixmax'));
+              }else if(!$req->input('prixmax') && $req->input('prixmin')){
+                $query->Where( 'prix','>=',$req->input('prixmin'));
+              }
+
+       //       if($idhebergement!=''){
+                $query->whereIn('idhebergement', $idhebergement);
+         //     }
+
+            })->select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->paginate(30);
+           // return $article;
+
+           foreach($article as $articl){
+               $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
+               $articl['idmembre']=$hebergement['idmembre'];
+               $articl['adresse']=$hebergement['adresse'];
+               
+               $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
+               $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
+               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+               $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+               $articl['codemembre']=$user->codemembre;
+               $articl['urlimagechambre']=$membre['urlimagechambre'];
+           
+              
+           }
+           return response()->json($article); 
+       }
+
+
+
+
+       public function filter_hotel(Request $req) {
+        if($req->input('prixmin') or $req->input('prixmax') ){
+        $idhebergement = chambre::select('idhebergement')->where(function ($query) use($req) {
+            if($req->input('prixmin') && $req->input('prixmax')){
+                $query->Where( 'prix','>=',$req->input('prixmin'));
+                $query->Where( 'prix','<=',$req->input('prixmax'));
+              }else if($req->input('prixmax') && !$req->input('prixmin')){
+                $query->Where( 'prix','<=',$req->input('prixmax'));
+              }else if(!$req->input('prixmax') && $req->input('prixmin')){
+                $query->Where( 'prix','>=',$req->input('prixmin'));
+              }
+        });
+    } else{
+        $idhebergement='';
+      }
+          $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($req,$idhebergement) {
+            $query->where('typehebergement', 'LIKE',   '%' . $req->input('typehebergement') . '%' );
+            $query->where('id_dep', 'LIKE',   '%' . $req->input('id_dep') . '%' );
+            $query->where('adresse', 'LIKE',   '%' . $req->input('adresse') . '%' );
+            $query->where('heurearrivee', 'LIKE',   '%' . $req->input('heurearrivee') . '%' );
+            $query->where('heuredepart', 'LIKE',   '%' . $req->input('heuredepart') . '%' );
+
+            $query->whereRaw('LOWER(designation) like ?', '%'. $req->input('designation') .'%');
+            if($idhebergement!=''){
+            $query->whereIn('idhebergement', $idhebergement); }
+            })->paginate(30);
+        foreach($article as $articl){
+             
+              $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
+      
+              $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+              $articl['codemembre']=$user->codemembre;
+              $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+          
+             
+          //   $articl['url']="api.iveez.com/api/image/{imagename}";   
+          }
+          return response()->json($article); 
+      }
 
 }
