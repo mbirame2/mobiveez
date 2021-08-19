@@ -419,15 +419,20 @@ class HotelController extends Controller
        
            $articl = reserverhotel::where('idreservationhebergement',$idreservation)->first();
            
-           $user = User::select('idmembre','codemembre','prenom','nom','localisation')->where('idmembre',$articl->destinataire)->first();
-           $articl['destinataire']=$user;
-
+          
                $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
                $articl['typechambre']=$chambre['typechambre'];
                $articl['prix']=$chambre['prix'];
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
                $articl['designation']=$hebergement['designation'];
+               $articl['idhebergement']=$hebergement['idhebergement'];
+
+               $user = User::select('idmembre','codemembre','prenom','nom','localisation')->where('idmembre',$articl->destinataire)->first();
+               $proprietaire = User::select('idmembre','codemembre' )->where('idmembre',$hebergement->idmembre)->first();
+
+               $articl['destinataire']=$user;
+               $articl['proprietaire']=$proprietaire;
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                $articl['urlimagechambre']=$membre['urlimagechambre'];
