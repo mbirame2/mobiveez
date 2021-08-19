@@ -159,6 +159,7 @@ class HotelController extends Controller
         $reserverhotel->arrivee=$req->input('arrivee');
         $reserverhotel->depart=$req->input('depart');
         $reserverhotel->besoins=$req->input('besoins');
+        $reserverhotel->nombrenuitees=$req->input('nombrenuitees');
         $reserverhotel->datereservation=date("Y-m-d H:i:s");
 //        $reserverhotel->statut="en attente";            
         $reserverhotel->save();  
@@ -308,7 +309,9 @@ class HotelController extends Controller
         $articl['codemembre']=$user->codemembre;
         $articl['designation']=$hebergement['designation'];
         $articl['adresse']=$hebergement['adresse'];
-        
+        $dept=departement::where('id_dept',$hebergement['id_dep'])->first(); 
+        $articl['departement']=$dept->lib_dept;
+
        
         return response()->json($articl); 
     }
@@ -477,7 +480,7 @@ class HotelController extends Controller
         public function meshotels($id) {
             //  $list=[31,32,33,34,35,36];
           
-              $article = hebergement::select('idhebergement','id_dep','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where([['idmembre',$id],['statut','acceptee']])->orderBy('idhebergement','desc')->get();
+              $article = hebergement::select('idhebergement','id_dep','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where([['idmembre',$id],['statut','!=','suppression']])->orderBy('idhebergement','desc')->get();
               foreach($article as $articl){
                  
                   $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
@@ -717,9 +720,12 @@ class HotelController extends Controller
 
       public function search_chambre($name) {
         //   $list=[31,32,33,34,35,36];
-       
-           $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->where(function ($query) use($name) {
+        $idhebergement = hebergement::select('idhebergement')->where( 'adresse', 'LIKE', '%' . $name . '%')->get();
+
+           $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->where(function ($query) use($name,$idhebergement) {
             $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');
+            $query->orWhere( 'prix', 'LIKE', '%' . $name . '%');
+            $query->orWherein( 'idhebergement', $idhebergement);
             })->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
