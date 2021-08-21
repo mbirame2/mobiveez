@@ -151,6 +151,11 @@ class HotelController extends Controller
             $reserverhotel= reserverhotel::where('idreservationhebergement',$req->input('idreservationhebergement'))->first();     
         }else{
             $reserverhotel= new reserverhotel;
+            $chambre = chambre::where('idchambre',$req->input('idchambre'))->first();
+            if($chambre['bloquer_reservation']=='true'){
+                return  response()->json(['error'=>"Reservation bloquée pour cette chambre"], 200);    
+            }
+
             }
         $reserverhotel->destinataire=$req->input('destinataire');
 
