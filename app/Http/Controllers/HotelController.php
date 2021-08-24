@@ -147,6 +147,9 @@ class HotelController extends Controller
 
       public function reserverhotel(Request $req){
   
+        $a=reserverhotel::latest('idreservationhebergement')->first();
+        $idreservation=1;
+
         if($req->input('idreservationhebergement')){
             $reserverhotel= reserverhotel::where('idreservationhebergement',$req->input('idreservationhebergement'))->first();     
         }else{
@@ -155,10 +158,16 @@ class HotelController extends Controller
             if($chambre['bloquer_reservation']=='true'){
                 return  response()->json(['error'=>"Reservation bloquée pour cette chambre"], 200);    
             }
+            if($a['idreservationhebergement']){
+                $idreservation=$a->idreservationhebergement +1;
+              }
+            $reserverhotel->referencereservationchambre=auth('api')->user()->codemembre."r".$idreservation.date("dmY");
+
 
             }
+       
+       
         $reserverhotel->destinataire=$req->input('destinataire');
-
         $reserverhotel->idchambre=$req->input('idchambre');
         $reserverhotel->idmembre=$req->input('idmembre');
         $reserverhotel->arrivee=$req->input('arrivee');
@@ -729,8 +738,9 @@ class HotelController extends Controller
       }
 
       public function search_chambre($name) {
-        //   $list=[31,32,33,34,35,36];
-        $idhebergement = hebergement::select('idhebergement')->where( 'adresse', 'LIKE', '%' . $name . '%')->get();
+        $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->get(); 
+        $idhebergement = hebergement::select('idhebergement')->where('adresse', 'LIKE', '%' . $name . '%')->orWhereIn('id_dep', $dept)->get();
+        //return $idhebergement;
 
            $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->where(function ($query) use($name,$idhebergement) {
             $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');

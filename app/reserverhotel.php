@@ -11,6 +11,6 @@ class reserverhotel extends Model
     protected $primaryKey = "idreservationhebergement";
     public $timestamps = false;
     protected $fillable = [
-      'idmembre','idchambre','arrivee','depart','besoins','datereservation','statut','destinataire','motif','feedback','nombrenuitees'
+      'idmembre','idchambre','arrivee','depart','besoins','datereservation','statut','destinataire','motif','feedback','nombrenuitees','referencereservationchambre'
     ];
 }
