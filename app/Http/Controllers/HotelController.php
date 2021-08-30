@@ -314,7 +314,7 @@ class HotelController extends Controller
         $favoris= favoris::where('id_chambre',$idchambre)->first(); 
         $articl['idfavoris']=$favoris['idfavoris'];
         
-        $membre = imagechambre::where('idchambre',$articl->idchambre)->get();
+        $membre = imagechambre::where('idchambre',$articl['idchambre'])->get();
         $articl['images']=$membre;
        
     
@@ -400,12 +400,12 @@ class HotelController extends Controller
        public function reservationsencours($statut,$idmembre) {
         //   $list=[31,32,33,34,35,36];
             if($statut=="faites"){
-                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->where('idmembre',$idmembre)->where('depart','<',date("Y-m-d H:i:s"))->get();
+                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->where('idmembre',$idmembre)->where('depart','>',date("Y-m-d H:i:s"))->get();
             }else if($statut=="recues"){
                 $hebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
                 $idchambre = chambre::select('idchambre')->wherein('idhebergement',$hebergement)->get();
                 //return $statut;
-                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->wherein('idchambre',$idchambre)->where('depart','<',date("Y-m-d H:i:s"))->get();
+                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->wherein('idchambre',$idchambre)->where('depart','>',date("Y-m-d H:i:s"))->get();
             }
             foreach($article as $articl){
               
@@ -477,6 +477,7 @@ class HotelController extends Controller
             Storage::disk('vue')->put($id.'_hebergement.txt', 0);
             $file=0;
             }
+            
             $article = restauration::select('idrestauration')->where('idhebergement',$articl['idhebergement'])->first();
             $articl['idrestauration']=$article['idrestauration'];
         
@@ -682,7 +683,7 @@ class HotelController extends Controller
        $gestionnaire= gestionnaire::where([['idmembre',$id],['idhebergement','!=',null]])->get(); 
 
        foreach($gestionnaire as $article){
-        $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('idhebergement',$article['idhebergement'])->first();
+        $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where('idhebergement',$article['idhebergement'])->first();
 
         $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
         $articl['urlimagehebergement']=$membre['urlimagehebergement'];
