@@ -43,6 +43,11 @@ Route::get('error', function () {
 
    })->name('error');
 
+Route::get('/listeservice/{id}',      ['middleware'=>'auth:api','middleware' => 'cors','uses'=>'ApiController@listeservice']);
+Route::get('/getidservice/{id}',      ['middleware'=>'auth:api','middleware' => 'cors','uses'=>'ApiController@getidservice']);
+
+Route::get('/getidservicewithmoduleonly/{id}',      ['middleware'=>'auth:api','middleware' => 'cors','uses'=>'ApiController@getidservicewithmoduleonly']);
+
 
  Route::group([
     'prefix'=>'backoffice',
@@ -94,7 +99,10 @@ Route::get('error', function () {
    Route::post('/commandestatut',  ['as'=>'lo','uses'=>'EmarketController@commandestatut']);
    Route::post('/ajout_credit ',  ['as'=>'lo','uses'=>'EmarketController@ajout_credit']); 
    Route::post('/remove_credit ',  ['as'=>'lo','uses'=>'EmarketController@remove_credit']);
-   Route::get('/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
+
+  
+
+
    Route::get('/deleteshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteshowroom']);
    Route::get('/deleteannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@deleteannonce']);
    Route::get('/boostshowroom/{id}',  ['as'=>'lo','uses'=>'EmarketController@boostshowroom']);
@@ -111,26 +119,18 @@ Route::get('error', function () {
    Route::get('/myoffers/{id}',  ['as'=>'lo','uses'=>'EmarketController@myoffers']);
 
    
-   Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
+   //Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
 
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
    Route::get('/getnotification/{id}/{module}',  ['as'=>'lo','uses'=>'EmarketController@getnotification']); 
 
-   Route::get('/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
     Route::post('/verify_contact',  ['as'=>'lo','uses'=>'EmarketController@verify_contact']);
-    Route::get('/search_article/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 
-    Route::get('/search_boutique/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_boutique']); 
-    Route::get('/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
     Route::get('/proshowrooms/{id}',  ['as'=>'lo','uses'=>'EmarketController@showroomsuser']); 
-    Route::get('/getboutique',  ['as'=>'lo','uses'=>'EmarketController@getboutique']); 
-    Route::get('/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
-    Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@ajout_panier']); 
+   Route::get('/ajout_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@ajout_panier']); 
     Route::get('/delete_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@delete_panier']); 
     Route::get('/liste_panier/{id}',  ['as'=>'lo','uses'=>'EmarketController@liste_panier']);  
     Route::get('/supprimercommande/{id}',  ['as'=>'lo','uses'=>'EmarketController@supprimercommande']);
-    Route::get('/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
-    Route::get('/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
     Route::get('/listeservice',  ['as'=>'lo','uses'=>'EmarketController@listeservice']);
     Route::get('/listecommande/{id}',  ['as'=>'lo','uses'=>'EmarketController@listecommande']);
     
@@ -183,8 +183,6 @@ Route::group([
    Route::get('/mesrestaurants/{id}',  ['as'=>'lo','uses'=>'RestaurantController@mesrestaurants']);
 
    Route::get('/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
-   Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatvip']);
-   Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationvip']);
    
    Route::get('/supprimercommandeplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@supprimercommandeplat']);
    Route::get('/supprimerrestauration/{id}',  ['as'=>'lo','uses'=>'RestaurantController@supprimerrestauration']);
@@ -212,9 +210,9 @@ Route::group([
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
    Route::get('/typecuisine',  ['as'=>'lo','uses'=>'RestaurantController@typecuisine']);
-   Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
    Route::get('/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
  
+   Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
    Route::get('/search_restaurant/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
    Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleteimage']);
    Route::get('/boostplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@boostplat']);
@@ -270,19 +268,19 @@ Route::group([
    Route::post('/buyboosthotel',  ['uses'=>'HotelController@buyboosthotel']);
    
    
-   Route::get('/getchambre',  ['uses'=>'HotelController@getchambre']);
-   Route::get('/gethotel',  ['uses'=>'HotelController@gethotel']);
-   Route::get('/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
+//   Route::get('/getchambre',  ['uses'=>'HotelController@getchambre']);
+  // Route::get('/gethotel',  ['uses'=>'HotelController@gethotel']);
+   //Route::get('/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
    Route::get('/bloquer_reservation/{id}/{statut}',  ['uses'=>'HotelController@bloquer_reservation']);
    Route::get('/listefavoris/{id}',  ['uses'=>'HotelController@listefavoris']);
    Route::get('/listeservice',  ['uses'=>'HotelController@listeservice']);
    Route::get('/boostvip/{module}/{id}',  ['uses'=>'HotelController@boostvip']);
-   Route::get('/getchambreservice',  ['uses'=>'HotelController@getchambreservice']);
-   Route::get('/gethotelservice',  ['uses'=>'HotelController@gethotelservice']);
+  // Route::get('/getchambreservice',  ['uses'=>'HotelController@getchambreservice']);
+   //Route::get('/gethotelservice',  ['uses'=>'HotelController@gethotelservice']);
 
    Route::get('/meshotels/{id}',  ['uses'=>'HotelController@meshotels']);
    Route::get('/chambreshotel/{id}',  ['uses'=>'HotelController@chambreshotel']);
-   Route::get('/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
+  // Route::get('/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
    Route::get('/deletefavoris/{id}',  ['uses'=>'HotelController@deletefavoris']);
    Route::get('/deleteimagechambre/{filename}/{id}',  ['uses'=>'HotelController@deleteimagechambre']);
    Route::get('/deleteimagehebergement/{filename}/{id}',  ['uses'=>'HotelController@deleteimagehebergement']);
@@ -309,4 +307,60 @@ Route::group([
    Route::get('/search_chambre/{name}',  [ 'uses'=>'HotelController@search_chambre']);
 
    
+});
+
+
+
+/*
+
+  //////// FEATURES WITHOUT TOKEN  ////////////
+
+
+ */
+
+
+Route::group([
+   'middleware' => 'cors',
+],function($route){
+   /// HOTEL //////
+   Route::get('/hotel/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
+   Route::get('/hotel/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
+   Route::get('/hotel/getchambreservice',  ['uses'=>'HotelController@getchambreservice']);
+   Route::get('/hotel/gethotelservice',  ['uses'=>'HotelController@gethotelservice']);
+   Route::get('/hotel/getchambre',  ['uses'=>'HotelController@getchambre']);
+   Route::get('/hotel/gethotel',  ['uses'=>'HotelController@gethotel']);
+   Route::get('/hotel/search_hotel/{name}',  [ 'uses'=>'HotelController@search_hotel']);
+   Route::get('/hotel/search_chambre/{name}',  [ 'uses'=>'HotelController@search_chambre']);
+   Route::post('/hotel/filter_chambre',  ['uses'=>'HotelController@filter_chambre']);
+   Route::post('/hotel/filter_hotel',  ['uses'=>'HotelController@filter_hotel']);
+  
+  // RESTAURANT/
+   Route::get('/restaurant/getplat',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
+   Route::get('/restaurant/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
+   Route::get('/restaurant/oneplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@oneplat']);
+   Route::get('/restaurant/onerestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@onerestaurant']);
+   Route::get('/restaurant/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
+   Route::get('/restaurant/search_restaurant/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
+   Route::post('/restaurant/filter_restaurant',  ['as'=>'lo','uses'=>'RestaurantController@filter_restaurant']);
+   Route::get('/restaurant/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
+   Route::get('/restaurant/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
+   Route::get('/restaurant/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
+   Route::get('/restaurant/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
+
+
+   //////// E-MARKET////////////
+
+   Route::get('/emarket/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
+   Route::get('/emarket/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
+   Route::get('/emarket/search_article/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 
+   Route::get('/emarket/search_boutique/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_boutique']); 
+   Route::get('/emarket/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
+   Route::get('/emarket/getboutique',  ['as'=>'lo','uses'=>'EmarketController@getboutique']); 
+   Route::get('/emarket/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
+   Route::get('/emarket/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
+   Route::get('/emarket/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
+ 
+
+
+
 });

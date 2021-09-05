@@ -16,6 +16,7 @@ use App\servicevendu;
 use App\reserverhotel;
 use App\imagehebergement;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Storage;
 
 class HotelController extends Controller
@@ -241,9 +242,13 @@ class HotelController extends Controller
             public function boostvip($module,$id)
                 {
                     if($module=="chambre"){
-                        $list=[700,701,702];
+                        //$list=[700,701,702];
+                        $list=ApiController::getidservicewithmoduleonly("Chambre");
+
                     }else if ($module=="hotel"){
-                        $list=[43,44,45,46,47,48];
+                      //  $list=[43,44,45,46,47,48];
+                        $list=ApiController::getidservicewithmoduleonly("Hebergement");
+
                     }
                
                 $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get();  
@@ -619,8 +624,9 @@ class HotelController extends Controller
 
         
         public function getchambreservice() {
-            $list=[700,701,702];
-           
+   //       $list=[700,701,702];
+            $list=ApiController::getidservicewithmoduleonly("Chambre");
+
                 $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
 
                 foreach($servicevendu as $article){
@@ -645,7 +651,9 @@ class HotelController extends Controller
         
         public function gethotelservice() {
             //  $list=[31,32,33,34,35,36];
-            $list=[43,44,45,46,47,48];
+           // $list=[43,44,45,46,47,48];
+            $list=ApiController::getidservicewithmoduleonly("Hebergement");
+
             $annonce = hebergement::select('idhebergement')->where('statut','acceptee')->get();
             $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
            

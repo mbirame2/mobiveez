@@ -15,13 +15,14 @@ use App\gestionnaire;
 use App\restauration;
 use App\servicevendu;
 use App\commande_plat;
-use App\invitereservationtable;
 use App\reservationtable;
 use App\imagerestauration;
 use Illuminate\Http\Request;
 use App\commanderestauration;
+use App\invitereservationtable;
 
 use App\commandereservationtable;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Storage;
 
 class RestaurantController extends Controller
@@ -395,13 +396,13 @@ public function delete_panier($id)
       foreach($article as $articl){
     //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
    //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
-
+    if(auth('api')->user()){
       $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
-      if($result){
-        $articl['idpanier']=$result->idpanier;
-      }else{
-        $articl['idpanier']=null;
-      }
+      $articl['idpanier']=$result['idpanier'];
+        }else{
+          $articl['idpanier']=null;
+        }
+
         if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
         }else {
@@ -417,7 +418,8 @@ public function delete_panier($id)
 
   public function getrestaurant()
   {
-    $list=[31,32,33,34,35,36];
+   // $list=[31,32,33,34,35,36];
+    $list=ApiController::getidservicewithmoduleonly("Restauration");
 
     $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
     foreach($article as $articl){
@@ -450,7 +452,9 @@ public function delete_panier($id)
 
 public function mesrestaurants($id)
 {
-  $list=[31,32,33,34,35,36];
+ // $list=[31,32,33,34,35,36];
+  $list=ApiController::getidservicewithmoduleonly("Restauration");
+
 
   $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
       foreach($article as $articl){
@@ -483,11 +487,13 @@ public function mesrestaurants($id)
 
 public function platrestaurant($id)
 {
-  $list=[697,698,699];
+//  $list=[697,698,699];
+  $list=ApiController::getidservicewithmoduleonly("Menu");
+
   $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
       foreach($article as $articl){
         
-        $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+        $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
         if($result){
           $articl['idpanier']=$result->idpanier;
         }else{
@@ -517,7 +523,7 @@ public function oneplat($id)
   $articl = plat::select('photo','idmenu','prixpetit',  'prixmoyen',  'prixgrand','statut','description','accompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
   $favoris= favoris::where('id_menu',$articl['idmenu'])->first(); 
   $articl['idfavoris']=$favoris['idfavoris'];
-  $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+  $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
     if($result){
       $articl['idpanier']=$result->idpanier;
     }else{
@@ -655,12 +661,14 @@ public function typecuisine()
 
 public function getplatservice()
 {
-  $list=[697,698,699];
+ // $list=[697,698,699];
+  $list=ApiController::getidservicewithmoduleonly("Menu");
+
   $annonce = plat::select('idmenu')->where('statut','acceptee')->get();
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
     $annonce = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','bloquer_commande','plat')->where('idmenu',$articl->idannonce)->first();
-    $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$annonce['idmenu']]])->first(); 
+    $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$annonce['idmenu']]])->first(); 
     if($result){
       $annonce['idpanier']=$result->idpanier;
     }else{
@@ -678,7 +686,9 @@ public function getplatservice()
 
 public function getrestaurationservice()
 {
-  $list=[31,32,33,34,35,36];
+ // $list=[31,32,33,34,35,36];
+  $list=ApiController::getidservicewithmoduleonly("Restauration");
+
   $annonce = restauration::select('idrestauration')->where('statut','acceptee')->get();
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
@@ -707,7 +717,10 @@ public function searchrestaurant($name)
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
     })->paginate(30);
 
-    $list=[31,32,33,34,35,36];
+   // $list=[31,32,33,34,35,36];
+    $list=ApiController::getidservicewithmoduleonly("Restauration");
+
+
   foreach($article as $articl){
     if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
     $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
@@ -743,7 +756,7 @@ public function searchplat($name)
     $query->orwhereRaw('LOWER(plat) like ?', '%'.strtolower($name).'%');
     })->paginate(30);
   foreach($article as $articl){
-  $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+  $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
   if($result){
     $articl['idpanier']=$result->idpanier;
   }else{
@@ -765,12 +778,16 @@ public function searchcategorieplat($name)
 {
   $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->paginate(30);
   foreach($article as $articl){
-  $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
-  if($result){
-    $articl['idpanier']=$result->idpanier;
-  }else{
-    $articl['idpanier']=null;
-  }
+    if(auth('api')->user()){
+      $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+      $articl['idpanier']=$result['idpanier'];
+    } else{
+      $articl['idpanier']=null;
+    }
+   
+
+ //   $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+ 
     if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
     $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
     }else {
@@ -794,7 +811,9 @@ public function deleteimage($filename,$id)
 
 public function boostplat($id)
 {
-  $list=[697,698,699];
+  //$list=[697,698,699];
+  $list=ApiController::getidservicewithmoduleonly("Menu");
+
   $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get();  
   foreach($servicevendus as $servicevendu){
     $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
@@ -808,7 +827,9 @@ public function boostplat($id)
 
 public function boostrestaurant($id)
 {
-  $list=[31,32,33,34,35,36];
+  //$list=[31,32,33,34,35,36];
+  $list=ApiController::getidservicewithmoduleonly("Restauration");
+
   $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); 
   foreach($servicevendus as $servicevendu){
     $service=service::select('nomService','montantService','module')->where('idservice',$servicevendu->idservice)->first();
@@ -1099,7 +1120,9 @@ if($specialite!=''){
 ->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->paginate(30);
 
 
-$list=[31,32,33,34,35,36];
+//$list=[31,32,33,34,35,36];
+$list=ApiController::getidservicewithmoduleonly("Restauration");
+
 foreach($annonce as $articl){
   if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
   $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));

@@ -753,7 +753,10 @@ class EmarketController extends Controller
 
     public function boostshowroom($id)
     {
-      $list=[28,29,30];
+      //$list=[28,29,30];
+     // $list=service::select('idService')->where('nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%')->where('module','Showroom')->get();
+      $list=ApiController::getidservicewithmoduleonly("Showroom");
+
       $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
@@ -766,8 +769,10 @@ class EmarketController extends Controller
     }
     public function boostarticle($id)
     {
-      $list=[21,23,24,25,26,27];
-      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); ; 
+   
+      $list=ApiController::getidservicewithmoduleonly("Annonce");
+
+      $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where('idannonce','=',$id)->whereIn('idservice',$list)->orderBy('idvente','desc')->get(); 
       foreach($servicevendus as $servicevendu){
         $service=service::select('nomService','module')->where('idservice',$servicevendu->idservice)->first();
         $servicevendu['service']=$service;
@@ -1105,7 +1110,14 @@ class EmarketController extends Controller
     }
     public function getboutiqueservice()
     {
-      $list=[28,29,30];
+     // $list=service::select('idService')->where('module','Showroom')->get();
+
+     // $list=ApiController::getidservice("Showroom");
+      
+      $list=ApiController::getidservicewithmoduleonly("Showroom");
+
+      //return $list;
+
       $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['idshowroom',$articl->idannonce],['etatshowroom','acceptee']])->first();
@@ -1227,7 +1239,13 @@ class EmarketController extends Controller
 
     public function getarticleservice()
     {
-      $list=[21,23,24,25,26,27];
+     
+     // $list=service::select('idService')->where('module','Annonce')->get();
+
+    //  $list=ApiController::getidservice("Annonce");
+      $list=ApiController::getidservicewithmoduleonly("Annonce");
+
+
       $annonce = annonce::select('idannonce')->where('statut','acceptee')->get();
 
       $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
@@ -1258,8 +1276,10 @@ class EmarketController extends Controller
     }
     public function listeservice()
     {
-      $list=[21,23,24,25,26,27,28,29,30];
-      $service = service::whereIn('idService',$list)->get();
+  //    $list=[21,23,24,25,26,27,28,29,30];
+      $service=service::where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Showroom']])->orWhere([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Annonce']])->get();
+
+     // $service = service::whereIn('idService',$list)->get();
     
   //  $article=$article->paginate(15);
       return response()->json($service); 

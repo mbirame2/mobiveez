@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\professionnel;
-use App\plat;
-use App\region;
-use App\chambre;
-use App\evenement;
-use App\vehicule;
-use App\restauration;
-use App\User;
-use App\departement;
-use App\souscategorie;
-use App\annonce;
-use App\automobile;
-use App\commande_plat;
-use App\habillement;
-use App\immobilier;
-use App\imageannonce;
-use Validator;
 use File;
+use App\plat;
+use App\User;
+use Validator;
+use App\region;
+use App\annonce;
+use App\chambre;
+use App\service;
+use App\vehicule;
+use App\evenement;
+use App\automobile;
+use App\immobilier;
+use App\departement;
+use App\habillement;
+use App\imageannonce;
+use App\restauration;
+use App\commande_plat;
+use App\professionnel;
+use App\souscategorie;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -270,6 +271,26 @@ class ApiController extends Controller
       $annonce->statut='acceptee';
       $annonce->save();
       return response()->json($annonce); 
+    }
+
+
+
+    public function listeservice($module)
+    {
+      $service=service::where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module',$module]])->get();
+      return response()->json($service); 
+    }
+
+    public static function  getidservice($module)
+    {
+      $service=service::select('idService')->where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module',$module]])->get();
+      return $service; 
+    }
+
+    public static function  getidservicewithmoduleonly($module)
+    {
+      $service=service::select('idService')->where('module',$module)->get();
+      return $service; 
     }
  
 }

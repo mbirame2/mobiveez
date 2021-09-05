@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable 
 {
     use HasApiTokens, Notifiable;
-    protected $table="membre";
+    protected $table="membre2";
 
     /**
      * The attributes that are mass assignable.
