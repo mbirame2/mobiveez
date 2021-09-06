@@ -715,7 +715,7 @@ public function searchrestaurant($name)
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
-    })->paginate(30);
+    })->orderBy('idrestauration','desc')->paginate(30);
 
    // $list=[31,32,33,34,35,36];
     $list=ApiController::getidservicewithmoduleonly("Restauration");
@@ -776,7 +776,7 @@ return response()->json($article);
 
 public function searchcategorieplat($name)
 {
-  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->paginate(30);
+  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->orderBy('idmenu','desc')->paginate(30);
   foreach($article as $articl){
     if(auth('api')->user()){
       $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
@@ -1117,7 +1117,7 @@ if($specialite!=''){
   $query->whereIn('idrestauration', $specialite);
 }
 })
-->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->paginate(30);
+->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
 
 
 //$list=[31,32,33,34,35,36];

@@ -553,7 +553,7 @@ class EmarketController extends Controller
        // $query->orderByRaw("FIELD(titre , '$name' ) ");
       })->orwhereHas('departement', function ($query) use ($name) {
         $query->whereRaw('LOWER(lib_dept) like ?', '%'.strtolower($name).'%');
-      })->orderByRaw("FIELD(titre , '$name' ) ")->paginate(30);
+      })->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
       
 
      foreach($annonce as $articl){
@@ -909,7 +909,7 @@ class EmarketController extends Controller
 
     public function filter_boutique(Request $req)
     {
-      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where([['etatshowroom','acceptee'],['idcategorieshowroom',$req->id_cat]])->get();
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where([['etatshowroom','acceptee'],['idcategorieshowroom',$req->id_cat]])->orderBy('idshowroom','desc')->get();
 
 
       foreach($annonce as $ann){
@@ -944,7 +944,7 @@ class EmarketController extends Controller
        if($dept){
         $query->orWhere( 'id_dep', $dept->id_dept);}
        
-        })->paginate(30);
+        })->orderBy('idshowroom','desc')->paginate(30);
   
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);
@@ -1496,7 +1496,7 @@ class EmarketController extends Controller
   })->whereHas('departement', function ($query) use ($req) {
     $query->where('lib_dept', 'LIKE', '%' .$req->input('departement'). '%');
   })
-  ->select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->paginate(30);
+  ->select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->orderBy('idannonce','desc')->paginate(30);
   
   foreach($annonce as $articl){
     unset($articl['departement']);
