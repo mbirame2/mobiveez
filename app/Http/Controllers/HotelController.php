@@ -407,10 +407,10 @@ class HotelController extends Controller
             if($statut=="faites"){
                 $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->where('idmembre',$idmembre)->where('depart','>',date("Y-m-d H:i:s"))->get();
             }else if($statut=="recues"){
-                $hebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
-                $idchambre = chambre::select('idchambre')->wherein('idhebergement',$hebergement)->get();
+               // $hebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
+                //$idchambre = chambre::select('idchambre')->wherein('idhebergement',$hebergement)->get();
                 //return $statut;
-                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->wherein('idchambre',$idchambre)->where('depart','>',date("Y-m-d H:i:s"))->get();
+                $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut','arrivee','depart')->where('destinataire',$idmembre)->where('depart','>',date("Y-m-d H:i:s"))->get();
             }
             foreach($article as $articl){
               
