@@ -155,8 +155,8 @@ class EmarketController extends Controller
         $service=service::where('idService',$servicevendu->idservice)->first();
         
         $articl['service']=$service;
-        $articl['service']['dateachat']=$servicevendu->dateachat;
-        $articl['service']['datefinservice']=$servicevendu->datefinservice;
+        $articl['service']['dateachat']=$servicevendu['dateachat'];
+        $articl['service']['datefinservice']=$servicevendu['datefinservice'];
       }else{
         $articl['service']=null;
       }
