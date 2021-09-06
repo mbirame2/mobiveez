@@ -127,7 +127,7 @@ class EmarketController extends Controller
     {
       $article = annonce::select('titre','prix','statut','localisation','idmembre','idannonce','referenceannonce','bloquer_commande')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
-        $membre = imageannonce::where('idannonce',$articl->idannonce)->get();
+        $membre = imageannonce::where('idannonce',$articl['idannonce'])->get();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
         }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
@@ -153,10 +153,11 @@ class EmarketController extends Controller
        //return response()->json($servicevendu->idservice); 
         if($servicevendu){
         $service=service::where('idService',$servicevendu->idservice)->first();
-        
+        $service['dateachat']=$servicevendu['dateachat'];
+        $service['datefinservice']=$servicevendu['datefinservice'];
         $articl['service']=$service;
-        $articl['service']['dateachat']=$servicevendu['dateachat'];
-        $articl['service']['datefinservice']=$servicevendu['datefinservice'];
+      //  $articl['service']['dateachat']=$servicevendu['dateachat'];
+        //$articl['service']['datefinservice']=$servicevendu['datefinservice'];
       }else{
         $articl['service']=null;
       }
