@@ -233,7 +233,8 @@ class AuthentificationController extends Controller
        
         return response()->json([
             "status"=>200,
-            "exist"=> true
+            "exist"=> true,
+            "typecompte"=> $user->typecompte
       ]);
     }
     public function updateuser(Request $request)
