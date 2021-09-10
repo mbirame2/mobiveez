@@ -303,12 +303,13 @@ class AuthentificationController extends Controller
 
     public function changepassword(Request $request){
         $email = $request->email;
+        $phonenumber = $request->phonenumber;
       
-            $user = User::where("email", $email)->first(); 
+            $user = User::where("email", $email)->orwhere("telephoneportable", $phonenumber)->first(); 
             if (!$user) {
                 return response()->json([
                     "status"=>403,
-                    "message"=> "le mail n'existe pas dans la base de donnée"
+                    "message"=> "le mail ou le numero telephone n'existe pas dans la base de donnée"
               ]);
             }
             $user->password=sha1($request->password); 
