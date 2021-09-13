@@ -172,13 +172,14 @@ Route::group([
    'middleware' => 'cors',
    'middleware' => 'auth:api',
 ],function($route){
+
    Route::post('/plat',  ['as'=>'lo','uses'=>'RestaurantController@plat']);
    Route::post('/restauration',  ['as'=>'lo','uses'=>'RestaurantController@restauration']);
    Route::post('/reservationtable',  ['as'=>'lo','uses'=>'RestaurantController@reservationtable']);
    
    Route::get('/listereservationtable/{id}',  ['as'=>'lo','uses'=>'RestaurantController@listereservationtable']);
 
-   Route::get('/getplat',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
+   //Route::get('/getplat',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
    Route::get('/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
    Route::get('/mesrestaurants/{id}',  ['as'=>'lo','uses'=>'RestaurantController@mesrestaurants']);
 

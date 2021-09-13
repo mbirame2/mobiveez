@@ -98,9 +98,8 @@ public function reservationtable(Request $req)
     if($a['idreservationtable']){
       $idreservationtable=$a->idreservationtable ;
     }
-  }
-  else{
-    
+  } else{ 
+  
     if($a['idreservationtable']){
       $idreservationtable=$a->idreservationtable +1 ;
     }
@@ -185,7 +184,7 @@ public function listereservationtable($id){
     $invit['codemembre']=$user['codemembre'];
   }
     $articl['listeinvites']=$invitereservationtable;
-    $commande = commandereservationtable::select('idcommandereservationtable', 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
+    $commande = commandereservationtable::select('idcommandereservationtable', 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->orderBy('idcommandereservationtable','desc')->get();
     foreach($commande as $command){
       $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
       $command['photo']=$article['photo'];
@@ -374,7 +373,7 @@ public function delete_panier($id)
 
   foreach($panier as $articl){
     
-    $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
+    $article = plat::select('photo','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
   //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
     $articl['plat']=$article;
     $restauration = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$article['idrestauration'])->first();
@@ -386,7 +385,7 @@ public function delete_panier($id)
   }
   return response()->json($panier); 
   }
-
+  
 
       /////////LES CONTROLLEURS DE GET METHODE/////////////////
  
@@ -394,11 +393,10 @@ public function delete_panier($id)
     {
       $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->orderBy('idmenu','desc')->paginate(30);
       foreach($article as $articl){
-    //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
-   //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
-    if(auth('api')->user()){
-      $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
-      $articl['idpanier']=$result['idpanier'];
+    
+        if(auth('api')->user()){
+          $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
+          $articl['idpanier']=$result['idpanier'];
         }else{
           $articl['idpanier']=null;
         }

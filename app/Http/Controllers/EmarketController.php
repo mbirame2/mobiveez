@@ -1302,7 +1302,7 @@ class EmarketController extends Controller
       $service = commande::select('idcommande','idpanier','motif','feedback','statut','datereceptioncommande','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
         $query->where('idmembre', $id);
         $query->where('statut', 'commandé');
-    })->get();
+    })->orderBy('idcommande','desc')->get();
     foreach($service as $articl){
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
      // return $membre;
