@@ -66,7 +66,7 @@ class AuthentificationController extends Controller
         $co->telephoneportable=$input['phone'];
         $co->email=$input['email'];
         $co->num_whatsapp=$input['num_whatsapp'];
-        $co->localisation=$input['addresse'];
+        $co->localisation=$input['adresse'];
         $co->etatcompte=1;
         $co->compte=0;
         $dept=departement::where('lib_dept',$input['city'])->first(); 
