@@ -992,7 +992,7 @@ public function buyboostrestauration(Request $req)
     if($reqpanier['destinataire']){$annonce->destinataire=$reqpanier['destinataire'];}
     if($reqpanier['adresse']){$annonce->adresselivraison=$reqpanier['adresse'];}
  //   $annonce->datelivraison=$reqpanier['dateheure'];
-    $annonce->datecommande=date("Y/m/d-H:i");
+    $annonce->datecommande=date("Y-m-d H:i:s");
 //    $annonce->accompagnements=$reqpanier['accompagnements'];
   //  $annonce->destinataire=$reqpanier['destinataire'];
 
@@ -1046,10 +1046,10 @@ public function buyboostrestauration(Request $req)
   public function listecommandeplat($cle,$valeur)
   {
     if($cle=="idmembre"){
-      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->where($cle,$valeur )->get();
+      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->where($cle,$valeur )->orderBy('idcommanderestauration','desc')->get();
     }else if ($cle=="idrestauration"){
       $article = plat::select('idmenu')->where($cle,$valeur )->get();
-      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->get();
+      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
     }
     foreach($service as $articl){
       $article = plat::select('photo', 'prix','prixpetit',  'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
@@ -1133,7 +1133,7 @@ foreach($annonce as $articl){
   $dept=departement::where('id_dept',$articl->id_dep)->first(); 
  $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
  $articl['codemembre']=$user->codemembre;
- $articl['photorestauration']=$membre->urlimagerestauration;
+ $articl['photorestauration']=$membre['urlimagerestauration'];
 
  $articl['departement']=$dept->lib_dept;
   $articl['vues']=$file;

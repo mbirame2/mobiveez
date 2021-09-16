@@ -183,7 +183,7 @@ Route::group([
    Route::get('/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
    Route::get('/mesrestaurants/{id}',  ['as'=>'lo','uses'=>'RestaurantController@mesrestaurants']);
 
-   Route::get('/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
+ //  Route::get('/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
    
    Route::get('/supprimercommandeplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@supprimercommandeplat']);
    Route::get('/supprimerrestauration/{id}',  ['as'=>'lo','uses'=>'RestaurantController@supprimerrestauration']);
