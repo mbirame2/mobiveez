@@ -939,7 +939,7 @@ class EmarketController extends Controller
       $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->first(); 
      // return $dept;
       $list=User::where('codemembre', 'LIKE', '%' . $name . '%')->select('idmembre')->get();
-      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list,$dept) {
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where(function ($query) use($name,$list,$dept) {
         $query->whereRaw('LOWER(nomshowroom) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(descriptionshowroom) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
@@ -948,7 +948,7 @@ class EmarketController extends Controller
        if($dept){
         $query->orWhere( 'id_dep', $dept->id_dept);}
        
-        })->orderBy('idshowroom','desc')->paginate(30);
+        })->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
   
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);

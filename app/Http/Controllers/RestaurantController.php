@@ -709,11 +709,11 @@ public function searchrestaurant($name)
 {
  
 
-  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->where(function ($query) use($name) {
+  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where(function ($query) use($name) {
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
-    })->orderBy('idrestauration','desc')->paginate(30);
+    })->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
 
    // $list=[31,32,33,34,35,36];
     $list=ApiController::getidservicewithmoduleonly("Restauration");
