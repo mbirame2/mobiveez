@@ -531,7 +531,7 @@ class EmarketController extends Controller
    
      $user = User::select('idmembre')->whereRaw('LOWER(prenom) like ?', '%'.strtolower($name).'%')->orwhereRaw('LOWER(nom) like ?', '%'.strtolower($name).'%')->get();
  //   return $user;
-     $annonce=annonce::select('titre','prix','localisation','idannonce','idmembre','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->where(function ($query) use($name,$list,$user) {
+     $annonce=annonce::select('titre','prix','localisation','idannonce','idmembre','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->andwhere(function ($query) use($name,$list,$user) {
       //  $query->orWhere('description', 'LIKE', '%' . $name . '%');
   //    $orderByClause  = "CASE WHEN title = '".$name."' THEN 0 ELSE 1 END,";
     //  $query->orderByRaw($orderByClause);

@@ -152,7 +152,7 @@ public function statutreservationtable(Request $req)
 public function listereservationid($cle, $valeur)
 {
 
-    $panier= reservationtable::select('idrestauration','titre','referencereservationtable','datereservation','heurearrivee','statut','idreservationtable','idmembre')->where($cle,$valeur)->get(); 
+    $panier= reservationtable::select('idrestauration','titre','referencereservationtable','datereservation','heurearrivee','statut','idreservationtable','idmembre')->where($cle,$valeur)->orderBy('idreservationtable','desc')->get(); 
     foreach($panier as $articl){
       $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
       $articl['photorestauration']=$membre['urlimagerestauration'];
