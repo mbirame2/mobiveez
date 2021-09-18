@@ -351,6 +351,8 @@ Route::group([
 
    //////// E-MARKET////////////
 
+   Route::post('/emarket/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);
+
    Route::get('/emarket/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
    Route::get('/emarket/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
    Route::get('/emarket/search_article/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 

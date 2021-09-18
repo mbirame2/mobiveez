@@ -522,20 +522,12 @@ class EmarketController extends Controller
       $list=souscategorie::select('id_souscat')->with('categorie')->whereHas('categorie', function ($query) use($name) {
         $query->where('nom_cat', 'LIKE', '%' . $name . '%');
     })->get();
-   // return response($list);
-//   $boutique = boutique::select('idshowroom')->whereRaw('LOWER(nomshowroom) like ?', '%'.strtolower($name).'%')->first();
-  // if($boutique){
-  //  
-  //  $listtwo        = annoncesboutique::select('idannonce')->where('idshowroom',$boutique->idshowroom)->get();
+ 
     
-   
      $user = User::select('idmembre')->whereRaw('LOWER(prenom) like ?', '%'.strtolower($name).'%')->orwhereRaw('LOWER(nom) like ?', '%'.strtolower($name).'%')->get();
  //   return $user;
-     $annonce=annonce::select('titre','prix','localisation','idannonce','idmembre','referenceannonce','idannonce','description','idsouscategorie')->where(function ($query) use($name,$list,$user) {
-      //  $query->orWhere('description', 'LIKE', '%' . $name . '%');
-  //    $orderByClause  = "CASE WHEN title = '".$name."' THEN 0 ELSE 1 END,";
-    //  $query->orderByRaw($orderByClause);
-  //  $query->orderByRaw("FIELD(titre,'%'.strtolower($name).'%')");
+     $annonce=annonce::select('titre','statut','prix','localisation','idannonce','idmembre','referenceannonce','idannonce','description','idsouscategorie')->where('statut','acceptee')->where(function ($query) use($name,$list,$user) {
+  
       $query->whereRaw('LOWER(titre) like ?', '%'.strtolower($name).'%');
       
         $query->orwhereRaw( 'LOWER(description) like ?', '%'.strtolower($name).'%');
@@ -554,10 +546,12 @@ class EmarketController extends Controller
         if($user){
           $query->orWhereIn('idmembre', $user);
         }
+        $query->orwhereHas('departement', function ($query) use ($name) {
+          $query->whereRaw('LOWER(lib_dept) like ?', '%'.strtolower($name).'%');
+        });
+
        // $query->orderByRaw("FIELD(titre , '$name' ) ");
-      })->orwhereHas('departement', function ($query) use ($name) {
-        $query->whereRaw('LOWER(lib_dept) like ?', '%'.strtolower($name).'%');
-      })->where('statut','acceptee')->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
+      })->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
       
 
      foreach($annonce as $articl){
@@ -939,7 +933,7 @@ class EmarketController extends Controller
       $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->first(); 
      // return $dept;
       $list=User::where('codemembre', 'LIKE', '%' . $name . '%')->select('idmembre')->get();
-      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where(function ($query) use($name,$list,$dept) {
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where('etatshowroom','acceptee')->where(function ($query) use($name,$list,$dept) {
         $query->whereRaw('LOWER(nomshowroom) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(descriptionshowroom) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
@@ -948,7 +942,7 @@ class EmarketController extends Controller
        if($dept){
         $query->orWhere( 'id_dep', $dept->id_dept);}
        
-        })->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
+        })->orderBy('idshowroom','desc')->paginate(30);
   
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);
@@ -1478,8 +1472,7 @@ class EmarketController extends Controller
 //return  $souscategorie;
 //var_dump($results);die();
     $annonce= annonce::with('departement')->where(function ($query) use($req,$souscategorie) {
-    $query->Where( 'statut','acceptee');
-      $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
+       $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
       $query->Where( 'localisation', 'LIKE','%'.$req->input('localisation').'%');
       $query->Where( 'titre', 'LIKE','%'.$req->input('titre').'%');
       if($req->input('prix_min') && $req->input('prix_max')){
@@ -1495,12 +1488,12 @@ class EmarketController extends Controller
       $query->whereIn('idsouscategorie', $souscategorie);
     }
     
-    //  $query->orwhere($field, 'like',  '%' . $string .'%');
+    $query->whereHas('departement', function ($query) use ($req) {
+      $query->where('lib_dept', 'LIKE', '%' .$req->input('departement'). '%');
+    });
     
-  })->whereHas('departement', function ($query) use ($req) {
-    $query->where('lib_dept', 'LIKE', '%' .$req->input('departement'). '%');
   })
-  ->select('titre','prix','localisation','idmembre','idannonce','referenceannonce')->orderBy('idannonce','desc')->paginate(30);
+  ->select('titre','prix','localisation','idmembre','idannonce','referenceannonce','statut')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
   
   foreach($annonce as $articl){
     unset($articl['departement']);
