@@ -537,7 +537,7 @@ class EmarketController extends Controller
     //  $query->orderByRaw($orderByClause);
   //  $query->orderByRaw("FIELD(titre,'%'.strtolower($name).'%')");
       $query->whereRaw('LOWER(titre) like ?', '%'.strtolower($name).'%');
-      $query->whereRaw('statut','acceptee');
+      
         $query->orwhereRaw( 'LOWER(description) like ?', '%'.strtolower($name).'%');
         $query->orwhereRaw('LOWER(localisation) like ?', '%'.strtolower($name).'%');
 
@@ -557,7 +557,7 @@ class EmarketController extends Controller
        // $query->orderByRaw("FIELD(titre , '$name' ) ");
       })->orwhereHas('departement', function ($query) use ($name) {
         $query->whereRaw('LOWER(lib_dept) like ?', '%'.strtolower($name).'%');
-      })->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
+      })->where('statut','acceptee')->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
       
 
      foreach($annonce as $articl){
