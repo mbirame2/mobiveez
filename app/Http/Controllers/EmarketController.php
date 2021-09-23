@@ -1304,6 +1304,10 @@ class EmarketController extends Controller
     foreach($service as $articl){
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
      // return $membre;
+     if(!$membre){
+      $membre['idannonce']=null;
+      $membre['idmembre']=null;
+     }
      $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre['idannonce'] )->first();
 
      if($boutique){
