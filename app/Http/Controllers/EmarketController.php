@@ -1,45 +1,47 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\StatutUser;
-
-use Illuminate\Http\Request;
-use App\professionnel;
-use App\categorie;
-use App\favoris;
-use App\modele;
+use File;
 use App\plat;
+use App\User;
+
+use Validator;
 use App\marque;
-use App\marque_moto;
+use App\modele;
 use App\panier;
 use App\region;
-use App\chambre;
-use App\commande;
-use App\propositionprix;
-use App\evenement;
-use App\notification;
-use App\vehicule;
-use App\restauration;
-use App\User;
-use App\departement;
-use App\souscategorie;
-use App\gestionnaire;
 use App\annonce;
-use App\automobile;
-use App\commande_plat;
-use App\habillement;
-use App\immobilier;
-use App\transaction;
-use App\boutique;
-use App\annoncesboutique;
-use App\servicevendu;
+use App\chambre;
+use App\favoris;
 use App\service;
+use App\boutique;
+use App\commande;
+use App\vehicule;
+use App\categorie;
+use App\evenement;
+use App\automobile;
+use App\immobilier;
+use App\departement;
+use App\habillement;
+use App\marque_moto;
+use App\transaction;
+use App\gestionnaire;
 use App\imageannonce;
-use Validator;
-use File;
+use App\notification;
+use App\restauration;
+use App\servicevendu;
+use App\commande_plat;
+use App\professionnel;
+use App\souscategorie;
+use App\Mail\StatutUser;
+use App\propositionprix;
+use App\annoncesboutique;
+use App\livraisoncommande;
+use Illuminate\Http\Request;
+use App\tarificationlivraison;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Console\Scheduling\Schedule;
 
 class EmarketController extends Controller
 {
@@ -1197,9 +1199,20 @@ class EmarketController extends Controller
      
       $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
       $commande->save();
+
+      if($reqpanier['livraison']==true){
+        $livraisoncommande= new livraisoncommande;
+        $livraisoncommande->adresse=$reqpanier['adresse'];
+        $livraisoncommande->id_destinataire=$reqpanier['id_destinataire'];
+        $livraisoncommande->id_tariflivraison=$reqpanier['id_tariflivraison'];
+        $livraisoncommande->besoins=$reqpanier['besoins'];
+        $livraisoncommande->datelivraisoncommande=date("Y-m-d H:i:s");
+        $livraisoncommande->idcommande=$commande->idcommande;
+        $livraisoncommande->save();
+      }
       
-      $number = commande::latest('idcommande')->first(); 
-       array_push($array, $number->idcommande);
+ //     $number = commande::latest('idcommande')->first(); 
+       array_push($array, $commande->idcommande);
   
       }
    
@@ -1275,14 +1288,12 @@ class EmarketController extends Controller
     }
     public function listeservice()
     {
-  //    $list=[21,23,24,25,26,27,28,29,30];
       $service=service::where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Showroom']])->orWhere([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Annonce']])->get();
-
-     // $service = service::whereIn('idService',$list)->get();
     
-  //  $article=$article->paginate(15);
       return response()->json($service); 
     }
+
+ 
     public function payepourmoi(Request $req)
     {
       foreach($req->panier as $reqpanier){
@@ -1297,17 +1308,16 @@ class EmarketController extends Controller
     }
     public function listecommande($id)
     {
-      $service = commande::select('idcommande','idpanier','motif','feedback','statut','datereceptioncommande','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id) {
+      $allannonce = annonce::select('idannonce')->where('statut','acceptee')->get();
+
+      $service = commande::select('idcommande','idpanier','motif','feedback','statut','datereceptioncommande','adresse','datecommande','reference','quantite','statut')->whereHas('panier', function ($query) use($id,$allannonce) {
         $query->where('idmembre', $id);
+        $query->whereIn('idannonce', $allannonce);
         $query->where('statut', 'commandé');
     })->orderBy('idcommande','desc')->get();
     foreach($service as $articl){
       $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
      // return $membre;
-     if(!$membre){
-      $membre['idannonce']=null;
-      $membre['idmembre']=null;
-     }
      $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre['idannonce'] )->first();
 
      if($boutique){

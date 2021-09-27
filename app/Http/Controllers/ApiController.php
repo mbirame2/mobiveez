@@ -22,6 +22,7 @@ use App\commande_plat;
 use App\professionnel;
 use App\souscategorie;
 use Illuminate\Http\Request;
+use App\tarificationlivraison;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -285,6 +286,13 @@ class ApiController extends Controller
     {
       $service=service::select('idService')->where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module',$module]])->get();
       return $service; 
+    }
+
+    public function listetarificationlivraison()
+    {
+      $service=tarificationlivraison::get();
+ 
+      return response()->json($service); 
     }
 
     public static function  getidservicewithmoduleonly($module)

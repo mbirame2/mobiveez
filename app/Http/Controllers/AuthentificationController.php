@@ -69,9 +69,9 @@ class AuthentificationController extends Controller
         $co->localisation=$input['adresse'];
         $co->etatcompte=1;
         $co->compte=0;
-        $dept=departement::where('lib_dept',$input['city'])->first(); 
+       // $dept=departement::where('lib_dept',$input['city'])->first(); 
         /*var_dump($dept->lib_dept);die();*/
-        $co->departement()->associate($dept);
+        //$co->departement()->associate($dept);
         $co->pays=$input['country'];
         if($request->accountType=="particulier")
         {
@@ -141,12 +141,12 @@ class AuthentificationController extends Controller
         {
             Auth::login($user);
             $user = Auth::user(); 
-            $dept=departement::with('region')->where('id_dept',$user->departement_id)->first(); 
-            $region=region::where('id_reg',$dept->region->id_reg)->first(); 
+           // $dept=departement::with('region')->where('id_dept',$user->departement_id)->first(); 
+            //$region=region::where('id_reg',$dept->region->id_reg)->first(); 
             //return $dept;
-            $pays=pays::where('id_pays',$region->id_pays)->first(); 
-            $user['departement']=$dept->lib_dept;
-            $user['pays']=$pays->lib_pays;
+            //$pays=pays::where('id_pays',$region->id_pays)->first(); 
+            //$user['departement']=$dept->lib_dept;
+            //$user['pays']=$pays->lib_pays;
             $token =  $user->createToken('MyApp')->accessToken; 
             return response()->json( [$token,$user]); 
         }else{

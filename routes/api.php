@@ -33,6 +33,8 @@ Route::group([
 
 });
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
+Route::get('/listetarificationlivraison',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@listetarificationlivraison']);
+
 Route::get('/base',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@base']);
 Route::get('/listemarque',      ['as'=>'log','middleware' => 'cors','uses'=>'EmarketController@listemarque']);
 
