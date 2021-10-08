@@ -10,6 +10,6 @@ class livraisoncommande extends Model
     public $timestamps = false;
     protected $primaryKey = "idlivraisoncommande";
     protected $fillable = [
-        'idcommande','id_destinataire','id_tariflivraison','adresse','besoins','datelivraisoncommande','statut' 
+        'idcommande','iddestinataire','idtariflivraison','adresse','besoins','datelivraisoncommande','statut' 
     ];
 }

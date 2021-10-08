@@ -1203,8 +1203,8 @@ class EmarketController extends Controller
       if($reqpanier['livraison']==true){
         $livraisoncommande= new livraisoncommande;
         $livraisoncommande->adresse=$reqpanier['adresse'];
-        $livraisoncommande->id_destinataire=$reqpanier['id_destinataire'];
-        $livraisoncommande->id_tariflivraison=$reqpanier['id_tariflivraison'];
+        $livraisoncommande->iddestinataire=$reqpanier['iddestinataire'];
+      //  $livraisoncommande->id_tariflivraison=$reqpanier['id_tariflivraison'];
         $livraisoncommande->besoins=$reqpanier['besoins'];
         $livraisoncommande->datelivraisoncommande=date("Y-m-d H:i:s");
         $livraisoncommande->idcommande=$commande->idcommande;
