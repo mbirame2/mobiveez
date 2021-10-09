@@ -79,7 +79,9 @@ class AuthentificationController extends Controller
             $article = User::where('pays',$input['country'])->where('typecompte',"particulier")->get();  
             $article = count($article)+1;
             $co->sexe=$request->gender;
-            $code=$request->countryCode.strval(date("y"))."Pa".strval($article+1);
+           // return ucfirst($request->countryCode);
+
+            $code=ucfirst($request->countryCode).strval(date("y"))."Pa".strval($article+1);
             $co->codemembre=$code;
             $co->DateInscription=date("Y/m/d-h:i");
         
