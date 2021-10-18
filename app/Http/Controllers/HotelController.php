@@ -369,7 +369,10 @@ class HotelController extends Controller
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
                $articl['designation']=$hebergement['designation'];
-               
+
+               $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement->idmembre)->first();
+               $articl['codemembre']=$user->codemembre;
+
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                $articl['urlimagechambre']=$membre['urlimagechambre'];
            
@@ -392,6 +395,9 @@ class HotelController extends Controller
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
                $articl['designation']=$hebergement['designation'];
+               
+               $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement->idmembre)->first();
+               $articl['codemembre']=$user->codemembre;
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                $articl['urlimagechambre']=$membre['urlimagechambre'];
