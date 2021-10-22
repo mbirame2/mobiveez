@@ -400,7 +400,9 @@ public function delete_panier($id)
         }else{
           $articl['idpanier']=null;
         }
-
+        $restauration = restauration::select('idmembre','idrestauration')->where('idrestauration',$articl->idrestauration)->first();
+        $user = User::select('idmembre','codemembre')->where('idmembre',$restauration->idmembre)->first();
+        $articl['codemembre']=$user->codemembre;
         if(File::exists(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->idmenu.'_menu.txt'));
         }else {
