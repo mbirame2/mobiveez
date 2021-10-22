@@ -861,7 +861,7 @@ class HotelController extends Controller
       }
           $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($req,$idhebergement) {
             $query->where('typehebergement', 'LIKE',   '%' . $req->input('typehebergement') . '%' );
-            $query->where('id_dep', 'LIKE',   '%' . $req->input('id_dep') . '%' );
+            $query->where('id_dep', $req->input('id_dep')  );
             $query->where('adresse', 'LIKE',   '%' . $req->input('adresse') . '%' );
             $query->where('heurearrivee', 'LIKE',   '%' . $req->input('heurearrivee') . '%' );
             $query->where('heuredepart', 'LIKE',   '%' . $req->input('heuredepart') . '%' );
