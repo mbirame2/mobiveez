@@ -1200,12 +1200,12 @@ class EmarketController extends Controller
       $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
       $commande->save();
 
-      if($reqpanier['livraison']==true){
+      if($req['livraison']==true){
         $livraisoncommande= new livraisoncommande;
-        $livraisoncommande->adresse=$reqpanier['adresse'];
-        $livraisoncommande->iddestinataire=$reqpanier['iddestinataire'];
+        $livraisoncommande->adresse=$req['adresse'];
+        $livraisoncommande->iddestinataire=$req['iddestinataire'];
       //  $livraisoncommande->id_tariflivraison=$reqpanier['id_tariflivraison'];
-        $livraisoncommande->besoins=$reqpanier['besoins'];
+        $livraisoncommande->besoins=$req['besoins'];
         $livraisoncommande->datelivraisoncommande=date("Y-m-d H:i:s");
         $livraisoncommande->idcommande=$commande->idcommande;
         $livraisoncommande->save();
