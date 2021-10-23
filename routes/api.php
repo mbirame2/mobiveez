@@ -121,7 +121,7 @@ Route::get('/getidservicewithmoduleonly/{id}',      ['middleware'=>'auth:api','m
    Route::get('/myoffers/{id}',  ['as'=>'lo','uses'=>'EmarketController@myoffers']);
 
    
-   //Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
+   Route::post('/annoncesboutique',  ['as'=>'lo','uses'=>'EmarketController@annoncesboutique']);
 
    Route::post('/add_notification',  ['as'=>'lo','uses'=>'EmarketController@add_notification']);
    Route::get('/removenotification/{id}',  ['as'=>'lo','uses'=>'EmarketController@removenotification']);
