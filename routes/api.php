@@ -365,7 +365,8 @@ Route::group([
    Route::get('/emarket/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
    Route::get('/emarket/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
    Route::get('/emarket/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
- 
+   Route::get('/emarket/getannonce/{code}',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
+
 
 
 
