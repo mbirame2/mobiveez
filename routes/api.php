@@ -143,7 +143,7 @@ Route::get('/getidservicewithmoduleonly/{id}',      ['middleware'=>'auth:api','m
     Route::post('/filter_boutique',  ['as'=>'lo','uses'=>'EmarketController@filter_boutique']);
 
     Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
-    Route::get('/getannonce',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
+    Route::get('/getannonce/{code}',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
     Route::get('/liste_categorie',  ['as'=>'lo','uses'=>'EmarketController@liste_categorie']);
     Route::get('/liste_souscategorie',  ['as'=>'lo','uses'=>'EmarketController@liste_souscategorie']);
     Route::get('/gettransaction',  ['as'=>'lo','uses'=>'EmarketController@gettransaction']);
@@ -213,7 +213,7 @@ Route::group([
    Route::get('/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
    Route::get('/typecuisine',  ['as'=>'lo','uses'=>'RestaurantController@typecuisine']);
-   Route::get('/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
+   Route::post('/searchcategorieplat',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
  
    Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
    Route::get('/search_restaurant/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
@@ -349,6 +349,7 @@ Route::group([
    Route::get('/restaurant/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
    Route::get('/restaurant/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
    Route::get('/restaurant/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
+   Route::post('/restaurant/searchcategorieplat',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
 
 
    //////// E-MARKET////////////

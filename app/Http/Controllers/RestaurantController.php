@@ -769,13 +769,18 @@ public function searchplat($name)
       $file=0;
     }
     $articl['vues']=$file;
+    $rest=restauration::where('idrestauration','=',$articl['idrestauration'])->first();
+    $user = User::select('idmembre','codemembre')->where('idmembre',$rest['idmembre'])->first();
+    $articl['codemembre']=$user['codemembre'];
 }
 return response()->json($article); 
 }
 
 
-public function searchcategorieplat($name)
+public function searchcategorieplat(Request $req)
 {
+  $name=$req->input('name');
+  
   $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->orderBy('idmenu','desc')->paginate(30);
   foreach($article as $articl){
     if(auth('api')->user()){
@@ -794,6 +799,9 @@ public function searchcategorieplat($name)
       Storage::disk('vue')->put($articl->idmenu.'_menu.txt', 0);
       $file=0;
     }
+    $rest=restauration::where('idrestauration','=',$articl['idrestauration'])->first();
+    $user = User::select('idmembre','codemembre')->where('idmembre',$rest['idmembre'])->first();
+    $articl['codemembre']=$user['codemembre'];
     $articl['vues']=$file;
 }
 return response()->json($article); 
@@ -853,7 +861,7 @@ public function deleteplat($id)
 
 public function deleterestaurant($id)
 {
-  $annonce = restauration::where('idrestauration','=',$id)->first(); ; 
+  $annonce = restauration::where('idrestauration','=',$id)->first(); 
   $annonce->statut='suppression';
   $annonce->save();
 //  $article=$article->paginate(15);

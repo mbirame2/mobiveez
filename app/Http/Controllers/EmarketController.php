@@ -104,9 +104,10 @@ class EmarketController extends Controller
 
 
 
-    public function allannonce()
+    public function allannonce($pays)
     {
-      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->where('referenceannonce', 'like', $pays.'%')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      $allannonce=[];
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
@@ -483,11 +484,9 @@ class EmarketController extends Controller
     //  array_push($details, $iman->urlimage);
     
     }
-  //  $url=$time;
  
     return response()->json(['succes'=>"Modification de lannonce avec succes","code"=>200,
    
-    
     ]);            
 
   
@@ -1676,9 +1675,6 @@ public function listefavoris($id)
     $boutique['proprietaire']=$user;
     array_push($showrooms, $boutique);
    }
-   
-    
-   
    
   }
   return response()->json(['annonce'=>$annonces,'showroom'=>$showrooms], 200);
