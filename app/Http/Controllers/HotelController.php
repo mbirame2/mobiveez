@@ -270,10 +270,14 @@ class HotelController extends Controller
      */
 
 
-        public function getchambre() {
+        public function getchambre($pays) {
      //   $list=[31,32,33,34,35,36];
     
-        $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->orderBy('idchambre','desc')->paginate(30);
+        $article = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->where('statut','acceptee')->orderBy('idchambre','desc')->whereHas('hebergement', function ($query) use ($pays) {
+            $query->whereHas('user', function ($query) use ($pays) {
+                $query->where('codemembre', 'like', $pays.'%');
+             });
+         })->paginate(30);
         foreach($article as $articl){
             $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
             $articl['idmembre']=$hebergement['idmembre'];
@@ -855,10 +859,13 @@ class HotelController extends Controller
               }else if(!$req->input('prixmax') && $req->input('prixmin')){
                 $query->Where( 'prix','>=',$req->input('prixmin'));
               }
-        });
+        })->get();
+        
     } else{
         $idhebergement='';
       }
+     // return response()->json([$idhebergement]);
+      
           $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($req,$idhebergement) {
             $query->where('typehebergement', 'LIKE',   '%' . $req->input('typehebergement') . '%' );
             $query->where('id_dep', $req->input('id_dep')  );
@@ -870,6 +877,7 @@ class HotelController extends Controller
             if($idhebergement!=''){
             $query->whereIn('idhebergement', $idhebergement); }
             })->orderBy('idhebergement','desc')->paginate(30);
+           // return $article;
         foreach($article as $articl){
              
               $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();

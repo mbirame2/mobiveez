@@ -389,9 +389,13 @@ public function delete_panier($id)
 
       /////////LES CONTROLLEURS DE GET METHODE/////////////////
  
-    public function getplat()
+    public function getplat($pays)
     {
-      $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->orderBy('idmenu','desc')->paginate(30);
+      $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->whereHas('restauration', function ($query) use ($pays) {
+        $query->whereHas('membre', function ($query) use ($pays) {
+            $query->where('codemembre', 'like', $pays.'%');
+         });
+     })->orderBy('idmenu','desc')->paginate(30);
       foreach($article as $articl){
     
         if(auth('api')->user()){

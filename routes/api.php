@@ -298,7 +298,7 @@ Route::group([
    Route::get('/onereservationchambre/{id}',  ['uses'=>'HotelController@onereservationchambre']);
    
    Route::post('/filter_chambre',  ['uses'=>'HotelController@filter_chambre']);
-   Route::post('/filter_hotel',  ['uses'=>'HotelController@filter_hotel']);
+  # Route::post('/filter_hotel',  ['uses'=>'HotelController@filter_hotel']);
 
    Route::post('/addgestionnaire',  ['uses'=>'HotelController@addgestionnaire']);
    Route::get('/listegestionnaire/{id}',  ['uses'=>'HotelController@listegestionnaire']);
@@ -330,7 +330,7 @@ Route::group([
    Route::get('/hotel/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
    Route::get('/hotel/getchambreservice',  ['uses'=>'HotelController@getchambreservice']);
    Route::get('/hotel/gethotelservice',  ['uses'=>'HotelController@gethotelservice']);
-   Route::get('/hotel/getchambre',  ['uses'=>'HotelController@getchambre']);
+   Route::get('/hotel/getchambre/{pays}',  ['uses'=>'HotelController@getchambre']);
    Route::get('/hotel/gethotel',  ['uses'=>'HotelController@gethotel']);
    Route::get('/hotel/search_hotel/{name}',  [ 'uses'=>'HotelController@search_hotel']);
    Route::get('/hotel/search_chambre/{name}',  [ 'uses'=>'HotelController@search_chambre']);
@@ -338,7 +338,7 @@ Route::group([
    Route::post('/hotel/filter_hotel',  ['uses'=>'HotelController@filter_hotel']);
   
   // RESTAURANT/
-   Route::get('/restaurant/getplat',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
+   Route::get('/restaurant/getplat/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
    Route::get('/restaurant/getrestaurant',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
    Route::get('/restaurant/oneplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@oneplat']);
    Route::get('/restaurant/onerestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@onerestaurant']);

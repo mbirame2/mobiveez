@@ -20,5 +20,8 @@ class chambre extends Model
        'prix','idhebergement','typechambre','capacite','description','typelit','climatisation','douche','baignoire','televiseur','refrigerateur','minibar','eauminerale','balcon','selectionfilm','conditionannulation','ventilation','petitdejeuner','bloquer_reservation','jacuzziprivee' ,'statut'
     ];
 
+    public function hebergement(){
+      return $this->belongsTo('App\hebergement','idhebergement');
+  }
 
 }
