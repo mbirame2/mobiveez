@@ -296,10 +296,12 @@ class HotelController extends Controller
         return response()->json($article); 
     }
 
-    public function gethotel() {
+    public function gethotel($pays) {
       //  $list=[31,32,33,34,35,36];
     
-        $article = hebergement::select('idhebergement','id_dep','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->orderBy('idhebergement','desc')->paginate(30);
+        $article = hebergement::select('idhebergement','id_dep','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->whereHas('user', function ($query) use ($pays) {
+             $query->where('codemembre',  'like', $pays.'%');
+            })->orderBy('idhebergement','desc')->paginate(30);
         foreach($article as $articl){
            
             $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();

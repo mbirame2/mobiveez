@@ -12,5 +12,7 @@ class boutique extends Model
     protected $fillable = [
       'etatshowroom','idmembre','id_dep', 'localisation','idcategorieshowroom','nomshowroom','descriptionshowroom','telephone','jourdebut','jourfin','heuredebut','heurefin','siteweb','logoshowroom','dateshowroom'
     ];
-   
+    public function user(){
+      return $this->belongsTo('App\User','idmembre');
+  }
 }

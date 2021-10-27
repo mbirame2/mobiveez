@@ -644,10 +644,12 @@ class EmarketController extends Controller
       return response()->json($annonces); 
     }
 
-    public function getboutique()
+    public function getboutique($pays)
     {
    //   $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',auth('api')->user()->idmembre)->first();
-      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','etatshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->orderBy('idshowroom','desc')->paginate(30);
+      $boutique = boutique::select('idmembre','descriptionshowroom','idshowroom','etatshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where('etatshowroom','acceptee')->whereHas('user', function ($query) use ($pays) {
+        $query->where('codemembre',  'like', $pays.'%');
+       })->orderBy('idshowroom','desc')->paginate(30);
       foreach($boutique as $articl){
       //  $membre = User::select('idmembre','nom','prenom','codemembre')->where('idmembre',$articl->idmembre)->first();
         //$articl['user']=$membre;

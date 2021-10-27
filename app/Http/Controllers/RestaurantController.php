@@ -420,12 +420,15 @@ public function delete_panier($id)
     return response()->json($article); 
   }
 
-  public function getrestaurant()
+  public function getrestaurant($pays)
   {
    // $list=[31,32,33,34,35,36];
     $list=ApiController::getidservicewithmoduleonly("Restauration");
 
-    $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
+    $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->whereHas('membre', function ($query) use ($pays) {
+     // $query->whereIn('idannonce', $service);
+      $query->where('codemembre',  'like', $pays.'%');
+     })->paginate(30);
     foreach($article as $articl){
       if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
       $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
