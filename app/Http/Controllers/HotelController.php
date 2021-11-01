@@ -738,12 +738,14 @@ class HotelController extends Controller
        return response()->json($gest); 
      }
 
-     public function search_hotel($name) {
+     public function search_hotel($pays,$name) {
         //  $list=[31,32,33,34,35,36];
       
           $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($name) {
             $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
-            })->orderBy('idhebergement','desc')->paginate(30);
+            })->whereHas('user', function ($query) use ($pays) {
+                $query->where('codemembre',  'like', $pays.'%');
+               })->orderBy('idhebergement','desc')->paginate(30);
         foreach($article as $articl){
              
               $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
@@ -758,7 +760,7 @@ class HotelController extends Controller
           return response()->json($article); 
       }
 
-      public function search_chambre($name) {
+      public function search_chambre($pays,$name) {
         $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->get(); 
         $idhebergement = hebergement::select('idhebergement')->where('adresse', 'LIKE', '%' . $name . '%')->orWhereIn('id_dep', $dept)->get();
         //return $idhebergement;
@@ -767,7 +769,11 @@ class HotelController extends Controller
             $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');
             $query->orWhere( 'prix', 'LIKE', '%' . $name . '%');
             $query->orWherein( 'idhebergement', $idhebergement);
-            })->orderBy('idchambre','desc')->paginate(30);
+            })->whereHas('hebergement', function ($query) use ($pays) {
+                $query->whereHas('user', function ($query) use ($pays) {
+                    $query->where('codemembre', 'like', $pays.'%');
+                 });
+             })->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
                $articl['idmembre']=$hebergement['idmembre'];

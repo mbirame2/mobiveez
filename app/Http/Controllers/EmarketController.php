@@ -518,7 +518,7 @@ class EmarketController extends Controller
       return response()->json($article); 
     }
 
-    public function search_article($name)
+    public function search_article($pays,$name)
     {
       $list=souscategorie::select('id_souscat')->with('categorie')->whereHas('categorie', function ($query) use($name) {
         $query->where('nom_cat', 'LIKE', '%' . $name . '%');
@@ -552,7 +552,7 @@ class EmarketController extends Controller
         });
 
        // $query->orderByRaw("FIELD(titre , '$name' ) ");
-      })->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
+      })->where('referenceannonce', 'like', $pays.'%')->orderByRaw("FIELD(titre , '$name' ) ")->orderBy('idannonce','desc')->paginate(30);
       
 
      foreach($annonce as $articl){
@@ -931,7 +931,7 @@ class EmarketController extends Controller
     }
 
 
-    public function search_boutique($name)
+    public function search_boutique($pays,$name)
     {
       $dept=departement::select('id_dept')->where('lib_dept','LIKE', '%' . $name . '%')->first(); 
      // return $dept;
@@ -945,7 +945,9 @@ class EmarketController extends Controller
        if($dept){
         $query->orWhere( 'id_dep', $dept->id_dept);}
        
-        })->orderBy('idshowroom','desc')->paginate(30);
+        })->whereHas('user', function ($query) use ($pays) {
+          $query->where('codemembre',  'like', $pays.'%');
+         })->orderBy('idshowroom','desc')->paginate(30);
   
    //   $sscat =souscategorie::select('id_souscat')->where('nom_souscat','LIKE','%'.$name.'%')->get(); 
      // echo($sscat);

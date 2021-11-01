@@ -714,7 +714,7 @@ public function getrestaurationservice()
 
   return response()->json($servicevendu); 
 }
-public function searchrestaurant($name)
+public function searchrestaurant($pays,$name)
 {
  
 
@@ -722,7 +722,10 @@ public function searchrestaurant($name)
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
-    })->orderBy('idrestauration','desc')->paginate(30);
+    })->whereHas('membre', function ($query) use ($pays) {
+      // $query->whereIn('idannonce', $service);
+       $query->where('codemembre',  'like', $pays.'%');
+      })->orderBy('idrestauration','desc')->paginate(30);
 
    // $list=[31,32,33,34,35,36];
     $list=ApiController::getidservicewithmoduleonly("Restauration");
@@ -756,12 +759,16 @@ return response()->json($article);
 
 
 }
-public function searchplat($name)
+public function searchplat($pays,$name)
 {
   $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->where(function ($query) use($name) {
     $query->whereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(plat) like ?', '%'.strtolower($name).'%');
-    })->paginate(30);
+    })->whereHas('restauration', function ($query) use ($pays) {
+      $query->whereHas('membre', function ($query) use ($pays) {
+          $query->where('codemembre', 'like', $pays.'%');
+       });
+   })->paginate(30);
   foreach($article as $articl){
   $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
   if($result){
