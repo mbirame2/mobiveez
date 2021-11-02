@@ -1112,7 +1112,7 @@ class EmarketController extends Controller
      
       return response()->json(['success'=>"Ajout panier avec succés"], 200); 
     }
-    public function getboutiqueservice()
+    public function getboutiqueservice($pays)
     {
      // $list=service::select('idService')->where('module','Showroom')->get();
 
@@ -1120,9 +1120,13 @@ class EmarketController extends Controller
       
       $list=ApiController::getidservicewithmoduleonly("Showroom");
 
+      $boutique = boutique::select('idshowroom')->where('etatshowroom','acceptee')->whereHas('user', function ($query) use ($pays) {
+        $query->where('codemembre',  'like', $pays.'%');
+       })->get();
+
       //return $list;
 
-      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
+      $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $boutique)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){
         $annonce = boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom')->where([['idshowroom',$articl->idannonce],['etatshowroom','acceptee']])->first();
         $cat= categorie::select('lib_cat','lib_caten')->where('id_cat', $annonce->idcategorieshowroom)->first();
@@ -1252,7 +1256,7 @@ class EmarketController extends Controller
       return response()->json(['success'=>"Suppression de la commande avec succés"], 200); 
     }
 
-    public function getarticleservice()
+    public function getarticleservice($pays)
     {
      
      // $list=service::select('idService')->where('module','Annonce')->get();
@@ -1261,7 +1265,7 @@ class EmarketController extends Controller
       $list=ApiController::getidservicewithmoduleonly("Annonce");
 
 
-      $annonce = annonce::select('idannonce')->where('statut','acceptee')->get();
+      $annonce = annonce::select('idannonce')->where('referenceannonce', 'like', $pays.'%')->where('statut','acceptee')->get();
 
       $servicevendu = servicevendu::select('idannonce','idservice','dateachat','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
       foreach($servicevendu as $articl){

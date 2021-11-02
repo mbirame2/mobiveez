@@ -328,8 +328,8 @@ Route::group([
    /// HOTEL //////
    Route::get('/hotel/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
    Route::get('/hotel/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
-   Route::get('/hotel/getchambreservice',  ['uses'=>'HotelController@getchambreservice']);
-   Route::get('/hotel/gethotelservice',  ['uses'=>'HotelController@gethotelservice']);
+   Route::get('/hotel/getchambreservice/{pays}',  ['uses'=>'HotelController@getchambreservice']);
+   Route::get('/hotel/gethotelservice/{pays}',  ['uses'=>'HotelController@gethotelservice']);
    Route::get('/hotel/getchambre/{pays}',  ['uses'=>'HotelController@getchambre']);
    Route::get('/hotel/gethotel/{code}',  ['uses'=>'HotelController@gethotel']);
    Route::get('/hotel/search_hotel/{pays}/{name}',  [ 'uses'=>'HotelController@search_hotel']);
@@ -345,8 +345,8 @@ Route::group([
    Route::get('/restaurant/search_plat/{pays}/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
    Route::get('/restaurant/search_restaurant/{pays}/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
    Route::post('/restaurant/filter_restaurant',  ['as'=>'lo','uses'=>'RestaurantController@filter_restaurant']);
-   Route::get('/restaurant/getplatvip',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
-   Route::get('/restaurant/getrestaurationvip',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
+   Route::get('/restaurant/getplatvip/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
+   Route::get('/restaurant/getrestaurationvip/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
    Route::get('/restaurant/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
    Route::get('/restaurant/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
    Route::post('/restaurant/searchcategorieplat',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
@@ -363,8 +363,8 @@ Route::group([
    Route::get('/emarket/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
    Route::get('/emarket/getboutique/{code}',  ['as'=>'lo','uses'=>'EmarketController@getboutique']); 
    Route::get('/emarket/getarticleboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@getarticleboutique']); 
-   Route::get('/emarket/getarticlevip',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
-   Route::get('/emarket/getboutiquevip',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
+   Route::get('/emarket/getarticlevip/{code}',  ['as'=>'lo','uses'=>'EmarketController@getarticleservice']);
+   Route::get('/emarket/getboutiquevip/{code}',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
    Route::get('/emarket/getannonce/{code}',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
 
 

@@ -666,12 +666,16 @@ public function typecuisine()
   return response()->json($service); 
 }
 
-public function getplatservice()
+public function getplatservice($pays)
 {
  // $list=[697,698,699];
-  $list=ApiController::getidservicewithmoduleonly("Menu");
+  $list=ApiController::getidservicewithmoduleonly("Restauration");
 
-  $annonce = plat::select('idmenu')->where('statut','acceptee')->get();
+  $annonce = plat::select('idmenu')->whereHas('restauration', function ($query) use ($pays) {
+    $query->whereHas('membre', function ($query) use ($pays) {
+        $query->where('codemembre', 'like', $pays.'%');
+     });
+ })->where('statut','acceptee')->get();
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
     $annonce = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','bloquer_commande','plat')->where('idmenu',$articl->idannonce)->first();
@@ -691,12 +695,14 @@ public function getplatservice()
 }
 
 
-public function getrestaurationservice()
+public function getrestaurationservice($pays)
 {
  // $list=[31,32,33,34,35,36];
   $list=ApiController::getidservicewithmoduleonly("Restauration");
 
-  $annonce = restauration::select('idrestauration')->where('statut','acceptee')->get();
+  $annonce = restauration::select('idrestauration')->whereHas('membre', function ($query) use ($pays) {
+     $query->where('codemembre',  'like', $pays.'%');
+    })->where('statut','acceptee')->get();
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
     $annonce = restauration::select('adresse','idmembre','id_dep','designation', 'fermeture','idrestauration','ouverture','typerestauration')->where('idrestauration',$articl->idannonce)->first();
