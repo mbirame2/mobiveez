@@ -347,7 +347,7 @@ Route::group([
    Route::post('/restaurant/filter_restaurant',  ['as'=>'lo','uses'=>'RestaurantController@filter_restaurant']);
    Route::get('/restaurant/getplatvip/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getplatservice']);
    Route::get('/restaurant/getrestaurationvip/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurationservice']);
-   Route::get('/restaurant/searchcategorieplat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
+   Route::get('/restaurant/searchcategorieplat/{pays}/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
    Route::get('/restaurant/platrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@platrestaurant']);
    Route::post('/restaurant/searchcategorieplat',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
 
@@ -355,7 +355,7 @@ Route::group([
    //////// E-MARKET////////////
 
    Route::post('/emarket/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);
-
+   Route::post('/emarket/filter_boutique',  ['as'=>'lo','uses'=>'EmarketController@filter_boutique']);
    Route::get('/emarket/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
    Route::get('/emarket/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
    Route::get('/emarket/search_article/{pays}/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 

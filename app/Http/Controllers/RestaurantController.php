@@ -797,11 +797,15 @@ return response()->json($article);
 }
 
 
-public function searchcategorieplat(Request $req)
+public function searchcategorieplat($pays,$name)
 {
-  $name=$req->input('name');
+ // $name=$req->input('name');
   
-  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->orderBy('idmenu','desc')->paginate(30);
+  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->whereHas('restauration', function ($query) use ($pays) {
+    $query->whereHas('membre', function ($query) use ($pays) {
+        $query->where('codemembre', 'like', $pays.'%');
+     });
+ })->where([['statut','acceptee'],['categorie_plat', 'LIKE','%'.$name.'%']])->orderBy('idmenu','desc')->paginate(30);
   foreach($article as $articl){
     if(auth('api')->user()){
       $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
@@ -1144,7 +1148,9 @@ if($idmembre!=''){
 if($specialite!=''){
   $query->whereIn('idrestauration', $specialite);
 }
-})
+})->whereHas('membre', function ($query) use ($req) {
+   $query->where('codemembre',  'like',  $req->input('pays').'%');
+  })
 ->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
 
 

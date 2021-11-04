@@ -910,7 +910,9 @@ class EmarketController extends Controller
 
     public function filter_boutique(Request $req)
     {
-      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->where([['etatshowroom','acceptee'],['idcategorieshowroom',$req->id_cat]])->orderBy('idshowroom','desc')->get();
+      $annonce =boutique::select('idmembre','descriptionshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->whereHas('user', function ($query) use ($req) {
+        $query->where('codemembre',  'like', $req->pays.'%');
+       })->where([['etatshowroom','acceptee'],['idcategorieshowroom',$req->id_cat]])->orderBy('idshowroom','desc')->get();
 
 
       foreach($annonce as $ann){
@@ -1492,7 +1494,7 @@ class EmarketController extends Controller
  
 //return  $souscategorie;
 //var_dump($results);die();
-    $annonce= annonce::with('departement')->where(function ($query) use($req,$souscategorie) {
+    $annonce= annonce::with('departement')->where('referenceannonce', 'like', $req->input('pays').'%')->where(function ($query) use($req,$souscategorie) {
        $query->where('referenceannonce', 'LIKE', '%' . $req->input('reference') . '%');
       $query->Where( 'localisation', 'LIKE','%'.$req->input('localisation').'%');
       $query->Where( 'titre', 'LIKE','%'.$req->input('titre').'%');

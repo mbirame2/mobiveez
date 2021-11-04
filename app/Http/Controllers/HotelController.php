@@ -841,7 +841,11 @@ class HotelController extends Controller
                 $query->whereIn('idhebergement', $idhebergement);
          //     }
 
-            })->select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->orderBy('idchambre','desc')->paginate(30);
+            })->whereHas('hebergement', function ($query) use ($req) {
+                $query->whereHas('user', function ($query) use ($req) {
+                    $query->where('codemembre', 'like', $req->pays.'%');
+                 });
+             })->select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit')->orderBy('idchambre','desc')->paginate(30);
            // return $article;
 
            foreach($article as $articl){
@@ -882,9 +886,12 @@ class HotelController extends Controller
       }
      // return response()->json([$idhebergement]);
       
-          $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($req,$idhebergement) {
+          $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->whereHas('user', function ($query) use ($req) {
+            $query->where('codemembre',  'like', $req->input('pays') .'%');
+           })->where(function ($query) use($req,$idhebergement) {
             $query->where('typehebergement', 'LIKE',   '%' . $req->input('typehebergement') . '%' );
-            $query->where('id_dep', $req->input('id_dep')  );
+            if($req->input('id_dep')) $query->where('id_dep', $req->input('id_dep')  );
+            
             $query->where('adresse', 'LIKE',   '%' . $req->input('adresse') . '%' );
             $query->where('heurearrivee', 'LIKE',   '%' . $req->input('heurearrivee') . '%' );
             $query->where('heuredepart', 'LIKE',   '%' . $req->input('heuredepart') . '%' );
