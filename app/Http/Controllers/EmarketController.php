@@ -1468,17 +1468,21 @@ class EmarketController extends Controller
      // $commande= new commande;
       $result=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
       
-      $img=$req->input('image');
+    //  $img=$req->input('image');
+      $time=$result->idmembre.'-'.time().'.png';
+
+    $data=$req->file('image');
+    $result->profil=$time;
       
-       $base64_str = substr($img, strpos($img, ",")+1);
+     //  $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
-        $data = base64_decode($base64_str);
-        $time=$result->idmembre.'-'.time().'.png';
-        Storage::disk('profil')->put($time, $data);
+       // $data = base64_decode($base64_str);
+       // $time=$result->idmembre.'-'.time().'.png';
+        Storage::disk('profil')->put($time, file_get_contents($data));
         $result->profil="profil/".$time ;
 
         $result->save();
-      return response()->json(['success'=>"Image de l'utilisateur mise à jour"], 200);            
+      return response()->json(['success'=>"Image de l'utilisateur mise à jour",'image'=>$result->profil], 200);            
     }
     public function filter_article(Request $req)
     {
