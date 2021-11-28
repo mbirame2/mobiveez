@@ -314,7 +314,7 @@ class ApiController extends Controller
                   'Content-Type: application/pdf',
                 );
 
-        return response()->download($file, 'filename.pdf', $headers);
+        return response()->download($file, 'cgu_'.$version.'.pdf', $headers);
     }
  
 }
