@@ -158,10 +158,8 @@ class AuthentificationController extends Controller
 
     public function me()
     {
-       
             return response()->json(auth('api')->user() );
-        
-            
+
     }
     
     public function getuser($id)
@@ -172,7 +170,6 @@ class AuthentificationController extends Controller
             $user['departement']=$dep->lib_dept;
             return response()->json($user);
         
-            
     }
     public function sendmail($mail)
     {
@@ -280,12 +277,12 @@ class AuthentificationController extends Controller
     public function logout()
     {
 
-     //   if (Auth::check()) {
-          //  return auth('api')->user()->idmembre;
+
+        
     Auth::logout();
     
     OauthAccessToken::where("user_id", auth('api')->user()->idmembre)->delete(); 
-     //    }
+     
         return response()->json([
             'message' => 'Successfully logged out',
             'status' => 200

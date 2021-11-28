@@ -18,6 +18,8 @@ Route::group([
    'prefix'=>'auth',
    'middleware' => 'cors',
 ],function($route){
+      Route::get('/download/cgu/{version}',  ['as'=>'lo','uses'=>'ApiController@getDownload']); 
+
       Route::get('/sendmail/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
       Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
       

@@ -1484,6 +1484,7 @@ class EmarketController extends Controller
         $result->save();
       return response()->json(['success'=>"Image de l'utilisateur mise à jour",'image'=>$result->profil], 200);            
     }
+    
     public function filter_article(Request $req)
     {
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  

@@ -300,5 +300,21 @@ class ApiController extends Controller
       $service=service::select('idService')->where('module',$module)->get();
       return $service; 
     }
+
+        public function getDownload($version)
+    {
+        //PDF file is stored under project/public/download/info.pdf
+        if($version=='fr'){
+          $file= public_path(). "/storage/cgu_files/CONDITIONS GENERALES D'UTILISATION - IVEEZ_FRANCAIS.pdf";
+        } else if($version=='en'){
+          $file= public_path(). "/storage/cgu_files/TERMS OF USE- IVEEZ_ENGLISH.pdf";
+        }
+
+        $headers = array(
+                  'Content-Type: application/pdf',
+                );
+
+        return response()->download($file, 'filename.pdf', $headers);
+    }
  
 }
