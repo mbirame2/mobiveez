@@ -1471,14 +1471,18 @@ class EmarketController extends Controller
     //  $img=$req->input('image');
       $time=$result->idmembre.'-'.time().'.png';
 
-    $data=$req->file('image');
-    $result->profil=$time;
+      $data=$req->input('image');
+      
       
      //  $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
        // $data = base64_decode($base64_str);
        // $time=$result->idmembre.'-'.time().'.png';
-        Storage::disk('profil')->put($time, file_get_contents($data));
+      // $filepath = public_path('uploads/');
+       $filepath = storage_path('app/public/profil');
+       move_uploaded_file($_FILES['filename']['tmp_name'], $filepath.$time);
+
+       // Storage::disk('profil')->put($time, file_get_contents($data));
         $result->profil="profil/".$time ;
 
         $result->save();
