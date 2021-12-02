@@ -1480,7 +1480,7 @@ class EmarketController extends Controller
        // $time=$result->idmembre.'-'.time().'.png';
       // $filepath = public_path('uploads/');
        $filepath = storage_path('app/public/profil');
-       move_uploaded_file($_FILES['filename']['tmp_name'], $filepath.$time);
+       move_uploaded_file($req->filename['tmp_name'], $filepath.$time);
 
        // Storage::disk('profil')->put($time, file_get_contents($data));
         $result->profil="profil/".$time ;
