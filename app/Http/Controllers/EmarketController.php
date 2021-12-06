@@ -195,7 +195,7 @@ class EmarketController extends Controller
       $annonce->referenceannonce=$req->input('codemembre').'-'.$artic;
       $annonce->typeannonce=$req->input('publish_type');
       $annonce->paiementtranche=$req->input('payment_type');
-      $dept=departement::where('lib_dept',$req->input('city'))->first(); 
+      $dept=departement::where('id_dept',$req->input('id_dept'))->first(); 
       $annonce->departement()->associate($dept);
       $annonce->titre=$req->input('title');
       $annonce->troc='non';
