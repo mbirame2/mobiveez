@@ -9,10 +9,10 @@
         </head>
     <body>
          
-        <p>Bienvenue dans Iveez! </p>
-        <p> Votre code de vérification est :</p>
+        <p>{{$details['title']}} </p>
+        <p>  {{$details['subject']}}</p>
         <h3>{{$details['code']}}</h3>
      
-        <p>Si vous n'êtes pas à l'origine de cette action, vous pouvez ignorer ce message.</p>
+        <p> {{$details['advice']}} </p>
         
     </body>

@@ -20,7 +20,7 @@ Route::group([
 ],function($route){
       Route::get('/download/cgu/{version}',  ['as'=>'lo','uses'=>'ApiController@getDownload']); 
 
-      Route::get('/sendmail/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
+      Route::get('/sendmail/{id}/{lang}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
       Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
       
       Route::post('/checkuser',  ['as'=>'lo','uses'=>'AuthentificationController@checkuser']); 

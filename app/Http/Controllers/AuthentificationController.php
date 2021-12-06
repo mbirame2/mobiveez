@@ -171,14 +171,27 @@ class AuthentificationController extends Controller
             return response()->json($user);
         
     }
-    public function sendmail($mail)
+    public function sendmail($mail,$lang)
     {
         $number=rand(1000,9999);
-        $details=[
+        if($lang=='fr'){
+            $details=[
              
-            'body'=>'Bienvenue dans Iveez. Votre code d activation est :',
-            'code'=>$number
-        ];
+                'subject'=>'Votre code de vérification est :',
+                'code'=>$number,
+                'title'=>'Bienvenue dans Iveez! ',
+                'advice'=>"Si vous n'êtes pas à l'origine de cette action, vous pouvez ignorer ce message.",
+            ];
+        } else if ($lang=='en'){
+            $details=[
+             
+                'subject'=>'Your verification code is :',
+                'code'=>$number,
+                'title'=>'Welcome to iveez!',
+                'advice'=>"If you did not initiate this action, you can ignore this message ",
+            ];
+        }
+        
         
       
             $user = User::where("email", $mail)->first();
