@@ -29,6 +29,6 @@ class ContactUser extends Mailable
      */
     public function build()
     {
-        return $this->from($this->details['from'])->subject("A propos de votre Article sur Iveez")->view('ContactMail');
+        return $this->from($this->details['from'])->subject($this->details['messageObject'])->view('ContactMail');
     }
 }
