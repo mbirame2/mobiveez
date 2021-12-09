@@ -29,6 +29,7 @@ class ContactUser extends Mailable
      */
     public function build()
     {
-        return $this->from($this->details['from'])->subject($this->details['messageObject'])->view('ContactMail');
+      //  return $this->details['subject'];
+        return $this->from($this->details['from'])->subject($this->details['subject'])->view('ContactMail');
     }
 }
