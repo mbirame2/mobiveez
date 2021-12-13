@@ -1469,9 +1469,16 @@ class EmarketController extends Controller
       $result=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
       
     //  $img=$req->input('image');
-      $time=$result->idmembre.'-'.time().'.png';
+    $filepath = storage_path('app/public/profil');
+    $time=$result->idmembre.'-'.time().'.'.$req->file('image')->getClientOriginalExtension();
 
-      $data=$req->input('image');
+ //   $req->file('image')->get
+    $req->file('image')->move($filepath,$time);
+   // $article->Imagename1=$req->file('imagename1')->getClientOriginalName();
+
+  //    $time=$result->idmembre.'-'.time().'.png';
+
+ //     $data=$req->input('image');
       
       
      //  $base64_str = substr($img, strpos($img, ",")+1);
@@ -1479,8 +1486,8 @@ class EmarketController extends Controller
        // $data = base64_decode($base64_str);
        // $time=$result->idmembre.'-'.time().'.png';
       // $filepath = public_path('uploads/');
-       $filepath = storage_path('app/public/profil');
-       move_uploaded_file($req->filename['tmp_name'], $filepath.$time);
+       
+    //   move_uploaded_file($req->filename['tmp_name'], $filepath.$time);
 
        // Storage::disk('profil')->put($time, file_get_contents($data));
         $result->profil="profil/".$time ;
