@@ -378,6 +378,8 @@ public function delete_panier($id)
     $articl['plat']=$article;
     $restauration = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$article['idrestauration'])->first();
     $articl['plat']['designation']=$restauration['designation'];
+    $user = User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
+    $articl['plat']['codemembre']=$user['codemembre'];
   } 
   if($panier->isEmpty()){
 
