@@ -1470,7 +1470,7 @@ class EmarketController extends Controller
       
     //  $img=$req->input('image');
     $filepath = storage_path('app/public/profil');
-    $time=$result->idmembre.'-'.time().'.'.$req->file('image')->getClientOriginalExtension();
+    $time=$result->idmembre.'-'.time().'.png';
 
  //   $req->file('image')->get
     $req->file('image')->move($filepath,$time);
