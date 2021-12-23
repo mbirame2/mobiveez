@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use File;
 use App\plat;
 use App\User;
-
+use App\Http\Controllers\ApiController;
 use Validator;
 use App\marque;
 use App\modele;
@@ -36,6 +36,7 @@ use App\souscategorie;
 use App\Mail\StatutUser;
 use App\propositionprix;
 use App\annoncesboutique;
+
 use App\livraisoncommande;
 use Illuminate\Http\Request;
 use App\tarificationlivraison;
@@ -45,6 +46,7 @@ use Illuminate\Console\Scheduling\Schedule;
 
 class EmarketController extends Controller
 {
+
     public function oneannonce($id)
     {
       $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
@@ -172,14 +174,12 @@ class EmarketController extends Controller
     }
 
 
-    public function annonce(Request $req){
+    public function annonce(Request $req, ApiController $apicontroller){
       $validator = Validator::make($req->all(), [ 
-        'city' => 'required', 
         'publish_type' => 'required', 
         'price' => 'required', 
         'payment_type' => 'required', 
         'title' => 'required', 
-        'publish_type' => 'required', 
     ]); 
       
           //var_dump(auth('api')->user()->id_professionnel);die();
@@ -292,19 +292,26 @@ class EmarketController extends Controller
      // var_dump($a);die();
       for($i=0;$i<$req->numberOfImages;$i++){
         $iman= new imageannonce;
-        $img=$req->input('image'.$i);
+      //  $img=$req->input('image'.$i);
       
-        $base64_str = substr($img, strpos($img, ",")+1);
+     //   $base64_str = substr($img, strpos($img, ",")+1);
         //var_dump($base64_str);die();
-        $data = base64_decode($base64_str);
+     //   $data = base64_decode($base64_str);
+       // $time=$a->idannonce+$i.'-'.time().'.png';
+      //  Storage::disk('annonce')->put($time, $data);
+
+      //  $time=$result->idmembre.'-'.time().'.png';
         $time=$a->idannonce+$i.'-'.time().'.png';
-        Storage::disk('annonce')->put($time, $data);
+        $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+
         $iman->idannonce= $a->idannonce;  
         $iman->urlimage="photo/".$time;  
         $iman->parametre=$i; 
         //array_push($details, $annonce);
         $iman->save();
         $details['image'.$i]=$iman->urlimage;
+
+
       //  array_push($details, $iman->urlimage);
       
       }
@@ -336,7 +343,7 @@ class EmarketController extends Controller
 
 
   
-  public function updateannonce(Request $req){
+  public function updateannonce(Request $req, ApiController $apicontroller){
     
     $annonce= annonce::where('idannonce',$req->input('idannonce'))->first(); 
     //$ss=souscategorie::where('id_souscat',$req->input('subcategory'))->first(); 
@@ -411,13 +418,10 @@ class EmarketController extends Controller
           //  $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
 
           } else  if ( !$req->input('idautomobile')) {
-          
             $automobile= new automobile;
-         
           }
           if($req->input('idmodelevoiture')){
             modele::where('idmodelevoiture',$req->input('idmodelevoiture'))->delete(); 
-
           }
 
           if($req->input('designation_modelevoiture')){
@@ -429,11 +433,6 @@ class EmarketController extends Controller
             $a=modele::latest('idmodelevoiture')->first();
            $automobile->idmodelevoiture=$a->idmodelevoiture;
           } 
-       
-          
-     // $marque=marque::where( 'idmarquevoiture', $req->input('idmarquevoiture'))->first(); 
-
-     
     
 
       $automobile->vehicule_type=$req->input('vehicule_type'); 
@@ -468,13 +467,16 @@ class EmarketController extends Controller
 
     for($i=0;$i<$req->numberOfImages;$i++){
       $iman= new imageannonce;
-      $img=$req->input('image'.$i);
+      //$img=$req->input('image'.$i);
     
-      $base64_str = substr($img, strpos($img, ",")+1);
+     // $base64_str = substr($img, strpos($img, ",")+1);
       //var_dump($base64_str);die();
-      $data = base64_decode($base64_str);
+      //$data = base64_decode($base64_str);
       $time=$req->idannonce+$i.'-'.time().'.png';
-      Storage::disk('annonce')->put($time, $data);
+      //Storage::disk('annonce')->put($time, $data);
+      //$time=$a->idannonce+$i.'-'.time().'.png';
+      $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+
       $iman->idannonce= $req->idannonce;  
       $iman->urlimage="photo/".$time;  
       $iman->parametre=$i; 
@@ -893,13 +895,13 @@ class EmarketController extends Controller
       $boutique->dateshowroom=date("Y-m-d H:i:s");
       
       if($req->input('logo')){
-        $img=$req->input('logo');
-      $base64_str = substr($img, strpos($img, ",")+1);
+      //  $img=$req->input('logo');
+    //  $base64_str = substr($img, strpos($img, ",")+1);
       //var_dump($base64_str);die();
-      $data = base64_decode($base64_str);
+   //   $data = base64_decode($base64_str);
       $time=$boutique->idmembre.'-'.time().'.png';
-      Storage::disk('annonce')->put($time, $data);
-    
+      $apicontroller->saveimage('app/public/profil',$time,$req->file('logo'));
+
       $boutique->logoshowroom="photo/".$time; 
       }
       $boutique->save();
@@ -1463,24 +1465,15 @@ class EmarketController extends Controller
       return response()->json($commande);   
     }
     
-    public function imageprofil(Request $req)
+    public function imageprofil(Request $req, ApiController $apicontroller)
     {
      // $commande= new commande;
       $result=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
       
-    //  $img=$req->input('image');
-    $filepath = storage_path('app/public/profil');
-    $time=$result->idmembre.'-'.time().'.png';
-
- //   $req->file('image')->get
-    $req->file('image')->move($filepath,$time);
- 
-    
-
-       // Storage::disk('profil')->put($time, file_get_contents($data));
-        $result->profil="profil/".$time ;
-
-        $result->save();
+      $time=$result->idmembre.'-'.time().'.png';
+      $apicontroller->saveimage('app/public/profil',$time,$req->file('image'));
+      $result->profil="profil/".$time ;
+      $result->save();
       return response()->json(['success'=>"Image de l'utilisateur mise à jour",'image'=>$result->profil], 200);            
     }
     
@@ -1489,7 +1482,6 @@ class EmarketController extends Controller
    //  $annonce=annonce::where([['titre','LIKE','%'.$req->input('titre').'%'],['referenceannonce','LIKE','%'.$req->input('reference').'%'],['titre','LIKE','%'.$req->input('titre').'%'],['statut','acceptee']])->get();  
   if($req->input('categorie')){
     $name=$req->input('categorie');
-   
     $souscategorie=souscategorie::select('id_souscat')->where('id_cat',$name)->get();
   }
   else{

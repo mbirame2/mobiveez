@@ -26,7 +26,7 @@ class HotelController extends Controller
      *  *****  REQUETE POST ***********
      */
 
-    public function chambre(Request $req){
+    public function chambre(Request $req, ApiController $apicontroller){
   
       
         if($req->input('idchambre')){
@@ -60,15 +60,17 @@ class HotelController extends Controller
         $chambre->save();
         $num=$chambre->idchambre;
         for($i=0;$i<$req->numberOfImages;$i++){
-            if($req->input('photochambre'.$i)){
+            if($req->file('photochambre'.$i)){
            
          
-             $img=$req->input('photochambre'.$i);
+           //  $img=$req->input('photochambre'.$i);
              $iman= new imagechambre;
-             $base64_str = substr($img, strpos($img, ",")+1);
-             $data = base64_decode($base64_str);
+          //   $base64_str = substr($img, strpos($img, ",")+1);
+            // $data = base64_decode($base64_str);
              $time=$num+$i.'-'.time().'.png';
-             Storage::disk('chambre')->put($time, $data);
+            // Storage::disk('chambre')->put($time, $data);
+             $apicontroller->saveimage('app/public/chambre',$time,$req->file('photochambre'.$i));
+
              $iman->idchambre= $chambre->idchambre;  
              $iman->urlimagechambre="chambre/".$time;  
              $iman->parametreimagechambre=$i; 
@@ -83,10 +85,10 @@ class HotelController extends Controller
   
       }
 
-      public function hebergement(Request $req){
+      public function hebergement(Request $req , ApiController $apicontroller){
   
       
-        if($req->input('idhebergement')){
+        if($req->input('idhebergement')){ 
             $hebergement= hebergement::where('idhebergement',$req->input('idhebergement'))->first();     
         }else{
             $hebergement= new hebergement;
@@ -120,16 +122,18 @@ class HotelController extends Controller
             $article->save();
         }
         for($i=0;$i<$req->numberOfImages;$i++){
-            if($req->input('photohebergement'.$i)){
+            if($req->file('photohebergement'.$i)){
            
          
-             $img=$req->input('photohebergement'.$i);
+         //    $img=$req->input('photohebergement'.$i);
              $iman= new imagehebergement;
-             $base64_str = substr($img, strpos($img, ",")+1);
+           //  $base64_str = substr($img, strpos($img, ",")+1);
              //var_dump($base64_str);die();
-             $data = base64_decode($base64_str);
+           //  $data = base64_decode($base64_str);
              $time=$num+$i.'-'.time().'.png';
-             Storage::disk('photohebergement')->put($time, $data);
+          //   Storage::disk('photohebergement')->put($time, $data);
+             $apicontroller->saveimage('app/public/photohebergement',$time,$req->file('photohebergement'.$i));
+
              $iman->idhebergement= $hebergement->idhebergement;  
              $iman->urlimagehebergement="photohebergement/".$time;  
              $iman->parametreimagehebergement=$i; 

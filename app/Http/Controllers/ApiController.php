@@ -168,6 +168,11 @@ class ApiController extends Controller
         return $response;
     
     }
+
+    public function saveimage($storage,$name,$req){
+      $filepath = storage_path($storage);
+      $req->move($filepath,$name);
+    }
     
     public function evenement(Request $req){
       $validator = Validator::make($req->all(), [ 

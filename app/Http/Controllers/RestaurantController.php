@@ -29,7 +29,7 @@ class RestaurantController extends Controller
 {
     
 
-    public function plat(Request $req){
+    public function plat(Request $req , ApiController $apicontroller){
     
         if($req->input('idmenu')){
           $annonce= plat::where('idmenu',$req->input('idmenu'))->first(); 
@@ -63,16 +63,18 @@ class RestaurantController extends Controller
         $annonce->restauration()->associate($article);
         $a=plat::latest('idmenu')->first();
         $num=$a->idmenu+1;
-        if($req->input('photo')){
+        if($req->file('photo')){
          
-          $img=$req->input('photo');
+      //    $img=$req->input('photo');
         
-          $base64_str = substr($img, strpos($img, ",")+1);
+      //    $base64_str = substr($img, strpos($img, ",")+1);
           //var_dump($base64_str);die();
           
-          $data = base64_decode($base64_str);
+      //    $data = base64_decode($base64_str);
           $time=$num.'-'.time().'.png';
-          Storage::disk('menu')->put($time, $data);
+     //     Storage::disk('menu')->put($time, $data);
+          $apicontroller->saveimage('app/public/menu',$time,$req->file('photo'));
+
           $annonce->photo="menu/".$time;
         }
        
@@ -266,7 +268,7 @@ public function addinvitetable($idreservation,$idmembre){
  
 }
 
-public function restauration(Request $req){
+public function restauration(Request $req , ApiController $apicontroller){
     
   if($req->input('idrestauration')){
     $annonce= restauration::where('idrestauration',$req->input('idrestauration'))->first(); 
@@ -296,16 +298,18 @@ public function restauration(Request $req){
 
   $num=$a->idrestauration;
   for($i=0;$i<$req->numberOfImages;$i++){
-   if($req->input('photorestauration'.$i)){
-  
-
-    $img=$req->input('photorestauration'.$i);
+   if($req->file('photorestauration'.$i)){
     $iman= new imagerestauration;
-    $base64_str = substr($img, strpos($img, ",")+1);
+
+   // $img=$req->input('photorestauration'.$i);
+   
+ //   $base64_str = substr($img, strpos($img, ",")+1);
     //var_dump($base64_str);die();
-    $data = base64_decode($base64_str);
+   // $data = base64_decode($base64_str);
     $time=$num+$i.'-'.time().'.png';
-    Storage::disk('photorestauration')->put($time, $data);
+  //  Storage::disk('photorestauration')->put($time, $data);
+    $apicontroller->saveimage('app/public/photorestauration',$time,$req->file('photorestauration'.$i));
+
     $iman->idrestauration= $annonce->idrestauration;  
     $iman->urlimagerestauration="photorestauration/".$time;  
     $iman->parametreimagerestauration=$i; 
