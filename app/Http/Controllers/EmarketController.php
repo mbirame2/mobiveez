@@ -866,7 +866,7 @@ class EmarketController extends Controller
   //  $article=$article->paginate(15);
       return response()->json($user); 
     }
-    public function boutique(Request $req){
+    public function boutique(Request $req, ApiController $apicontroller){
     
       
      
