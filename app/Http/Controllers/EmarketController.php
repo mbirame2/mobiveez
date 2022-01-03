@@ -900,7 +900,7 @@ class EmarketController extends Controller
       //var_dump($base64_str);die();
    //   $data = base64_decode($base64_str);
       $time=$boutique->idmembre.'-'.time().'.png';
-      $apicontroller->saveimage('app/public/profil',$time,$req->file('logo'));
+      $apicontroller->saveimage('app/public/photo',$time,$req->file('logo'));
 
       $boutique->logoshowroom="photo/".$time; 
       }
