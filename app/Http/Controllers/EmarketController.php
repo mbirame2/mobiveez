@@ -894,7 +894,7 @@ class EmarketController extends Controller
       
       $boutique->dateshowroom=date("Y-m-d H:i:s");
       
-      if($req->input('logo')){
+      if($req->file('logo')){
       //  $img=$req->input('logo');
     //  $base64_str = substr($img, strpos($img, ",")+1);
       //var_dump($base64_str);die();
