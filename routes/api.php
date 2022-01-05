@@ -338,6 +338,8 @@ Route::group([
    Route::get('/hotel/search_chambre/{pays}/{name}',  [ 'uses'=>'HotelController@search_chambre']);
    Route::post('/hotel/filter_chambre',  ['uses'=>'HotelController@filter_chambre']);
    Route::post('/hotel/filter_hotel',  ['uses'=>'HotelController@filter_hotel']);
+   Route::get('/hotel/chambreshotel/{id}',  ['uses'=>'HotelController@chambreshotel']);
+
   
   // RESTAURANT/
    Route::get('/restaurant/getplat/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);

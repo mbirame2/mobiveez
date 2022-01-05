@@ -747,9 +747,9 @@ class EmarketController extends Controller
 
     public function deleteannonce($id)
     {
-      $annonce = annonce::where('idannonce','=',$id)->first(); ; 
-      $annonce->statut='suppression';
-      $annonce->save();
+      $annonce = annonce::where('idannonce','=',$id)->delete(); 
+     // $annonce->statut='suppression';
+     // $annonce->save();
   //  $article=$article->paginate(15);
    
       return response()->json(['success'=>"Suppression de l' annonce avec succés"], 200); 
