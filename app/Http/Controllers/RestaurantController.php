@@ -325,7 +325,7 @@ public function restauration(Request $req , ApiController $apicontroller){
   Storage::disk('vue')->put($num.'_restauration.txt', 0);
 
   if($req->input('typecuisine')){
-    $typecuisine = $req->input('typecuisine');
+    $typecuisine = explode( ',', $req->input('typecuisine') ) ;
     $dept=specialite::where('idrestauration',$annonce->idrestauration)->delete(); 
 
     foreach($typecuisine as $type){
