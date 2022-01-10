@@ -352,7 +352,7 @@ class EmarketController extends Controller
   
     $annonce->typeannonce=$req->input('typeannonce');
     $annonce->paiementtranche=$req->input('paiementtranche');
-    $dept=departement::where('lib_dept',$req->input('lib_dept'))->first(); 
+    $dept=departement::where('id_dept',$req->input('id_dept'))->first(); 
     $annonce->departement()->associate($dept);
     $annonce->titre=$req->input('titre');
 
@@ -497,12 +497,12 @@ class EmarketController extends Controller
 
 
 
-    public function similarannonce($name)
+    public function similarannonce($pays,$name)
     {
     
      // $annonce=[];
      // $annonce=souscategorie::select('id_souscat')->where('nom_souscat',$name)->first();   
-      $article=annonce::select('titre','prix','localisation','referenceannonce','idannonce')->where([['idsouscategorie',$name],['statut','acceptee']])->orderBy('idannonce','desc')->paginate(30);
+      $article=annonce::select('titre','prix','localisation','referenceannonce','idannonce')->where([['idsouscategorie',$name],['statut','acceptee'],['referenceannonce', 'like', $pays.'%']])->orderBy('idannonce','desc')->paginate(30);
      // array_push($annonce, $sscat);
      foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
@@ -747,9 +747,9 @@ class EmarketController extends Controller
 
     public function deleteannonce($id)
     {
-      $annonce = annonce::where('idannonce','=',$id)->delete(); 
-     // $annonce->statut='suppression';
-     // $annonce->save();
+      $annonce = annonce::where('idannonce','=',$id)->first(); 
+      $annonce->statut='suppression';
+      $annonce->save();
   //  $article=$article->paginate(15);
    
       return response()->json(['success'=>"Suppression de l' annonce avec succés"], 200); 

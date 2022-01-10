@@ -361,7 +361,7 @@ Route::group([
    Route::post('/emarket/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);
    Route::post('/emarket/filter_boutique',  ['as'=>'lo','uses'=>'EmarketController@filter_boutique']);
    Route::get('/emarket/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
-   Route::get('/emarket/similarannonce/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
+   Route::get('/emarket/similarannonce/{pays}/{name}',  ['as'=>'lo','uses'=>'EmarketController@similarannonce']);
    Route::get('/emarket/search_article/{pays}/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_article']); 
    Route::get('/emarket/search_boutique/{pays}/{name}',  ['as'=>'lo','uses'=>'EmarketController@search_boutique']); 
    Route::get('/emarket/oneboutique/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneboutique']);    
