@@ -342,6 +342,7 @@ Route::group([
 
   
   // RESTAURANT/
+   Route::get('/restaurant/mesrestaurants/{id}',  ['as'=>'lo','uses'=>'RestaurantController@mesrestaurants']);
    Route::get('/restaurant/getplat/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getplat']);
    Route::get('/restaurant/getrestaurant/{pays}',  ['as'=>'lo','uses'=>'RestaurantController@getrestaurant']);
    Route::get('/restaurant/oneplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@oneplat']);
