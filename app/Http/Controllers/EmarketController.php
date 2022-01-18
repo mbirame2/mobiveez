@@ -125,6 +125,7 @@ class EmarketController extends Controller
         }
         if($membre){
           $articl['image']=$membre->urlimage;
+          $articl['image']['parametre']=$membre->parametre;
         }
        
         $articl['vues']=$file;
@@ -1423,6 +1424,8 @@ class EmarketController extends Controller
     if($id==0){
    
     $user->etatcompte=0;
+    $user->email='';
+    $user->telephoneportable='';
     $user->DateDesactivation=date("Y/m/d-h:i");
     $user->save();
       
@@ -1467,6 +1470,10 @@ class EmarketController extends Controller
     // Delete User
     //$user->delete();
     $details['body']="Votre compte Iveez ".auth('api')->user()->codemembre." vient d'etre supprimer. Merci.";
+
+    Auth::logout();
+    
+    OauthAccessToken::where("user_id", auth('api')->user()->idmembre)->delete(); 
 
     }else  if($id==1){
       $details['body']="Vous compte a été réactivé avec succes";
