@@ -1146,7 +1146,7 @@ $annonce= restauration::where(function ($query) use($req,$idmembre,$specialite) 
 
 
   $query->Where( 'designation', 'LIKE','%'.$req->input('designation').'%');
-  $query->Where( 'id_dep', 'LIKE','%'.$req->input('id_dep').'%');
+  $query->Where( 'id_dep', $req->input('id_dep'));
   $query->Where( 'typerestauration', 'LIKE','%'.$req->input('typerestauration').'%');
 if($idmembre!=''){
   $query->whereIn('idmembre', $idmembre);

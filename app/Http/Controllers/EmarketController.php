@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use File;
 use App\plat;
 use App\User;
-use App\Http\Controllers\ApiController;
 use Validator;
 use App\marque;
 use App\modele;
@@ -23,6 +22,7 @@ use App\automobile;
 use App\immobilier;
 use App\departement;
 use App\habillement;
+use App\hebergement;
 use App\marque_moto;
 use App\transaction;
 use App\gestionnaire;
@@ -37,10 +37,14 @@ use App\Mail\StatutUser;
 use App\propositionprix;
 use App\annoncesboutique;
 
+use App\reservationtable;
 use App\livraisoncommande;
 use Illuminate\Http\Request;
+use App\commanderestauration;
 use App\tarificationlivraison;
+use App\commandereservationtable;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Console\Scheduling\Schedule;
 
@@ -1414,15 +1418,55 @@ class EmarketController extends Controller
              
         'code'=> ''
     ];
-    $user=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
+    $idmembre=auth('api')->user()->idmembre;
+    $user=User::where('idmembre','=',$idmembre)->first(); 
     if($id==0){
    
-      
-    $Date1=date("Y/m/d-h:i");
-    $Date2 = date('Y/m/d-h:i', strtotime($Date1 . " + 3 day"));
-    $user->DateDesactivation=$Date2;
+    $user->etatcompte=0;
+    $user->DateDesactivation=date("Y/m/d-h:i");
     $user->save();
-    $details['body']="Votre compte sera désactivé le ".$Date2." , il vous reste donc 72h pour annuler la procédure. Au dela , le compte sera definitivement désactivé avec tout ce qui est lié à ce compte";
+      
+    $membre = annonce::where('idmembre',$idmembre)->first();
+    $membre->statut="suppression";
+    $membre->save();
+
+    $membre = boutique::where('idmembre',$idmembre)->first();
+    $membre->etatshowroom="suppression";
+    $membre->save();
+
+    $membre = restauration::where('idmembre',$idmembre)->first();
+    $membre->statut="suppression";
+    $membre->save();
+
+    $membre = plat::where('idmembre',$idmembre)->first();
+    $membre->statut="suppression";
+    $membre->save();
+
+    $membre = chambre::where('idmembre',$idmembre)->first();
+    $membre->statut="suppression";
+    $membre->save();
+
+    $membre = hebergement::where('idmembre',$idmembre)->first();
+    $membre->statut="suppression";
+    $membre->save();
+
+    $membre = commande::where('idmembre',$idmembre)->whereHas('panier', function ($query) use ($idmembre) {
+      $query->where('idmembre', $idmembre);
+    })->first();
+    $membre->statut="DELETED";
+    $membre->save();
+
+    $membre = commanderestauration::where('idmembre',$idmembre)->first();
+    $membre->statut="DELETED";
+    $membre->save();
+
+    $membre = reservationtable::where('idmembre',$idmembre)->first();
+    $membre->statut="DELETED";
+    $membre->save();
+
+    // Delete User
+    //$user->delete();
+    $details['body']="Votre compte Iveez ".auth('api')->user()->codemembre." vient d'etre supprimer. Merci.";
 
     }else  if($id==1){
       $details['body']="Vous compte a été réactivé avec succes";
