@@ -125,7 +125,7 @@ class EmarketController extends Controller
         }
         if($membre){
           $articl['image']=$membre->urlimage;
-          $articl['image']['parametre']=$membre->parametre;
+          $articl['imageparametre']=$membre->parametre;
         }
        
         $articl['vues']=$file;
