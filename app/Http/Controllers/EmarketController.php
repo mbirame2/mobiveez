@@ -62,7 +62,7 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
-        $membre = imageannonce::where('idannonce',$annonce->idannonce)->get();
+        $membre = imageannonce::where('idannonce',$annonce->idannonce)->orderBy('parametre', 'desc')->get();
         $annonce['image']=$membre;
         $user=User::with('departement')->select('prenom','nom','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$annonce->idmembre)->first();
         $annonce['vues']=$file;
@@ -470,6 +470,7 @@ class EmarketController extends Controller
       array_push($details, $annonce);
     }
 
+    $param=imageannonce::select('parametre')->where('idannonce',$req->input('idannonce'))->orderBy('parametre', 'desc')->first();
     for($i=0;$i<$req->numberOfImages;$i++){
       $iman= new imageannonce;
       //$img=$req->input('image'.$i);
@@ -484,7 +485,7 @@ class EmarketController extends Controller
 
       $iman->idannonce= $req->idannonce;  
       $iman->urlimage="photo/".$time;  
-      $iman->parametre=$i; 
+      $iman->parametre=$param+$i+1; 
       //array_push($details, $annonce);
       $iman->save();
      
