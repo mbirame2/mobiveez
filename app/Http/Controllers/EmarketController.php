@@ -62,7 +62,7 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
-        $membre = imageannonce::where('idannonce',$annonce->idannonce)->orderBy('parametre', 'desc')->get();
+        $membre = imageannonce::where('idannonce',$annonce->idannonce)->orderBy('parametre', 'asc')->get();
         $annonce['image']=$membre;
         $user=User::with('departement')->select('prenom','nom','departement_id','localisation','profil','email','telephoneportable')->where('idmembre',$annonce->idmembre)->first();
         $annonce['vues']=$file;
