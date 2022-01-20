@@ -485,7 +485,12 @@ class EmarketController extends Controller
 
       $iman->idannonce= $req->idannonce;  
       $iman->urlimage="photo/".$time;  
-      $iman->parametre=$param->parametre+$i+1; 
+      if($param['parametre']){
+        $iman->parametre=$param->parametre+$i+1; 
+      } else {
+        $iman->parametre=$i+1; 
+      }
+      
       //array_push($details, $annonce);
       $iman->save();
      
