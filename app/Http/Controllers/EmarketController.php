@@ -488,7 +488,7 @@ class EmarketController extends Controller
       if($param['parametre']){
         $iman->parametre=$param->parametre+$i+1; 
       } else {
-        $iman->parametre=$i+1; 
+        $iman->parametre=$i; 
       }
       
       //array_push($details, $annonce);
