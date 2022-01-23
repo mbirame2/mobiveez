@@ -37,12 +37,14 @@ use App\Mail\StatutUser;
 use App\propositionprix;
 use App\annoncesboutique;
 
+use App\OauthAccessToken;
 use App\reservationtable;
 use App\livraisoncommande;
 use Illuminate\Http\Request;
 use App\commanderestauration;
 use App\tarificationlivraison;
 use App\commandereservationtable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Storage;
@@ -1433,51 +1435,74 @@ class EmarketController extends Controller
     $user->email='';
     $user->telephoneportable='';
     $user->DateDesactivation=date("Y/m/d-h:i");
-    $user->save();
+ //   $user->save();
       
-    $membre = annonce::where('idmembre',$idmembre)->first();
-    $membre->statut="suppression";
-    $membre->save();
+    $annonce = annonce::where('idmembre',$idmembre)->first();
+    if($annonce) {
+      $annonce->statut="suppression";
+      $annonce->save();
+    }
+    
 
-    $membre = boutique::where('idmembre',$idmembre)->first();
-    $membre->etatshowroom="suppression";
-    $membre->save();
+    $boutique = boutique::where('idmembre',$idmembre)->first();
+    if($boutique){
+      $boutique->etatshowroom="suppression";
+      $boutique->save();
+    }
+    
+    $restauration = restauration::where('idmembre',$idmembre)->first();
+    if($restauration){
+      $restauration->statut="suppression";
+      $restauration->save();
 
-    $membre = restauration::where('idmembre',$idmembre)->first();
-    $membre->statut="suppression";
-    $membre->save();
+      $plat = plat::where('idrestauration',$restauration['idrestauration'])->first();
+      if($plat){
+        $plat->statut="suppression";
+        $plat->save();
+      }
+    }
+    
 
-    $membre = plat::where('idmembre',$idmembre)->first();
-    $membre->statut="suppression";
-    $membre->save();
+    $hebergement = hebergement::where('idmembre',$idmembre)->first();
+    if($hebergement){
+      $hebergement->statut="suppression";
+      $hebergement->save();  
 
-    $membre = chambre::where('idmembre',$idmembre)->first();
-    $membre->statut="suppression";
-    $membre->save();
+      $chambre = chambre::where('idhebergement',$hebergement['idhebergement'])->first();
+      if($chambre){
+        $chambre->statut="suppression";
+        $chambre->save();
+      }
+    }
+    
 
-    $membre = hebergement::where('idmembre',$idmembre)->first();
-    $membre->statut="suppression";
-    $membre->save();
-
-    $membre = commande::where('idmembre',$idmembre)->whereHas('panier', function ($query) use ($idmembre) {
+    
+    $commande = commande::whereHas('panier', function ($query) use ($idmembre) {
       $query->where('idmembre', $idmembre);
     })->first();
-    $membre->statut="DELETED";
-    $membre->save();
+    if($commande){
+      $commande->statut="DELETED";
+      $commande->save();
+    }
+    
+    $commanderestauration = commanderestauration::where('idmembre',$idmembre)->first();
+    if($commanderestauration){
+      $commanderestauration->statut="DELETED";
+      $commanderestauration->save();
+    }
 
-    $membre = commanderestauration::where('idmembre',$idmembre)->first();
-    $membre->statut="DELETED";
-    $membre->save();
-
-    $membre = reservationtable::where('idmembre',$idmembre)->first();
-    $membre->statut="DELETED";
-    $membre->save();
+    $reservationtable = reservationtable::where('idmembre',$idmembre)->first();
+    if($reservationtable){
+      $reservationtable->statut="DELETED";
+      $reservationtable->save();
+    }
+    
 
     // Delete User
     //$user->delete();
     $details['body']="Votre compte Iveez ".auth('api')->user()->codemembre." vient d'etre supprimer. Merci.";
 
-    Auth::logout();
+  //  Auth::logout();
     
     OauthAccessToken::where("user_id", auth('api')->user()->idmembre)->delete(); 
 
@@ -1485,13 +1510,13 @@ class EmarketController extends Controller
       $details['body']="Vous compte a été réactivé avec succes";
       $user->DateDesactivation=null;
       $user->etatcompte=1;
-      $user->save();
+      
     }
    
      
-    #return $details;
-    Mail::to($user->email)->send(new StatutUser($details));
-
+      #return $details;
+      Mail::to($user->email)->send(new StatutUser($details));
+      $user->save();
       return response()->json(['success'=>"Statut de l'utilisateur mise à jour"], 200);   
     }
     public function commandestatut(Request $req)
