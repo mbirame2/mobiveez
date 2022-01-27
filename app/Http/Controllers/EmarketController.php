@@ -1428,6 +1428,8 @@ class EmarketController extends Controller
         'code'=> ''
     ];
     $idmembre=auth('api')->user()->idmembre;
+    $codemembre=auth('api')->user()->codemembre;
+    $email=auth('api')->user()->email;
     $user=User::where('idmembre','=',$idmembre)->first(); 
     if($id==0){
    
@@ -1435,7 +1437,7 @@ class EmarketController extends Controller
     $user->email='';
     $user->telephoneportable='';
     $user->DateDesactivation=date("Y/m/d-h:i");
- //   $user->save();
+    $user->save();
       
     $annonce = annonce::where('idmembre',$idmembre)->first();
     if($annonce) {
@@ -1500,23 +1502,23 @@ class EmarketController extends Controller
 
     // Delete User
     //$user->delete();
-    $details['body']="Votre compte Iveez ".auth('api')->user()->codemembre." vient d'etre supprimer. Merci.";
+    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Merci.";
 
   //  Auth::logout();
     
-    OauthAccessToken::where("user_id", auth('api')->user()->idmembre)->delete(); 
+    OauthAccessToken::where("user_id", $idmembre)->delete(); 
 
     }else  if($id==1){
       $details['body']="Vous compte a été réactivé avec succes";
       $user->DateDesactivation=null;
       $user->etatcompte=1;
-      
+      $user->save();
     }
    
      
       #return $details;
-      Mail::to($user->email)->send(new StatutUser($details));
-      $user->save();
+      Mail::to($email)->send(new StatutUser($details));
+      
       return response()->json(['success'=>"Statut de l'utilisateur mise à jour"], 200);   
     }
     public function commandestatut(Request $req)
