@@ -1434,8 +1434,8 @@ class EmarketController extends Controller
     if($id==0){
    
     $user->etatcompte=0;
-    $user->email='';
-    $user->telephoneportable='';
+    $user->email=null;
+    $user->telephoneportable=null;
     $user->DateDesactivation=date("Y/m/d-h:i");
     $user->save();
       
