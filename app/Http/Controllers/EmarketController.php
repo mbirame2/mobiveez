@@ -1439,66 +1439,66 @@ class EmarketController extends Controller
     $user->DateDesactivation=date("Y/m/d-h:i");
     $user->save();
       
-    $annonce = annonce::where('idmembre',$idmembre)->first();
-    if($annonce) {
-      $annonce->statut="suppression";
-      $annonce->save();
-    }
+    $annonce = annonce::where('idmembre',$idmembre)->update(['statut' => 'suppression']);
+    // if($annonce) {
+    //   $annonce->statut="suppression";
+    //   $annonce->save();
+    // }
     
 
-    $boutique = boutique::where('idmembre',$idmembre)->first();
-    if($boutique){
-      $boutique->etatshowroom="suppression";
-      $boutique->save();
-    }
+    $boutique = boutique::where('idmembre',$idmembre)->update(['etatshowroom' => 'suppression']);
+    // if($boutique){
+    //   $boutique->etatshowroom="suppression";
+    //   $boutique->save();
+    // }
     
-    $restauration = restauration::where('idmembre',$idmembre)->first();
-    if($restauration){
-      $restauration->statut="suppression";
-      $restauration->save();
+    $restauration = restauration::where('idmembre',$idmembre)->update(['statut' => 'suppression']);
+    // if($restauration){
+    //   $restauration->statut="suppression";
+    //   $restauration->save();
 
-      $plat = plat::where('idrestauration',$restauration['idrestauration'])->first();
-      if($plat){
-        $plat->statut="suppression";
-        $plat->save();
-      }
-    }
+      $plat = plat::where('idrestauration',$restauration['idrestauration'])->update(['statut' => 'suppression']);
+    //   if($plat){
+    //     $plat->statut="suppression";
+    //     $plat->save();
+    //   }
+    // }
     
 
-    $hebergement = hebergement::where('idmembre',$idmembre)->first();
-    if($hebergement){
-      $hebergement->statut="suppression";
-      $hebergement->save();  
+    $hebergement = hebergement::where('idmembre',$idmembre)->update(['statut' => 'suppression']);
+    // if($hebergement){
+    //   $hebergement->statut="suppression";
+    //   $hebergement->save();  
 
-      $chambre = chambre::where('idhebergement',$hebergement['idhebergement'])->first();
-      if($chambre){
-        $chambre->statut="suppression";
-        $chambre->save();
-      }
-    }
+      $chambre = chambre::where('idhebergement',$hebergement['idhebergement'])->update(['statut' => 'suppression']);
+      // if($chambre){
+      //   $chambre->statut="suppression";
+      //   $chambre->save();
+      // }
+    // }
     
 
     
     $commande = commande::whereHas('panier', function ($query) use ($idmembre) {
       $query->where('idmembre', $idmembre);
-    })->first();
-    if($commande){
-      $commande->statut="DELETED";
-      $commande->save();
-    }
+    })->update(['statut' => 'DELETED']);
+    // if($commande){
+    //   $commande->statut="DELETED";
+    //   $commande->save();
+    // }
     
-    $commanderestauration = commanderestauration::where('idmembre',$idmembre)->first();
-    if($commanderestauration){
-      $commanderestauration->statut="DELETED";
-      $commanderestauration->save();
-    }
+    $commanderestauration = commanderestauration::where('idmembre',$idmembre)->update(['statut' => 'DELETED']);
+    // if($commanderestauration){
+    //   $commanderestauration->statut="DELETED";
+    //   $commanderestauration->save();
+    // }
 
-    $reservationtable = reservationtable::where('idmembre',$idmembre)->first();
-    if($reservationtable){
-      $reservationtable->statut="DELETED";
-      $reservationtable->save();
-    }
-    
+    $reservationtable = reservationtable::where('idmembre',$idmembre)->update(['statut' => 'DELETED']);
+  // if($reservationtable){
+  //   $reservationtable->statut="DELETED";
+  //   $reservationtable->save();
+  // }
+  
 
     // Delete User
     //$user->delete();
