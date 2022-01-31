@@ -83,8 +83,10 @@ class EmarketController extends Controller
         $immobilier=immobilier::where('idannonce',$annonce->idannonce)->first();
         $automobile=automobile::where('idannonce',$annonce->idannonce)->first();
         if($habillement){
+          $habillement['idhabillement']=$habillement['id'];
           $annonce['habillement']=$habillement;
         }else if($immobilier){
+       //   $immobilier['idimmobilier']=$immobilier['id'];
           $annonce['immobilier']=$immobilier;
         }else if($automobile){
           if($automobile->idmodelevoiture!=0){
