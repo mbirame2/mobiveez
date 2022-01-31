@@ -166,8 +166,8 @@ class AuthentificationController extends Controller
     {
         $user = User::select( 'idmembre','prenom','departement_id','profil','nom','telephoneportable','localisation','telephonefixe','email','codemembre')->where(
             'idmembre', $id)->first();
-            $dep=departement::where('id_dept',$user->departement_id)->first(); 
-            $user['departement']=$dep->lib_dept;
+            $dep=departement::where('id_dept',$user['departement_id'])->first(); 
+            $user['departement']=$dep['lib_dept'];
             return response()->json($user);
         
     }
