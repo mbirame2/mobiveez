@@ -1062,8 +1062,8 @@ class EmarketController extends Controller
       $prix=  propositionprix::where('idmembre',$id)->orderBy('idproposition','desc')->paginate(30);
       foreach($prix as $articl){
  
-          $annonce =annonce::where([['statut','acceptee'],['idannonce',$articl->idannonce]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
-          $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$annonce->idannonce )->first();
+          $annonce =annonce::where([['statut','acceptee'],['idannonce',$articl['idannonce']]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+          $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$annonce['idannonce'] )->first();
 
           if($boutique){
            $annonce['idshowroom']=$boutique->idshowroom;
