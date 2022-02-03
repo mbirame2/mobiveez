@@ -217,8 +217,8 @@ Route::group([
    Route::get('/typecuisine',  ['as'=>'lo','uses'=>'RestaurantController@typecuisine']);
    Route::post('/searchcategorieplat',  ['as'=>'lo','uses'=>'RestaurantController@searchcategorieplat']);
  
-   Route::get('/search_plat/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
-   Route::get('/search_restaurant/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
+   Route::get('/search_plat/{pays}/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchplat']);
+   Route::get('/search_restaurant/{pays}/{name}',  ['as'=>'lo','uses'=>'RestaurantController@searchrestaurant']); 
    Route::get('/deleteimage/{filename}/{id}',  ['as'=>'lo','uses'=>'RestaurantController@deleteimage']);
    Route::get('/boostplat/{id}',  ['as'=>'lo','uses'=>'RestaurantController@boostplat']);
    Route::get('/boostrestaurant/{id}',  ['as'=>'lo','uses'=>'RestaurantController@boostrestaurant']);
@@ -308,8 +308,8 @@ Route::group([
    Route::get('/gestionnairehebergement/{id}',  ['uses'=>'HotelController@gestionnairehebergement']);
    Route::get('/gestionnaireconnected/{id}/{value}',  ['uses'=>'EmarketController@gestionnaireconnected']);
 
-   Route::get('/search_hotel/{name}',  [ 'uses'=>'HotelController@search_hotel']);
-   Route::get('/search_chambre/{name}',  [ 'uses'=>'HotelController@search_chambre']);
+   Route::get('/search_hotel/{pays}/{name}',  [ 'uses'=>'HotelController@search_hotel']);
+   Route::get('/search_chambre/{pays}/{name}',  [ 'uses'=>'HotelController@search_chambre']);
 
    
 });

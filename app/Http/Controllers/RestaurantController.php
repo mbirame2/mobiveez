@@ -1139,26 +1139,24 @@ if($req->input('idtypecuisine')){
   $specialite='';
 }
 
-
 $annonce= restauration::where(function ($query) use($req,$idmembre,$specialite) {
   $query->where('adresse', 'LIKE', '%' . $req->input('adresse') . '%');
-
-
-
   $query->Where( 'designation', 'LIKE','%'.$req->input('designation').'%');
-  $query->Where( 'id_dep', $req->input('id_dep'));
+//  
+  if( $req->input('id_dep')){
+    $query->Where( 'id_dep', $req->input('id_dep'));
+  }
   $query->Where( 'typerestauration', 'LIKE','%'.$req->input('typerestauration').'%');
-if($idmembre!=''){
-  $query->whereIn('idmembre', $idmembre);
-}
-if($specialite!=''){
-  $query->whereIn('idrestauration', $specialite);
-}
+  if($idmembre!='') {
+    $query->whereIn('idmembre', $idmembre);
+  }
+  if($specialite!=''){
+    $query->whereIn('idrestauration', $specialite);
+  }
 })->whereHas('membre', function ($query) use ($req) {
    $query->where('codemembre',  'like',  $req->input('pays').'%');
   })
 ->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
-
 
 //$list=[31,32,33,34,35,36];
 $list=ApiController::getidservicewithmoduleonly("Restauration");
@@ -1173,11 +1171,10 @@ foreach($annonce as $articl){
   $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
 
   $dept=departement::where('id_dept',$articl->id_dep)->first(); 
- $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
- $articl['codemembre']=$user->codemembre;
- $articl['photorestauration']=$membre['urlimagerestauration'];
-
- $articl['departement']=$dept->lib_dept;
+  $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
+  $articl['codemembre']=$user->codemembre;
+  $articl['photorestauration']=$membre['urlimagerestauration'];
+  $articl['departement']=$dept->lib_dept;
   $articl['vues']=$file;
   $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
   $service = service::where('idService',$servicevendu['idservice'])->first();
