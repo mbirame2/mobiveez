@@ -850,7 +850,7 @@ public function deleteimage($filename,$id)
 public function boostplat($id)
 {
   //$list=[697,698,699];
-  $list=ApiController::getidservicewithmoduleonly("Menu");
+  $list=ApiController::getidservicewithmoduleonly("Restauration");
 
   $servicevendus = servicevendu::select('datefinservice','dateachat','idservice')->where( 'idannonce','=',$id )->whereIn('idservice',$list)->orderBy('idvente','desc')->get();  
   foreach($servicevendus as $servicevendu){
@@ -920,7 +920,12 @@ public function buyboostrestauration(Request $req)
       $result->save();
 
       $servicevendu = new servicevendu;
-      $servicevendu->idannonce= $req->idrestauration; 
+      if($req->idmenu){
+        $idannonce=$req->idmenu;
+      }else{
+          $idannonce=$req->idrestauration;
+      }
+      $servicevendu->idannonce= $idannonce; 
       $servicevendu->etatvente= 'en attente'; 
       $servicevendu->idservice= $req->idservice; 
       $Date1=date("Y/m/d-H:i");

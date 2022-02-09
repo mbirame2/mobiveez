@@ -167,8 +167,6 @@ class HotelController extends Controller
                 $idreservation=$a->idreservationhebergement +1;
               }
             $reserverhotel->referencereservationchambre=auth('api')->user()->codemembre."r".$idreservation.date("dmY");
-
-
             }
        
        
@@ -395,7 +393,7 @@ class HotelController extends Controller
         //   $list=[31,32,33,34,35,36];
            $hebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
            $idchambre = chambre::select('idchambre')->wherein('idhebergement',$hebergement)->get();
-
+        
            $article = reserverhotel::select('idreservationhebergement','idmembre','idchambre','datereservation','statut')->wherein('idchambre',$idchambre)->get();
            foreach($article as $articl){
               
