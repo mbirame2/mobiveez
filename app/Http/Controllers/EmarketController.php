@@ -1304,7 +1304,7 @@ class EmarketController extends Controller
         
         $articl['article']=$annonce;
         $articl['service']=$service->nomService;
-        $articl['image']=$img->urlimage;
+        $articl['image']=$img['urlimage'];
         $articl['vues']=$file;
       }
      
