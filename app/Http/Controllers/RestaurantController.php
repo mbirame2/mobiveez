@@ -657,8 +657,10 @@ public function addfavoris(Request $req)
 
 public function listeservice()
 {
-  $list=[31,32,33,34,35,36,697,698,699];
-  $service = service::whereIn('idService',$list)->get();
+ // $list=[31,32,33,34,35,36,697,698,699];
+  $service=service::where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Restauration']])->orWhere([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Menu']])->get();
+
+ // $service = service::whereIn('idService',$list)->get();
 
 //  $article=$article->paginate(15);
   return response()->json($service); 

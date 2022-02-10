@@ -628,8 +628,9 @@ class HotelController extends Controller
 
         public function listeservice()
             {
-            $list=[43,44,45,46,47,48,700,701,702];
-            $service = service::whereIn('idService',$list)->get();
+         //   $list=[43,44,45,46,47,48,700,701,702];
+         //   $service = service::whereIn('idService',$list)->get();
+         $service=service::where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Hebergement']])->orWhere([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module','Chambre']])->get();
 
             //  $article=$article->paginate(15);
             return response()->json($service); 
