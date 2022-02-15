@@ -677,7 +677,7 @@ public function typecuisine()
 public function getplatservice($pays)
 {
  // $list=[697,698,699];
-  $list=ApiController::getidservicewithmoduleonly("Restauration");
+  $list=ApiController::getidservicewithmoduleonly("Menu");
 
   $annonce = plat::select('idmenu')->whereHas('restauration', function ($query) use ($pays) {
     $query->whereHas('membre', function ($query) use ($pays) {
