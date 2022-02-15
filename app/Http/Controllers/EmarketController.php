@@ -1081,6 +1081,24 @@ class EmarketController extends Controller
       return response()->json($prix); 
     }
 
+    public function detailsoffer($id){
+      $articl= propositionprix::where('idproposition',$id)->first();
+      $annonce =annonce::where([['statut','acceptee'],['idannonce',$articl['idannonce']]])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$annonce['idannonce'] )->first();
+
+      if($boutique){
+        $annonce['idshowroom']=$boutique['idshowroom'];
+      }
+      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce['idmembre'])->first();
+
+      $image = imageannonce::where('idannonce',$annonce['idannonce'])->first();
+        
+      $articl['annonce']=$annonce;
+      $articl['vendeur']=$user;
+      $articl['annonce']['image']=$image['urlimage'];
+      return $articl;
+    }
+
     public function add_notification(Request $req)
     {
       $notification= new notification;

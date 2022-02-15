@@ -327,6 +327,7 @@ Route::group([
 Route::group([
    'middleware' => 'cors',
 ],function($route){
+   
    /// HOTEL //////
    Route::get('/hotel/onechambre/{id}',  ['uses'=>'HotelController@onechambre']);
    Route::get('/hotel/onehotel/{id}',  ['uses'=>'HotelController@onehotel']);
@@ -358,7 +359,6 @@ Route::group([
 
 
    //////// E-MARKET////////////
-
    Route::post('/emarket/filter_article',  ['as'=>'lo','uses'=>'EmarketController@filter_article']);
    Route::post('/emarket/filter_boutique',  ['as'=>'lo','uses'=>'EmarketController@filter_boutique']);
    Route::get('/emarket/oneannonce/{id}',  ['as'=>'lo','uses'=>'EmarketController@oneannonce']);
@@ -372,6 +372,7 @@ Route::group([
    Route::get('/emarket/getboutiquevip/{code}',  ['as'=>'lo','uses'=>'EmarketController@getboutiqueservice']);
    Route::get('/emarket/getannonce/{code}',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
    Route::get('/emarket/liste_categorie',  ['as'=>'lo','uses'=>'EmarketController@liste_categorie']);
+   Route::get('/emarket/detailsoffer/{id}',  ['as'=>'lo','uses'=>'EmarketController@detailsoffer']);
 
 
 
