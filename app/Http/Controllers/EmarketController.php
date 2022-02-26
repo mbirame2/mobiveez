@@ -1070,9 +1070,10 @@ class EmarketController extends Controller
 
           $image = imageannonce::where('idannonce',$annonce['idannonce'])->first();
            
+          $annonce['image']=$image['urlimage'];
           $articl['annonce']=$annonce;
           $articl['vendeur']=$user;
-          $articl['annonce']['image']=$image['urlimage'];
+         // $articl['annonce']['image']=$image['urlimage'];
       }
      
      
