@@ -400,8 +400,6 @@ class EmarketController extends Controller
 
           }else if(! $req->input('idimmobilier')){
             $immobilier= new immobilier;
-          
-
           }
       $immobilier->surface=$req->input('surface');     
      
@@ -1473,11 +1471,13 @@ class EmarketController extends Controller
     // }
     
     $restauration = restauration::where('idmembre',$idmembre)->update(['statut' => 'suppression']);
+    $idrestauration = restauration::select('idrestauration')->where('idmembre',$idmembre)->get();
+
     // if($restauration){
     //   $restauration->statut="suppression";
     //   $restauration->save();
 
-      $plat = plat::where('idrestauration',$restauration['idrestauration'])->update(['statut' => 'suppression']);
+      $plat = plat::whereIn('idrestauration',$idrestauration)->update(['statut' => 'suppression']);
     //   if($plat){
     //     $plat->statut="suppression";
     //     $plat->save();
@@ -1486,11 +1486,13 @@ class EmarketController extends Controller
     
 
     $hebergement = hebergement::where('idmembre',$idmembre)->update(['statut' => 'suppression']);
+    $idhebergement = hebergement::select('idhebergement')->where('idmembre',$idmembre)->get();
+
     // if($hebergement){
     //   $hebergement->statut="suppression";
     //   $hebergement->save();  
 
-      $chambre = chambre::where('idhebergement',$hebergement['idhebergement'])->update(['statut' => 'suppression']);
+      $chambre = chambre::whereIn('idhebergement',$idhebergement)->update(['statut' => 'suppression']);
       // if($chambre){
       //   $chambre->statut="suppression";
       //   $chambre->save();
@@ -1522,7 +1524,7 @@ class EmarketController extends Controller
 
     // Delete User
     //$user->delete();
-    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Merci.";
+    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Nous espéronsvous revoir parmi nous. Merci.";
 
   //  Auth::logout();
     
