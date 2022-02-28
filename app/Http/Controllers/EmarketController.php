@@ -1066,13 +1066,16 @@ class EmarketController extends Controller
           if($boutique){
            $annonce['idshowroom']=$boutique['idshowroom'];
           }
+          
           $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce['idmembre'])->first();
 
           $image = imageannonce::where('idannonce',$annonce['idannonce'])->first();
-           
-          $annonce['image']=$image['urlimage'];
-          $articl['annonce']=$annonce;
-          $articl['vendeur']=$user;
+          if($annonce){
+            $annonce['image']=$image['urlimage'];
+            $articl['annonce']=$annonce;
+            $articl['vendeur']=$user;
+          }
+          
          // $articl['annonce']['image']=$image['urlimage'];
       }
      
