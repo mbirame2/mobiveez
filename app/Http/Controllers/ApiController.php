@@ -283,6 +283,7 @@ class ApiController extends Controller
 
     public function listeservice($module)
     {
+      return auth('api')->user()->pays;
       $service=service::where([['nomcomplet', 'LIKE', '%' . auth('api')->user()->pays . '%'],['module',$module]])->get();
       return response()->json($service); 
     }
