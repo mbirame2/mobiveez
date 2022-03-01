@@ -285,11 +285,11 @@ class ApiController extends Controller
     {
      // return strtolower(substr(auth('api')->user()->codemembre,0,2));
       if(strtolower(substr(auth('api')->user()->codemembre,0,2))=="gm"){
-        $pays="gambia";
+        $pays="Gambia";
       }else if(strtolower(substr(auth('api')->user()->codemembre,0,2))=="sn"){
         $pays="Sénégal";
       }
-      $service=service::where([['nomcomplet', 'LIKE', '%' . $pays . '%'],['module',$module]])->get();
+      $service=service::where([['nomcomplet', 'LIKE', $pays ],['module',$module]])->get();
       return response()->json($service); 
     }
 
