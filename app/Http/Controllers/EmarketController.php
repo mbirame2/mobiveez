@@ -616,6 +616,9 @@ class EmarketController extends Controller
       $annonce =boutique::where('idshowroom',$id)->select('idmembre','descriptionshowroom','etatshowroom','idshowroom','heuredebut','heurefin','logoshowroom','id_dep','idcategorieshowroom','jourdebut','jourfin','localisation','telephone','nomshowroom','logoshowroom')->first();  
       $user=User::select('prenom','nom' ,'codemembre','email')->where('idmembre',$annonce->idmembre)->first();
 
+      $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
+      $annonce['lib_dept']=$dep->lib_dept;
+
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
         }else{
