@@ -96,7 +96,7 @@ class EmarketController extends Controller
             $automobile['idmodelevoiture']=$modele->idmodelevoiture;
             $automobile['idmarquevoiture']=$modele->idmarquevoiture;
   
-            $automobile['marque']=$marque->designation_marquevoiture;
+            $automobile['marque']=$marque['designation_marquevoiture'];
   
           }else{
             $automobile['idmodelevoiture']=$automobile['idmarquevoiture']=$automobile['marque']=$automobile['modele']=null;
@@ -423,7 +423,6 @@ class EmarketController extends Controller
           if ($req->input('idautomobile')){
             $automobile=  automobile::where( 'idautomobile', $req->input('idautomobile'))->first(); 
           //  $modele= modele::where( 'idmodelevoiture', $req->input('idmodelevoiture'))->first(); 
-
           } else  if ( !$req->input('idautomobile')) {
             $automobile= new automobile;
           }
@@ -438,7 +437,7 @@ class EmarketController extends Controller
             $modele->save();
 
             $a=modele::latest('idmodelevoiture')->first();
-           $automobile->idmodelevoiture=$a->idmodelevoiture;
+            $automobile->idmodelevoiture=$a->idmodelevoiture;
           } 
     
 
