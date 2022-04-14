@@ -316,14 +316,13 @@ class AuthentificationController extends Controller
         $phonenumber = $request->phonenumber;
       
         
-            $user = User::where("email", $email)->where("telephoneportable", $phonenumber)->first(); 
+            $user = User::where("email", $email)->orwhere("telephoneportable", $phonenumber)->first(); 
             if (!$user) {
                 return response()->json([
                     "status"=>403,
                     "message"=> "le mail ou le numero telephone n'existe pas dans la base de donnée"
               ]);
             }
-            //return $user;
             $user->password=sha1($request->password); 
             $user->save();
             return response()->json([
