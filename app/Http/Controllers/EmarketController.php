@@ -1530,7 +1530,7 @@ class EmarketController extends Controller
 
     // Delete User
     //$user->delete();
-    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Nous espéronsvous revoir parmi nous. Merci.";
+    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Nous espérons vous revoir parmi nous. Merci.";
 
   //  Auth::logout();
     

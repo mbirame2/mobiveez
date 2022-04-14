@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ContactUser;
+use App\pays;
 
-use App\Services\SendEmailService;
 use App\User;
-use App\OauthAccessToken;
+use App\region;
+use Carbon\Carbon;
 
 use App\departement;
 use App\particulier;
+use App\Mail\TestMail;
 use App\professionnel;
-use App\Services\SendEmailServiceImpl;
+use App\Mail\ContactUser;
+use App\OauthAccessToken;
+use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Services\UserServiceImpl;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
+use App\Services\SendEmailService;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TestMail;
-use App\region;
-use App\pays;
+use Illuminate\Support\Facades\Auth; 
+use App\Services\SendEmailServiceImpl;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -315,13 +315,15 @@ class AuthentificationController extends Controller
         $email = $request->email;
         $phonenumber = $request->phonenumber;
       
-            $user = User::where("email", $email)->orwhere("telephoneportable", $phonenumber)->first(); 
+        
+            $user = User::where("email", $email)->where("telephoneportable", $phonenumber)->first(); 
             if (!$user) {
                 return response()->json([
                     "status"=>403,
                     "message"=> "le mail ou le numero telephone n'existe pas dans la base de donnée"
               ]);
             }
+            //return $user;
             $user->password=sha1($request->password); 
             $user->save();
             return response()->json([
