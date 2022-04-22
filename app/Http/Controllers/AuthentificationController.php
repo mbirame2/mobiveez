@@ -321,7 +321,8 @@ class AuthentificationController extends Controller
         $phonenumber = $request->phonenumber;
       
         
-            $user = User::where("email", $email)->orwhere("telephoneportable", $phonenumber)->first(); 
+            $user = User::where("telephoneportable", $phonenumber)->first(); 
+            
             if (!$user) {
                 return response()->json([
                     "status"=>403,
