@@ -57,6 +57,7 @@ class AuthentificationController extends Controller
         }
         $input = $request->all(); 
         
+        $check_email=false;
         if($input['email']!= NULL){
             $check_email=User::where('email', $input['email'])->exists();
         }
