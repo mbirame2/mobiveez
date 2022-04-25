@@ -57,8 +57,12 @@ class AuthentificationController extends Controller
         }
         $input = $request->all(); 
         
-        $check=User::where('telephoneportable',$input['phone'])->orwhere('email', $input['email'])->exists();
-        if($check && $input['email']!= NULL){
+        if($input['email']!= NULL){
+            $check_email=User::where('email', $input['email'])->exists();
+        }
+
+        $check=User::where('telephoneportable',$input['phone'])->exists();
+        if( $check_email || $check){
             return response()->json(['error'=>'Phone numer or email already found'], 400); 
         }
         $input['password'] = sha1($input['password']); 
