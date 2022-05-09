@@ -754,8 +754,10 @@ class HotelController extends Controller
       
           $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->where(function ($query) use($name) {
             $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
-            })->whereHas('user', function ($query) use ($pays) {
+            })->whereHas('user', function ($query) use ($pays,$name) {
                 $query->where('codemembre',  'like', $pays.'%');
+                $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
+                
                })->orderBy('idhebergement','desc')->paginate(30);
         foreach($article as $articl){
              
@@ -780,9 +782,10 @@ class HotelController extends Controller
             $query->whereRaw('LOWER(typechambre) like ?', '%'.strtolower($name).'%');
             $query->orWhere( 'prix', 'LIKE', '%' . $name . '%');
             $query->orWherein( 'idhebergement', $idhebergement);
-            })->whereHas('hebergement', function ($query) use ($pays) {
-                $query->whereHas('user', function ($query) use ($pays) {
+            })->whereHas('hebergement', function ($query) use ($pays,$name) {
+                $query->whereHas('user', function ($query) use ($pays,$name) {
                     $query->where('codemembre', 'like', $pays.'%');
+                    $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
                  });
              })->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){

@@ -736,9 +736,10 @@ public function searchrestaurant($pays,$name)
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
-    })->whereHas('membre', function ($query) use ($pays) {
+    })->whereHas('membre', function ($query) use ($pays,$name) {
       // $query->whereIn('idannonce', $service);
        $query->where('codemembre',  'like', $pays.'%');
+       $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
       })->orderBy('idrestauration','desc')->paginate(30);
 
    // $list=[31,32,33,34,35,36];
@@ -778,9 +779,10 @@ public function searchplat($pays,$name)
   $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->where(function ($query) use($name) {
     $query->whereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(plat) like ?', '%'.strtolower($name).'%');
-    })->whereHas('restauration', function ($query) use ($pays) {
-      $query->whereHas('membre', function ($query) use ($pays) {
+    })->whereHas('restauration', function ($query) use ($pays,$name) {
+      $query->whereHas('membre', function ($query) use ($pays,$name) {
           $query->where('codemembre', 'like', $pays.'%');
+          $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
        });
    })->paginate(30);
   foreach($article as $articl){
