@@ -339,9 +339,6 @@ class EmarketController extends Controller
       $details['idshowroom']=$req->input('idshowroom'); 
       Storage::disk('vue')->put($a->referenceannonce.'_biens.txt', 0);
 
-      ApiController::personalizemail("m.baldeh@websystech.net","Hello!
-      There is a new publication in iveez to be moderated.
-      Please login to your backoffice account for the moderation");
       return response()->json(['succes'=>"Enregistrement de lannonce avec succes","code"=>200,
       'data'=>$details,
       'type'=>$req->input('publish_type'),
