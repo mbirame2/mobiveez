@@ -217,6 +217,24 @@ class AuthentificationController extends Controller
      
     }
 
+    public function  personalizemail($mail,$text)
+    {
+        $number=rand(1000,9999);
+
+            $details=[
+             
+                'subject'=> $text,
+                'code'=> '',
+                'title'=>'New publication',
+                'advice'=>" ",
+            ];
+        
+
+            Mail::to($mail)->send(new TestMail($details));
+            //$user = $this->userService->findUserByEmail($mail);  //code...
+     
+    }
+
     public function contact(Request $req )
     {
         

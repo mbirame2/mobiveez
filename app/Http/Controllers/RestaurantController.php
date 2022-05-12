@@ -736,10 +736,10 @@ public function searchrestaurant($pays,$name)
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
-    })->whereHas('membre', function ($query) use ($pays,$name) {
+    })->whereHas('membre', function ($query) use ($pays) {
       // $query->whereIn('idannonce', $service);
        $query->where('codemembre',  'like', $pays.'%');
-       $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
+       
       })->orderBy('idrestauration','desc')->paginate(30);
 
    // $list=[31,32,33,34,35,36];
@@ -756,7 +756,7 @@ public function searchrestaurant($pays,$name)
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
 
     $dept=departement::where('id_dept',$articl['id_dep'])->first(); 
-    $user = User::select('idmembre','codemembre')->where('idmembre',$articl['idmembre'])->first();
+    $user = User::select('idmembre','codemembre')->where('idmembre',$articl['idmembre'])->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%')->first();
     $articl['codemembre']=$user['codemembre'];
     $articl['photorestauration']=$membre['urlimagerestauration'];
 
