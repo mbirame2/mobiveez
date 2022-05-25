@@ -116,7 +116,7 @@ class EmarketController extends Controller
 
     public function allannonce($pays)
     {
-      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->whereRaw('LOWER(referenceannonce)', 'like',  strtolower($pays).'%')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->whereRaw('LOWER(referenceannonce) like ?',  strtolower($pays).'%')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
       $allannonce=[];
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
