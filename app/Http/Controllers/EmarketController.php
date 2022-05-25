@@ -116,7 +116,7 @@ class EmarketController extends Controller
 
     public function allannonce($pays)
     {
-      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->where('referenceannonce', 'like', $pays.'%')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
+      $article = annonce::select('titre','prix','localisation','statut','idmembre','idannonce','referenceannonce')->whereRaw('LOWER(referenceannonce)', 'like',  strtolower($pays).'%')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
       $allannonce=[];
       foreach($article as $articl){
         $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
@@ -1530,7 +1530,9 @@ class EmarketController extends Controller
 
     // Delete User
     //$user->delete();
-    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Nous espérons vous revoir parmi nous. Merci.";
+    $details['body']="Votre compte Iveez ".$codemembre." vient d'etre supprimer. Si vous n'êtes pas à l'origine de cette action, veuillez le signaler à l'équipe de iveez via l'option 'Feedback' dans Paramètres pour le rétablir.
+    Nous espérons vous revoir parmi nous bientôt.
+    Merci.";
 
   //  Auth::logout();
     
