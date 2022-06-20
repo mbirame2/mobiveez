@@ -91,7 +91,7 @@ class AuthentificationController extends Controller
             $co->sexe=$request->gender;
            // return ucfirst($request->countryCode);
 
-            $code=ucfirst($request->countryCode).strval(date("y"))."Pa".strval($article+1);
+            $code=strtolower($request->countryCode).strval(date("y"))."Pa".strval($article+1);
             $co->codemembre=$code;
             $co->DateInscription=date("Y/m/d-h:i");
         
@@ -102,7 +102,7 @@ class AuthentificationController extends Controller
             $article = User::where('pays',$input['country'])->where('typecompte',"professionnel")->get();  
             $article = count($article)+1;
 
-            $code=$request->countryCode.strval(date("y"))."Pr".strval($article);
+            $code=strtolower($request->countryCode).strval(date("y"))."Pr".strval($article);
             $co->DateInscription=date("Y-m-d h:i:sa");
             $co->codemembre=$code;
             $co->societe=$request->company;
