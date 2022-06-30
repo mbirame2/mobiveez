@@ -9,11 +9,9 @@
         </head>
     <body>
          
-        <p>Bienvenue dans Iveez! </p>
  
         <h3>{{$details['body']}}</h3>
       
 
-        <p>Merci.</p>
         
     </body>

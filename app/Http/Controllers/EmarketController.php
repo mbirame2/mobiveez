@@ -1443,7 +1443,7 @@ class EmarketController extends Controller
       return response()->json( $data); 
     }
 
-    public function statutcompte($id)
+    public function statutcompte($id,$lang)
     {
      // $commande= new commande;
 
@@ -1530,10 +1530,15 @@ class EmarketController extends Controller
 
     // Delete User
     //$user->delete();
-    $details['body']="Your iveez account ".$codemembre." has just been deleted.
+    
+    $body=($lang =='en') ? "Your iveez account ".$codemembre." has just been deleted.
     If you are not the initiator of this action, please report it to the iveez team via the 'Feedback' option in Settings to restore it. 
     We hope to see you again here soon.
-    Thank you.";
+    Thank you." : "Votre compte iveez ".$codemembre." vient d'être supprimé.
+    Si vous n'êtes pas à l'origine de cette action, veuillez le signaler à l'équipe de iveez via l'option 'Feedback' dans Paramètres pour le rétablir.
+    Nous espérons vous revoir parmi nous bientôt.
+    Merci.";
+    $details['body']=$body;
 
   //  Auth::logout();
     
