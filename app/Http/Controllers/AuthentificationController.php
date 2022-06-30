@@ -103,7 +103,7 @@ class AuthentificationController extends Controller
             $article = count($article)+1;
 
             $code=strtolower($request->countryCode).strval(date("y"))."Pr".strval($article);
-            $co->DateInscription=date("Y-m-d h:i:sa");
+            $co->DateInscription=date("Y/m/d-h:i");
             $co->codemembre=$code;
             $co->societe=$request->company;
             $co->telephonefixe=$request->landline;
