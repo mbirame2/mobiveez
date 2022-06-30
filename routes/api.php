@@ -144,7 +144,7 @@ Route::get('/getidservicewithmoduleonly/{id}',      ['middleware'=>'auth:api','m
     Route::post('/payepourmoi',  ['as'=>'lo','uses'=>'EmarketController@payepourmoi']);
     Route::post('/filter_boutique',  ['as'=>'lo','uses'=>'EmarketController@filter_boutique']);
 
-    Route::get('/statutcompte/{id}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
+    Route::get('/statutcompte/{id}/{lang}',  ['as'=>'lo','uses'=>'EmarketController@statutcompte']);
     Route::get('/getannonce/{code}',  ['as'=>'lo','uses'=>'EmarketController@allannonce']);
     Route::get('/liste_categorie',  ['as'=>'lo','uses'=>'EmarketController@liste_categorie']);
     Route::get('/liste_souscategorie',  ['as'=>'lo','uses'=>'EmarketController@liste_souscategorie']);
