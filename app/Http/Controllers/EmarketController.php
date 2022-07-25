@@ -1740,12 +1740,12 @@ public function onecommande($id)
     $query->where('statut', 'commandé');
 })->first();
 
-$membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$service->panier->idannonce],['statut','acceptee']])->first();
-$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$service->panier->idmembre)->first();
+$membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$service['panier']['idannonce']],['statut','acceptee']])->first();
+$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$service['panier']['idmembre'])->first();
 $service['acheteur']=$user;
 unset($service['panier']);
 $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
-$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre->idmembre)->first();
+$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'])->first();
 
 $service['vendeur']=$user;
 $service['annonce']=$membre;
