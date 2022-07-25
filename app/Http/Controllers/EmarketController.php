@@ -1744,7 +1744,7 @@ $membre = annonce::select('localisation','idmembre','idsouscategorie','prix','re
 $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$service['panier']['idmembre'])->first();
 $service['acheteur']=$user;
 unset($service['panier']);
-$image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
+$image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
 $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'])->first();
 
 $service['vendeur']=$user;
