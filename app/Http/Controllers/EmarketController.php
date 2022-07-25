@@ -1750,7 +1750,7 @@ $user = User::select('prenom','nom','telephoneportable','email','localisation','
 $service['vendeur']=$user;
 $service['annonce']=$membre;
 $service['image']=$image;
-$livraison = livraisoncommande::where('idcommande',$service->idcommande)->first();
+$livraison = livraisoncommande::where('idcommande',$service['idcommande'])->first();
 
 $service['livraison']=$livraison;
 
