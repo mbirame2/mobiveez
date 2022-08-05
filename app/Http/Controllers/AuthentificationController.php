@@ -121,21 +121,6 @@ class AuthentificationController extends Controller
 
  
 
-    public function loggin(){ 
-        if (is_numeric(request('telephone_mail'))) {
-            $field = 'telephoneportable' ;
-        }else{
-            $field = 'email' ;
-        }
-        if( Auth::attempt([$field => request('telephone_mail'), 'password' => sha1(request('password'))]) ){ 
-            $user = Auth::user(); 
-            $token =  $user->createToken('MyApp')->accessToken; 
-            return response()->json( [$token,$user]); 
-        } 
-        else{ 
-            return response()->json(['error'=>'Unauthorised'], 401); 
-        } 
-    }
 
     public function login(){
         if (is_numeric(request('telephone_mail'))) {
@@ -181,6 +166,16 @@ class AuthentificationController extends Controller
             return response()->json($user);
         
     }
+
+    public function updatemodule($id,$modul)
+    {
+            $user = User::where('idmembre', $id)->first();
+            $user->default_modul=$modul;
+            $user->save();
+            return response()->json($user);
+        
+    }
+
     public function sendmail($mail,$lang)
     {
         $number=rand(1000,9999);

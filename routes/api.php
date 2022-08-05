@@ -19,6 +19,7 @@ Route::group([
    'middleware' => 'cors',
 ],function($route){
       Route::get('/download/cgu/{version}',  ['as'=>'lo','uses'=>'ApiController@getDownload']); 
+      Route::get('/updatemodule/{id}/{module}',  ['as'=>'lo','uses'=>'AuthentificationController@updatemodule']);
 
       Route::get('/sendmail/{id}/{lang}',  ['as'=>'lo','uses'=>'AuthentificationController@sendmail']); 
       Route::get('/getuser/{id}',  ['as'=>'lo','uses'=>'AuthentificationController@getuser']); 
