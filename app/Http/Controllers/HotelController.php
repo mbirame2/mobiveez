@@ -561,7 +561,8 @@ class HotelController extends Controller
             $annonce = hebergement::where('idhebergement','=',$id)->first(); 
             $annonce->statut='suppression';
             $annonce->save();
-         
+            
+            chambre::where('idhebergement',$id)->update(['statut' => 'suppression']);
             return response()->json(['success'=>"Supprimer avec succés"], 200); 
           }
 

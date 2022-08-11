@@ -898,7 +898,8 @@ public function deleterestaurant($id)
   $annonce = restauration::where('idrestauration','=',$id)->first(); 
   $annonce->statut='suppression';
   $annonce->save();
-//  $article=$article->paginate(15);
+
+  plat::where('idrestauration',$id)->update(['statut' => 'suppression']);
 
   return response()->json(['success'=>"Suppression du restaurant avec succés"], 200); 
 }
