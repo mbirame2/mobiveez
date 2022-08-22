@@ -736,10 +736,11 @@ public function searchrestaurant($pays,$name)
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
-    })->whereHas('membre', function ($query) use ($pays) {
+    })->whereHas('membre', function ($query) use ($pays,$name) {
       // $query->whereIn('idannonce', $service);
        $query->where('codemembre',  'like', $pays.'%');
-       
+       $query->orwhereIn('prenom', explode(" ", $name));
+       $query->orwhereIn('nom', explode(" ", $name));
       })->orderBy('idrestauration','desc')->paginate(30);
 
    // $list=[31,32,33,34,35,36];
@@ -783,6 +784,8 @@ public function searchplat($pays,$name)
       $query->whereHas('membre', function ($query) use ($pays,$name) {
           $query->where('codemembre', 'like', $pays.'%');
           $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
+          $query->orwhereIn('nom', explode(" ", $name));
+          $query->orwhereIn('prenom', explode(" ", $name));
        });
    })->paginate(30);
   foreach($article as $articl){

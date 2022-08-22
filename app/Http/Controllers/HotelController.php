@@ -758,7 +758,8 @@ class HotelController extends Controller
             })->whereHas('user', function ($query) use ($pays,$name) {
                 $query->where('codemembre',  'like', $pays.'%');
                 $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
-                
+                $query->orwhereIn('nom', explode(" ", $name));
+                $query->orwhereIn('prenom', explode(" ", $name));
                })->orderBy('idhebergement','desc')->paginate(30);
         foreach($article as $articl){
              
@@ -787,6 +788,8 @@ class HotelController extends Controller
                 $query->whereHas('user', function ($query) use ($pays,$name) {
                     $query->where('codemembre', 'like', $pays.'%');
                     $query->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%');
+                    $query->orwhereIn('nom', explode(" ", $name));
+                    $query->orwhereIn('prenom', explode(" ", $name));
                  });
              })->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
