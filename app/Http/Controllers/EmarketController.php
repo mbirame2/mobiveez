@@ -301,15 +301,6 @@ class EmarketController extends Controller
      // var_dump($a);die();
       for($i=0;$i<$req->numberOfImages;$i++){
         $iman= new imageannonce;
-      //  $img=$req->input('image'.$i);
-      
-     //   $base64_str = substr($img, strpos($img, ",")+1);
-        //var_dump($base64_str);die();
-     //   $data = base64_decode($base64_str);
-       // $time=$a->idannonce+$i.'-'.time().'.png';
-      //  Storage::disk('annonce')->put($time, $data);
-
-      //  $time=$result->idmembre.'-'.time().'.png';
         $time=$a->idannonce+$i.'-'.time().'.png';
         $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
 

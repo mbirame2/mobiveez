@@ -14,6 +14,7 @@ use App\typecuisine;
 use App\gestionnaire;
 use App\restauration;
 use App\servicevendu;
+use App\categorierestaurant;
 use App\commande_plat;
 use App\reservationtable;
 use App\imagerestauration;
@@ -272,8 +273,6 @@ public function restauration(Request $req , ApiController $apicontroller){
     
   if($req->input('idrestauration')){
     $annonce= restauration::where('idrestauration',$req->input('idrestauration'))->first(); 
-
-
   }else{
   $annonce= new restauration;
   }
@@ -300,12 +299,6 @@ public function restauration(Request $req , ApiController $apicontroller){
   for($i=0;$i<$req->numberOfImages;$i++){
    if($req->file('photorestauration'.$i)){
     $iman= new imagerestauration;
-
-   // $img=$req->input('photorestauration'.$i);
-   
- //   $base64_str = substr($img, strpos($img, ",")+1);
-    //var_dump($base64_str);die();
-   // $data = base64_decode($base64_str);
     $time=$num+$i.'-'.time().'.png';
   //  Storage::disk('photorestauration')->put($time, $data);
     $apicontroller->saveimage('app/public/photorestauration',$time,$req->file('photorestauration'.$i));
@@ -669,6 +662,15 @@ public function listeservice()
 public function typecuisine()
 {
   $service = typecuisine::get();
+
+//  $article=$article->paginate(15);
+  return response()->json($service); 
+}
+
+public function categorie_restaurant($lang)
+{
+  $lang=($lang==='fr') ? 'lib_cat' : 'lib_caten';
+  $service = categorierestaurant::select($lang,'nom_cat')->get();
 
 //  $article=$article->paginate(15);
   return response()->json($service); 
