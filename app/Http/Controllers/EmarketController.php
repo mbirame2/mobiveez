@@ -316,7 +316,7 @@ class EmarketController extends Controller
       
       }
     //  $url=$time;
-      if($req->input('publish_type')=='article' && $req->input('idshowroom')){
+      if( $req->input('idshowroom')){
       
         $iman= new annoncesboutique;
         $iman->idannonce= $a->idannonce;  
