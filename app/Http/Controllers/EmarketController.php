@@ -267,7 +267,7 @@ class EmarketController extends Controller
         $automobile->place=$req->input('place');
        
         $automobile->climatisation=$req->input('air_conditionning');
-        $automobile->typeoperation=$req->input('type');  
+        $automobile->typeoperation=$req->input('type');
         $automobile->couleur=$req->input('color');  
         $automobile->kilometre=$req->input('mileage');  
         $automobile->puissance=$req->input('power');  
@@ -304,9 +304,9 @@ class EmarketController extends Controller
         $time=$a->idannonce+$i.'-'.time().'.png';
         $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
 
-        $iman->idannonce= $a->idannonce;  
-        $iman->urlimage="photo/".$time;  
-        $iman->parametre=$i; 
+        $iman->idannonce= $a->idannonce;
+        $iman->urlimage="photo/".$time;
+        $iman->parametre=$i;
         //array_push($details, $annonce);
         $iman->save();
         $details['image'.$i]=$iman->urlimage;
@@ -463,6 +463,14 @@ class EmarketController extends Controller
       array_push($details, $annonce);
     }
 
+    if( $req->input('idshowroom')){
+      $iman= new annoncesboutique;
+      $iman->idannonce= $annonce->idannonce;  
+      $iman->idshowroom=$req->input('idshowroom');  
+      $iman->visibilite=0;
+      $iman->save();
+     // array_push($details, $iman);
+    }
     $param=imageannonce::select('parametre')->where('idannonce',$req->input('idannonce'))->orderBy('parametre', 'desc')->first();
     for($i=0;$i<$req->numberOfImages;$i++){
       $iman= new imageannonce;
