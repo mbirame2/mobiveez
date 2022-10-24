@@ -158,6 +158,8 @@ class EmarketController extends Controller
           $articl['idannonceshowroom']=null;
           $articl['idshowroom']=null;
         }
+        $favoris= favoris::where(['id_membre',$id],['id_annonce',$articl['idannonce']])->first();
+        $articl['idfavoris']=$favoris['idfavoris'];
         $prix=  propositionprix::where([['idannonce',$articl->idannonce],['statut','=',null]])->count();
         $articl['total_offer']=$prix;
         $articl['image']=$membre;
@@ -639,6 +641,10 @@ class EmarketController extends Controller
        $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
        $annonce['departement']=$dep->lib_dept;
        $annonce['categorie']=$cat;
+
+       $favoris= favoris::where(['id_membre',$id],['id_showroom',$annonce['idshowroom']])->first();
+       $annonce['idfavoris']=$favoris['idfavoris'];
+
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
         }else{
