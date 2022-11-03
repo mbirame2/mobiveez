@@ -58,7 +58,7 @@ class AuthentificationController extends Controller
         $input = $request->all(); 
         
         $check_email=false;
-        if($input['email']!= NULL){
+        if(isset($input['email'])){
             $check_email=User::where('email', $input['email'])->exists();
         }
 
@@ -74,9 +74,9 @@ class AuthentificationController extends Controller
         $co->nom=$input['last_name'];
         $co->password=$input['password'];
         $co->telephoneportable=$input['phone'];
-        $co->email=$input['email'];
-        $co->num_whatsapp=$input['num_whatsapp'];
-        $co->localisation=$input['adresse'];
+        $co->email=$input['email'] ?? null;
+        $co->num_whatsapp=$input['num_whatsapp'] ?? null;
+        $co->localisation=$input['adresse'] ?? null;
         $co->etatcompte=1;
         $co->compte=0;
        // $dept=departement::where('lib_dept',$input['city'])->first(); 
