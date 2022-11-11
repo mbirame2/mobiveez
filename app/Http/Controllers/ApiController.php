@@ -170,8 +170,13 @@ class ApiController extends Controller
     }
 
     public function saveimage($storage,$name,$req){
-      $filepath = storage_path($storage);
-      $req->move($filepath,$name);
+      try {
+        $filepath = storage_path($storage);
+        $req->move($filepath,$name);
+      } catch (\Exception $e) {
+        abort(403, 'File not upload. Please try again');
+          //return $e->getMessage();
+      }      
     }
     
     public function evenement(Request $req){
