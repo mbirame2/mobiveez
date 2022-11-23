@@ -304,7 +304,11 @@ class EmarketController extends Controller
       for($i=0;$i<$req->numberOfImages;$i++){
         $iman= new imageannonce;
         $time=$a->idannonce+$i.'-'.time().'.png';
-        $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+        if ($req->hasFile('image'.$i)) {
+          $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+        }else{
+          return response()->json(['error'=>"Image file doesn't send"], 401);    
+        }
 
         $iman->idannonce= $a->idannonce;
         $iman->urlimage="photo/".$time;
@@ -484,7 +488,12 @@ class EmarketController extends Controller
       $time=$req->idannonce+$i.'-'.time().'.png';
       //Storage::disk('annonce')->put($time, $data);
       //$time=$a->idannonce+$i.'-'.time().'.png';
-      $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+      if ($req->hasFile('image'.$i)) {
+        $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+      }else{
+        return response()->json(['error'=>"Image file doesn't send"], 401);    
+      }
+     // $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
 
       $iman->idannonce= $req->idannonce;  
       $iman->urlimage="photo/".$time;  
@@ -921,7 +930,12 @@ class EmarketController extends Controller
       //var_dump($base64_str);die();
    //   $data = base64_decode($base64_str);
       $time=$boutique->idmembre.'-'.time().'.png';
-      $apicontroller->saveimage('app/public/photo',$time,$req->file('logo'));
+      if ($req->hasFile('logo')) {
+        $apicontroller->saveimage('app/public/photo',$time,$req->file('logo'));
+      }else{
+        return response()->json(['error'=>"Image file doesn't send"], 401);    
+      }
+      //$apicontroller->saveimage('app/public/photo',$time,$req->file('logo'));
 
       $boutique->logoshowroom="photo/".$time; 
       }
@@ -1597,7 +1611,12 @@ class EmarketController extends Controller
       $result=User::where('idmembre','=',auth('api')->user()->idmembre)->first(); 
       
       $time=$result->idmembre.'-'.time().'.png';
-      $apicontroller->saveimage('app/public/profil',$time,$req->file('image'));
+      if ($req->hasFile('image')) {
+        $apicontroller->saveimage('app/public/profil',$time,$req->file('image'));
+      }else{
+        return response()->json(['error'=>"Image file doesn't send"], 401);    
+      }
+      //$apicontroller->saveimage('app/public/profil',$time,$req->file('image'));
       $result->profil="profil/".$time ;
       $result->save();
       return response()->json(['success'=>"Image de l'utilisateur mise à jour",'image'=>$result->profil], 200);            
