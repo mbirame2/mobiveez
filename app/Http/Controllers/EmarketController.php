@@ -469,7 +469,7 @@ class EmarketController extends Controller
       array_push($details, $annonce);
     }
 
-    if( !annoncesboutique::where([['idannonce', $annonce['idannonce']],['idshowroom',$req['idshowroom']]])->exists()){
+    if( !annoncesboutique::where([['idannonce', $annonce['idannonce']],['idshowroom',$req['idshowroom']]])->exists() && $req->input('idshowroom')){
       $iman= new annoncesboutique;
       $iman->idannonce= $annonce->idannonce;  
       $iman->idshowroom=$req->input('idshowroom');  
