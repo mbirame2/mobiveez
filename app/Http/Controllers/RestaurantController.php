@@ -175,6 +175,8 @@ public function listereservationtable($id){
   foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
     $restauration = restauration::where('idrestauration',$articl->idrestauration)->first();
+    $codemembre = User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
+    $articl['codemembre_proprio']=$codemembre['codemembre'];
     $articl['designation']=$restauration['designation'];
     $articl['photo']=$membre['urlimagerestauration'];
     $invitereservationtable=invitereservationtable::select( 'idmembre', 'statut')->where('idreservationtable',$articl->idreservationtable)->get();
