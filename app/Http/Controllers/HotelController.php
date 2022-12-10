@@ -346,7 +346,7 @@ class HotelController extends Controller
     public function chambreshotel($idhotel) {
         //   $list=[31,32,33,34,35,36];
        
-           $article = chambre::select('idhebergement','bloquer_reservation','idchambre','typechambre','prix','typelit','statut')->where([['idhebergement',$idhotel],['statut','acceptee']] )->orderBy('idchambre','desc')->paginate(30);
+           $article = chambre::select('idhebergement','bloquer_reservation','idchambre','typechambre','prix','typelit','statut')->where([['idhebergement',$idhotel],['statut','!=','suppression']] )->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
                $articl['idmembre']=$hebergement['idmembre'];
