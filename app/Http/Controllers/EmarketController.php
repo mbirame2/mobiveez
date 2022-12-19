@@ -304,11 +304,14 @@ class EmarketController extends Controller
       for($i=0;$i<$req->numberOfImages;$i++){
         $iman= new imageannonce;
         $time=$a->idannonce+$i.'-'.time().'.png';
-        if ($req->hasFile('image'.$i)->isValid()) {
-          $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
-        }else{
+        try{
+          if ($req->hasFile('image'.$i)->isValid()) {
+            $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+          }
+        } catch(Exception $e){
           return response()->json(['error'=>"Image file doesn't send"], 401);    
         }
+       
 
         $iman->idannonce= $a->idannonce;
         $iman->urlimage="photo/".$time;
