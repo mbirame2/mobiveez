@@ -283,6 +283,9 @@ public function restauration(Request $req , ApiController $apicontroller){
 
   $annonce->statut="en attente";
   $annonce->capacite=$req->input('capacite');
+  
+  $annonce->jourdebut=$req->input('jourdebut');
+  $annonce->jourfin=$req->input('jourfin');
 
   $annonce->designation=$req->input('designation');
   $annonce->description=$req->input('description');
