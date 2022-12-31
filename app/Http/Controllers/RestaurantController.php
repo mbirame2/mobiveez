@@ -378,7 +378,7 @@ public function delete_panier($id)
     $article = plat::select('photo','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
   //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
     $articl['plat']=$article;
-    $restauration = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$article['idrestauration'])->first();
+    $restauration = restauration::select('idmembre','idrestauration','designation','statut','jourdebut','jourfin')->where('idrestauration',$article['idrestauration'])->first();
     $articl['plat']['designation']=$restauration['designation'];
     $user = User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
     $articl['plat']['codemembre']=$user['codemembre'];
@@ -429,7 +429,7 @@ public function delete_panier($id)
    // $list=[31,32,33,34,35,36];
     $list=ApiController::getidservicewithmoduleonly("Restauration");
 
-    $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->whereHas('membre', function ($query) use ($pays) {
+    $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration','jourdebut','jourfin')->where('statut','acceptee')->orderBy('idrestauration','desc')->whereHas('membre', function ($query) use ($pays) {
      // $query->whereIn('idannonce', $service);
       $query->where('codemembre',  'like', $pays.'%');
      })->paginate(30);
@@ -467,7 +467,7 @@ public function mesrestaurants($id)
   $list=ApiController::getidservicewithmoduleonly("Restauration");
 
 
-  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
+  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration','jourdebut','jourfin')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idrestauration','desc')->get();
       foreach($article as $articl){
     //    $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
     //       $panier = panier::where([["idmembre", auth('api')->user()->idmembre],["idannonce",$id],["statut",'!=',"commandé"]])->first(); 
@@ -540,7 +540,7 @@ public function oneplat($id)
     }else{
       $articl['idpanier']=null;
     }
-      $article = restauration::select('idmembre','idrestauration','designation','statut')->where('idrestauration',$articl->idrestauration)->first();
+      $article = restauration::select('idmembre','idrestauration','designation','statut','jourdebut','jourfin')->where('idrestauration',$articl->idrestauration)->first();
       $articl['designation']=$article->designation;
       $user = User::select('idmembre','codemembre')->where('idmembre',$article->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
@@ -564,7 +564,7 @@ return response()->json($articl);
 public function onerestaurant($id)
 {
   
-  $articl = restauration::select('adresse','description','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$id)->first();
+  $articl = restauration::select('adresse','description','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration','jourdebut','jourfin')->where('idrestauration',$id)->first();
    
         if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
@@ -720,7 +720,7 @@ public function getrestaurationservice($pays)
     })->where('statut','acceptee')->get();
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
-    $annonce = restauration::select('adresse','idmembre','id_dep','designation', 'fermeture','idrestauration','ouverture','typerestauration')->where('idrestauration',$articl->idannonce)->first();
+    $annonce = restauration::select('adresse','jourdebut','jourfin','idmembre','id_dep','designation', 'fermeture','idrestauration','ouverture','typerestauration')->where('idrestauration',$articl->idannonce)->first();
     $user = User::select('idmembre','codemembre')->where('idmembre',$annonce->idmembre)->first();
     $annonce['codemembre']= $user->codemembre;
     $membre = imagerestauration::where('idrestauration',$annonce->idrestauration)->first();
@@ -739,7 +739,7 @@ public function searchrestaurant($pays,$name)
 {
  
 
-  $article = restauration::select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->where(function ($query) use($name) {
+  $article = restauration::select('adresse','id_dep','jourdebut','jourfin','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->where(function ($query) use($name) {
     $query->whereRaw('LOWER(designation) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(adresse) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(typerestauration) like ?', '%'.strtolower($name).'%');
@@ -975,7 +975,7 @@ public function buyboostrestauration(Request $req)
      foreach($gestionnaire as $test){
        
     //  $membre = boutique::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$articl->panier->idannonce],['statut','acceptee']])->first();
-    $articl = restauration::select('adresse','description','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$test->idrestauration)->first();
+    $articl = restauration::select('adresse','jourdebut','jourfin','description','capacite','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','statut','typerestauration')->where('idrestauration',$test->idrestauration)->first();
    
     if(File::exists(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'))){
     $file=File::get(storage_path('app/public/compteur/'.$articl->idrestauration.'_restauration.txt'));
@@ -1176,7 +1176,7 @@ $annonce= restauration::where(function ($query) use($req,$idmembre,$specialite) 
 })->whereHas('membre', function ($query) use ($req) {
    $query->where('codemembre',  'like',  $req->input('pays').'%');
   })
-->select('adresse','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
+->select('adresse','jourdebut','jourfin','id_dep','idmembre','designation','fermeture','idrestauration','ouverture','typerestauration')->where('statut','acceptee')->orderBy('idrestauration','desc')->paginate(30);
 
 //$list=[31,32,33,34,35,36];
 $list=ApiController::getidservicewithmoduleonly("Restauration");
