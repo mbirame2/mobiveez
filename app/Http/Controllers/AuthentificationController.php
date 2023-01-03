@@ -7,7 +7,9 @@ use App\pays;
 use App\User;
 use App\region;
 use Carbon\Carbon;
-
+use App\boutique;
+use App\restauration;
+use App\hebergement;
 use App\departement;
 use App\particulier;
 use App\Mail\TestMail;
@@ -356,6 +358,37 @@ class AuthentificationController extends Controller
       
 
        
+    }
+
+    public function getidmembreofboutiqur(){
+        $boutique =boutique::select('idmembre')->get()->toArray(); 
+        $restauration =restauration::select('idmembre')->get()->toArray(); 
+        $hebergement =hebergement::select('idmembre')->get()->toArray();
+
+        $array = array_unique(array_merge($boutique, $restauration,$hebergement),SORT_REGULAR);
+        //return $array;
+
+        //var_dump($boutique); die();
+        foreach($array as $an){
+            $user =User::where([['idmembre',$an['idmembre']],['typecompte',"particulier"]])->first(); 
+            if($user){
+                //if($user['country'])
+                error_log('user'.$user['idmembre']);
+
+                $article = User::where('pays',$user['pays'])->where('typecompte',"professionnel")->get();  
+                $article = count($article)+1;
+
+                
+                $user->typecompte="Professionnel";
+                $user->codemembre=mb_substr($user['codemembre'], 0, 4)."Pr".strval($article+1);
+                $user->DateInscription=date("Y/m/d-h:i");
+                $user->save();
+            }
+        }
+        return response()->json([
+            "status"=>200,
+            "message"=> "success"
+      ]);
     }
 
 
