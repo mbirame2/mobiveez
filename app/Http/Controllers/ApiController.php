@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use File;
 use App\plat;
 use App\User;
@@ -172,6 +173,7 @@ class ApiController extends Controller
     public function saveimage($storage,$name,$req){
       try {
         $filepath = storage_path($storage);
+        Log::channel('custom_log')->info(date("Y-m-d").' ImageFile '.$req);
         $req->move($filepath,$name);
       } catch (\Exception $e) {
         abort(403, 'File not upload. Please try again');
