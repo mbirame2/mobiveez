@@ -1106,10 +1106,10 @@ public function buyboostrestauration(Request $req)
   public function listecommandeplat($cle,$valeur)
   {
     if($cle=="idmembre"){
-      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->where($cle,$valeur )->orderBy('idcommanderestauration','desc')->get();
+      $service = commanderestauration::select('idcommanderestauration','idmembre','idmenu','statut','datecommande','referencecommande')->where($cle,$valeur )->orderBy('idcommanderestauration','desc')->get();
     }else if ($cle=="idrestauration"){
       $article = plat::select('idmenu')->where($cle,$valeur )->get();
-      $service = commanderestauration::select('idcommanderestauration','idmenu','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
+      $service = commanderestauration::select('idcommanderestauration','idmenu','idmembre','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
     }
     foreach($service as $articl){
       $article = plat::select('photo', 'prix','prixpetit',  'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
