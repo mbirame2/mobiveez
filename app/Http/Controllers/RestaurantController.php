@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use File;
 use App\plat;
-use App\categorie_plat;
+use App\categorieplat;
 use App\User;
 use App\panier;
 use App\favoris;
