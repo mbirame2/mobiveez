@@ -45,8 +45,10 @@ class RestaurantController extends Controller
 
         $annonce->statut="en attente";
         $annonce->accompagnements=$req->input('accompagnements');
+        $annonce->prixaccompagnements=$req->input('prixaccompagnements');
 
         $annonce->prix=$req->input('prix');
+        $annonce->isdelivered=$req->input('isdelivered');
         $annonce->prixpetit=$req->input('prixpetit');
         $annonce->prixmoyen=$req->input('prixmoyen');
         $annonce->prixgrand=$req->input('prixgrand');
@@ -502,7 +504,7 @@ public function platrestaurant($id)
 //  $list=[697,698,699];
   $list=ApiController::getidservicewithmoduleonly("Menu");
 
-  $article = plat::select('photo','categorie_plat','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
+  $article = plat::select('photo','categorie_plat','idmenu','isdelivered', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
       foreach($article as $articl){
         
         $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
@@ -532,7 +534,7 @@ return response()->json($article);
 
 public function oneplat($id)
 {
-  $articl = plat::select('photo','idmenu','prixpetit',  'prixmoyen',  'prixgrand','statut','description','accompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
+  $articl = plat::select('photo','idmenu','prixpetit',  'prixmoyen', 'isdelivered', 'prixgrand','statut','description','accompagnements','prixaccompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
   $favoris= favoris::where('id_menu',$articl['idmenu'])->first(); 
   $articl['idfavoris']=$favoris['idfavoris'];
   $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
@@ -794,7 +796,7 @@ return response()->json($article);
 }
 public function searchplat($pays,$name)
 {
-  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->where(function ($query) use($name) {
+  $article = plat::select('photo','idmenu', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->where(function ($query) use($name) {
     $query->whereRaw('LOWER(prix) like ?', '%'.strtolower($name).'%');
     $query->orwhereRaw('LOWER(plat) like ?', '%'.strtolower($name).'%');
     })->whereHas('restauration', function ($query) use ($pays,$name) {
@@ -831,7 +833,7 @@ public function searchcategorieplat($pays,$name)
 {
  // $name=$req->input('name');
   
-  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->whereHas('restauration', function ($query) use ($pays) {
+  $article = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'isdelivered','dureepreparation','plat')->whereHas('restauration', function ($query) use ($pays) {
     $query->whereHas('membre', function ($query) use ($pays) {
         $query->where('codemembre', 'like', $pays.'%');
      });
@@ -1059,6 +1061,7 @@ public function buyboostrestauration(Request $req)
     if($reqpanier['besoins']){$annonce->besoin=$reqpanier['besoins'];}
     if($reqpanier['dateheure']){$annonce->datelivraison=$reqpanier['dateheure'];}
     if($reqpanier['accompagnements']){$annonce->accompagnements=$reqpanier['accompagnements'];}
+    if($reqpanier['prixaccompagnements']){$annonce->prixaccompagnements=$reqpanier['prixaccompagnements'];}
     if($reqpanier['destinataire']){$annonce->destinataire=$reqpanier['destinataire'];}
     if($reqpanier['adresse']){$annonce->adresselivraison=$reqpanier['adresse'];}
  //   $annonce->datelivraison=$reqpanier['dateheure'];
@@ -1084,6 +1087,8 @@ public function buyboostrestauration(Request $req)
     $annonce->quantite=$req->input('quantite');
     $annonce->prixpizza=$req->input('prixpizza');
     $annonce->accompagnements=$req->input('accompagnements');
+    $annonce->prixaccompagnements=$req->input('accompagnements');
+
 
     
     $annonce->place=$req->input('place');
@@ -1122,7 +1127,7 @@ public function buyboostrestauration(Request $req)
       $service = commanderestauration::select('idcommanderestauration','idmenu','idmembre','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
     }
     foreach($service as $articl){
-      $article = plat::select('photo', 'prix','prixpetit',  'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
+      $article = plat::select('photo', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
       $articl['photo']=$article['photo'];
       $articl['prix']=$article['prix'];
       $articl['plat']=$article['plat'];
@@ -1138,7 +1143,7 @@ public function onecommandeplat($id)
 
     $articl = commanderestauration::where('idcommanderestauration', $id)->first();
   
-    $article = plat::select('photo', 'prix','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
+    $article = plat::select('photo','isdelivered', 'prix','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
     $restauration = restauration::select('designation')->where("idrestauration",$article['idrestauration'] )->first();
     $user=User::select('prenom','nom','idmembre','codemembre',"localisation")->where('idmembre',$articl->idmembre)->first();
 

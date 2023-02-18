@@ -10,6 +10,6 @@ class commanderestauration extends Model
     public $timestamps = false;
     protected $primaryKey = "idcommanderestauration";
     protected $fillable = [
-        'idmenu', 'adresselivraison', 'prixpizza', 'idmembre', 'quantite','besoin','referencecommande','datelivraison','heurelivraison','datecommande','statut','accompagnements','destinataire','place','feedback','motif'
+        'idmenu', 'adresselivraison', 'prixpizza', 'idmembre', 'quantite','besoin','referencecommande','datelivraison','heurelivraison','datecommande','statut','accompagnements','prixaccompagnements','destinataire','place','feedback','motif'
     ];
 }
