@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use File;
 use App\plat;
+use App\categorie_plat;
 use App\User;
 use App\panier;
 use App\favoris;
@@ -395,7 +396,7 @@ public function delete_panier($id)
  
     public function getplat($pays)
     {
-      $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->whereHas('restauration', function ($query) use ($pays) {
+      $article = plat::select('photo','categorie_plat','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','plat')->where('statut','acceptee')->whereHas('restauration', function ($query) use ($pays) {
         $query->whereHas('membre', function ($query) use ($pays) {
             $query->where('codemembre', 'like', $pays.'%');
          });
@@ -501,7 +502,7 @@ public function platrestaurant($id)
 //  $list=[697,698,699];
   $list=ApiController::getidservicewithmoduleonly("Menu");
 
-  $article = plat::select('photo','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
+  $article = plat::select('photo','categorie_plat','idmenu', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
       foreach($article as $articl){
         
         $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
@@ -667,6 +668,15 @@ public function listeservice()
 public function typecuisine()
 {
   $service = typecuisine::get();
+
+//  $article=$article->paginate(15);
+  return response()->json($service); 
+}
+
+public function categorie_plat($lang)
+{
+  $lang=($lang==='fr') ? 'lib_cat' : 'lib_caten';
+  $service = categorieplat::select($lang,'nom_cat')->get();
 
 //  $article=$article->paginate(15);
   return response()->json($service); 
