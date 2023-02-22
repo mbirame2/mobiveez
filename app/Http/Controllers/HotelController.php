@@ -897,7 +897,7 @@ class HotelController extends Controller
      // return response()->json([$idhebergement]);
       
           $article = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart')->where('statut','acceptee')->whereHas('user', function ($query) use ($req) {
-            $query->where('codemembre',  'like', $req->input('pays') .'%');
+            $query->where('codemembre',  'like', $req->input('reference') .'%');
            })->where(function ($query) use($req,$idhebergement) {
             $query->where('typehebergement', 'LIKE',   '%' . $req->input('typehebergement') . '%' );
             if($req->input('id_dep')) $query->where('id_dep', $req->input('id_dep')  );
