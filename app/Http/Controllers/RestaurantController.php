@@ -379,7 +379,7 @@ public function delete_panier($id)
 
   foreach($panier as $articl){
     
-    $article = plat::select('photo','isdelivered','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
+    $article = plat::select('photo','isdelivered','accompagnements','prixaccompagnements','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
   //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
     $articl['plat']=$article;
     $restauration = restauration::select('idmembre','idrestauration','designation','statut','jourdebut','jourfin')->where('idrestauration',$article['idrestauration'])->first();
