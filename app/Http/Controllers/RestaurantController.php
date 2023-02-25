@@ -1054,6 +1054,7 @@ public function buyboostrestauration(Request $req)
     $annonce->referencecommande=auth('api')->user()->codemembre."-".$reqpanier['idmenu']."c".$idcommanderestauration.date("dmY");
     $annonce->idmenu=$reqpanier['idmenu'];
     $annonce->place=$reqpanier['place'];
+    $annonce->nombreaccompagnements=$reqpanier['nombreaccompagnements'];
  //   $annonce->adresselivraison=$reqpanier['adresse'];
     $annonce->idmembre=$reqpanier['idmembre'];
     $annonce->quantite=$reqpanier['quantite'];
@@ -1083,6 +1084,7 @@ public function buyboostrestauration(Request $req)
       $annonce->statut=$req->input('statut');
       $annonce->save();
     }else{
+    $annonce->nombreaccompagnements=$req->input('nombreaccompagnements');
     $annonce->adresselivraison=$req->input('adresse');
     $annonce->quantite=$req->input('quantite');
     $annonce->prixpizza=$req->input('prixpizza');
@@ -1121,10 +1123,10 @@ public function buyboostrestauration(Request $req)
   public function listecommandeplat($cle,$valeur)
   {
     if($cle=="idmembre"){
-      $service = commanderestauration::select('idcommanderestauration','idmembre','idmenu','statut','datecommande','referencecommande')->where($cle,$valeur )->orderBy('idcommanderestauration','desc')->get();
+      $service = commanderestauration::select('idcommanderestauration','idmembre','idmenu','statut','datecommande','referencecommande','nombreaccompagnements')->where($cle,$valeur )->orderBy('idcommanderestauration','desc')->get();
     }else if ($cle=="idrestauration"){
       $article = plat::select('idmenu')->where($cle,$valeur )->get();
-      $service = commanderestauration::select('idcommanderestauration','idmenu','idmembre','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
+      $service = commanderestauration::select('idcommanderestauration','nombreaccompagnements','idmenu','idmembre','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
     }
     foreach($service as $articl){
       $article = plat::select('photo', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
