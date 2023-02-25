@@ -374,7 +374,8 @@ public function delete_panier($id)
 }
   public function liste_panier($id)
   {
-  $panier =panier::select('idmenu','idpanier','quantite')->where([['idmenu','!=',null],['idmembre','=',$id],['statut','!=','commandé']])->get();
+  $plat=plat::select('idmenu')->where('statut' , '!=', 'suppression')->get();
+  $panier =panier::select('idmenu','idpanier','quantite')->whereIn('idmenu',$plat)->where([['idmenu','!=',null],['idmembre','=',$id],['statut','!=','commandé']])->get();
 
   foreach($panier as $articl){
     
