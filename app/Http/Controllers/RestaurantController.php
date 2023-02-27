@@ -1090,7 +1090,7 @@ public function buyboostrestauration(Request $req)
     $annonce->quantite=$req->input('quantite');
     $annonce->prixpizza=$req->input('prixpizza');
     $annonce->accompagnements=$req->input('accompagnements');
-    $annonce->prixaccompagnements=$req->input('accompagnements');
+    $annonce->prixaccompagnements=$req->input('prixaccompagnements');
 
 
     
