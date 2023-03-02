@@ -1130,7 +1130,9 @@ public function buyboostrestauration(Request $req)
       $service = commanderestauration::select('idcommanderestauration','nombreaccompagnements','idmenu','idmembre','statut','datecommande','referencecommande')->whereIn('idmenu', $article)->orderBy('idcommanderestauration','desc')->get();
     }
     foreach($service as $articl){
-      $article = plat::select('photo', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
+      $article = plat::select('photo','idmenu', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
+      $user=User::select('codemembre')->where('idmembre',$article['idmenu'])->first();
+      $articl['codemembre']=$user['codemembre'];
       $articl['photo']=$article['photo'];
       $articl['prix']=$article['prix'];
       $articl['plat']=$article['plat'];
