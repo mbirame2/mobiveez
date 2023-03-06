@@ -1131,7 +1131,8 @@ public function buyboostrestauration(Request $req)
     }
     foreach($service as $articl){
       $article = plat::select('photo','idmenu', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
-      $user=User::select('codemembre')->where('idmembre',$article['idmenu'])->first();
+      $restauration = restauration::select('idmembre')->where("idrestauration",$article['idrestauration'] )->first();
+      $user=User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
       $articl['codemembre']=$user['codemembre'];
       $articl['photo']=$article['photo'];
       $articl['prix']=$article['prix'];
