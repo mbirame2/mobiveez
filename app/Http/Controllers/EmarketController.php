@@ -187,7 +187,6 @@ class EmarketController extends Controller
 
     public function annonce(Request $req, ApiController $apicontroller){
       $validator = Validator::make($req->all(), [ 
-        'publish_type' => 'required', 
         'price' => 'required', 
         'payment_type' => 'required', 
         'title' => 'required', 
