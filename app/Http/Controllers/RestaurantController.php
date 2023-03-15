@@ -1117,6 +1117,7 @@ public function buyboostrestauration(Request $req)
     $result=restauration::where('idrestauration','=',$id)->first(); 
     $result->statut='suppression';
     $result->save();
+    plat::where('idrestauration',$id)->update(['statut' => 'suppression']);
     return response()->json(['code'=>200]); 
   }
 
