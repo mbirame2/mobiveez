@@ -11,8 +11,14 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::group([
+   'prefix'=>'delivery',
+   'middleware' => 'cors',
+],function($route){
+   Route::get('/zone',  ['uses'=>'DeliveryController@getZone']); 
+   Route::post('/tarificationZone',  ['uses'=>'DeliveryController@tarificationZone']); 
 
-
+});
 //retourne tous les endpoints commençant par /api/auth fait appel à AuthentificationController
 Route::group([
    'prefix'=>'auth',

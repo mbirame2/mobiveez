@@ -4,17 +4,19 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class service extends Model
+class zone extends Model
 {
-               /**
+                 /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $table="services";
+    protected $table="zone";
+    protected $primaryKey = "id";
     public $timestamps = false;
-    protected $primaryKey = "idService";
+
     protected $fillable = [
-        'nomService', 'module','montantService','nbjour', 'nomcomplet' 
+        'departement','arrondissement','commune'
     ];
+
 }
