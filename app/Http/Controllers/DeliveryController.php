@@ -16,9 +16,12 @@ class DeliveryController extends Controller
         return response()->json($zone); 
     }
 
+    public function getTarificationZone($id){
+        $tarificationlivraison = tarificationlivraison::where('id_membre',$id)->get(); 
+        return response()->json($tarificationlivraison); 
+    }
+
     public function tarificationZone(Request $request){
-
-
 
         $validatedData = Validator::make($request->all(), [ 
             '*.id_membre' => 'required',

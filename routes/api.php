@@ -17,6 +17,7 @@ Route::group([
 ],function($route){
    Route::get('/zone',  ['uses'=>'DeliveryController@getZone']); 
    Route::post('/tarificationZone',  ['uses'=>'DeliveryController@tarificationZone']); 
+   Route::get('/getTarificationZone/{id}',  ['uses'=>'DeliveryController@getTarificationZone']); 
 
 });
 //retourne tous les endpoints commençant par /api/auth fait appel à AuthentificationController
