@@ -14,6 +14,6 @@ class region extends Model
     ];
 
     public function pays(){
-        return $this->belongsTo('App\pays2','id_pays');
+        return $this->belongsTo('App\pays','id_pays');
     }
 }
