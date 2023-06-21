@@ -12,9 +12,9 @@ class DeliveryController extends Controller
 {
     
     public function getZone($country){
-        $zone = zone::whereHas('departement', function ($query) {
+        $zone = zone::whereHas('departement', function ($query)  {
                     $query->whereHas('region', function ($query) {
-                        $query->whereHas('pays', function ($query) {
+                        $query->whereHas('pays', function ($query) use ($country) {
                             $query->where('lib_pays', $country);
                         });
                     });
