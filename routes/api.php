@@ -15,7 +15,7 @@ Route::group([
    'prefix'=>'delivery',
    'middleware' => 'cors',
 ],function($route){
-   Route::get('/zone',  ['uses'=>'DeliveryController@getZone']); 
+   Route::get('/zone/{pays}',  ['uses'=>'DeliveryController@getZone']); 
    Route::post('/tarificationZone',  ['uses'=>'DeliveryController@tarificationZone']); 
    Route::get('/getTarificationZone/{id}',  ['uses'=>'DeliveryController@getTarificationZone']); 
 
