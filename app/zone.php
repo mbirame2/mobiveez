@@ -16,7 +16,10 @@ class zone extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'departement','arrondissement','commune'
+        'departement','arrondissement','commune', 'id_dept'
     ];
 
+    public function departement(){
+        return $this->belongsTo('App\departement','id_dept');
+    }
 }

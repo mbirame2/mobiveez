@@ -12,4 +12,8 @@ class region extends Model
     protected $fillable = [
         'lib_reg', 'id_pays'
     ];
+
+    public function pays(){
+        return $this->belongsTo('App\pays2','id_pays');
+    }
 }
