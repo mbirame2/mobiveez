@@ -16,8 +16,8 @@ class DeliveryController extends Controller
                     $query->whereHas('region', function ($query) {
                         $query->whereHas('pays', function ($query) {
                             $query->where('lib_pays', $country);
-                        })
-                    })
+                        });
+                    });
                 })->get();
         return response()->json($zone); 
     }
