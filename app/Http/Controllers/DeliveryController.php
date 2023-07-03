@@ -11,14 +11,8 @@ use Illuminate\Support\Facades\Log;
 class DeliveryController extends Controller
 {
     
-    public function getZone($country){
-        $zone = zone::whereHas('departement', function ($query) use ($country) {
-                    $query->whereHas('region', function ($query) use ($country) {
-                        $query->whereHas('pays', function ($query) use ($country) {
-                            $query->where('lib_pays', $country);
-                        });
-                    });
-                })->get();
+    public function getZone($id_dept){
+        $zone = zone::where('departement',$id_dept)->with('departement')->get();
         return response()->json($zone); 
     }
 
