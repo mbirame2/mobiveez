@@ -12,7 +12,7 @@ class DeliveryController extends Controller
 {
     
     public function getZone($id_dept){
-        $zone = zone::where('departement',$id_dept)->with('departement')->get();
+        $zone = zone::where('id_dept',$id_dept)->with('departement')->get();
         return response()->json($zone); 
     }
 
