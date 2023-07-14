@@ -17,7 +17,7 @@ class DeliveryController extends Controller
     }
 
     public function getTarificationZone($id){
-        $tarificationlivraison = tarificationlivraison::where('id_membre',$id)->get(); 
+        $tarificationlivraison = tarificationlivraison::where('id_membre',$id)->with('zone')->get(); 
         return response()->json($tarificationlivraison); 
     }
 

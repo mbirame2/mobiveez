@@ -19,7 +19,7 @@ class tarificationlivraison extends Model
     //   return $this->belongsTo('App\User','id_membre');
     // }
 
-    // public function zone(){
-    //     return $this->belongsTo('App\zone','id_zone');
-    // }
+    public function zone(){
+        return $this->belongsTo('App\zone','id_zone');
+    }
 }
