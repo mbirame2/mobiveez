@@ -33,7 +33,11 @@ class DeliveryController extends Controller
         }
         foreach ($request->all() as $data) {
             //Log::debug('request:', $data);
-            $object = tarificationlivraison::create($data);
+            if($data['id']){
+                tarificationZone::where('id', $data['id'])->update($data);
+            }else{
+                tarificationlivraison::create($data);
+            }
         }
 
         return response()->json(['message'=>'success'], 200);
