@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 use App\zone;
 use App\tarificationlivraison;
 use Validator;
-use Illuminate\Support\Facades\Log;
 
 class DeliveryController extends Controller
 {
@@ -41,5 +41,14 @@ class DeliveryController extends Controller
         }
 
         return response()->json(['message'=>'success'], 200);
+    }
+
+    public function deleteTarification(Request $request){
+        Log::channel('custom_log')->info(date("Y-m-d").' id[0] :'.$request[0]);
+
+        tarificationlivraison::whereIn('id', $request)->delete();
+
+        return response()->json(['message'=>'success'], 200);
+
     }
 }
