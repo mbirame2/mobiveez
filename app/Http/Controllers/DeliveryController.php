@@ -51,4 +51,8 @@ class DeliveryController extends Controller
         return response()->json(['message'=>'success'], 200);
 
     }
+
+    public function deliver(Request $request){
+
+    } 
 }
