@@ -79,7 +79,7 @@ class DeliveryController extends Controller
         if ($request->hasFile('photoColis')) {
           $apicontroller->saveimage('app/public/delivery',$time,$request->file('photoColis'));
         }
-        $request['photoColis']=$time;
+        $request['photoColis']="delivery/".$time;
         livraison::create($request->all());
 
         return response()->json(['message'=>'success'], 200);
