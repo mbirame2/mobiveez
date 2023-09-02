@@ -21,8 +21,8 @@ Route::group([
    Route::get('/getTarificationZone/{id}',  ['uses'=>'DeliveryController@getTarificationZone']); 
    Route::post('/deleteTarification',  ['uses'=>'DeliveryController@deleteTarification']); 
    Route::post('/deliver',  ['uses'=>'DeliveryController@deliver']); 
+   Route::get('/deliver/{id}',  ['uses'=>'DeliveryController@getdeliver']); 
 
-   
 });
 //retourne tous les endpoints commençant par /api/auth fait appel à AuthentificationController
 Route::group([

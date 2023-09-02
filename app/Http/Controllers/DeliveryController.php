@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 use App\zone;
+use App\livraison;
 use App\tarificationlivraison;
 use Validator;
 
@@ -54,5 +55,39 @@ class DeliveryController extends Controller
 
     public function deliver(Request $request){
 
+        $validatedData = Validator::make($request->all(), [ 
+            'id_dept' => 'required',
+            'poids' => 'required',
+            'nomExpediteur' => 'required',
+            'taille' => 'required',
+            'typeColis' => 'required',
+            'pointCollecte' => 'required',
+            'telephoneDestinataire' => 'required',
+            'adresseDestinataire' => 'required',
+            'reference' => 'required',
+            'nomDestinataire' => 'required',
+            'photoColis' => 'required|file',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $data['dateLivraison']=date("Y-m-d H:i:s");
+        $time=auth('api')->user()->idmembre.'-'.time().$request->file('photoColis')->getClientOriginalExtension();
+        if ($req->hasFile('photoColis')) {
+          $apicontroller->saveimage('app/public/delivery',$time,$req->file('photoColis'));
+        }
+        $data['photoColis']=$time;
+        livraison::create($data);
+
+        return response()->json(['message'=>'success'], 200);
+
     } 
+
+    public function getdeliver($id){
+        $livraison = livraison::where('id',$id)->get(); 
+        return response()->json($livraison);
+    }
 }
