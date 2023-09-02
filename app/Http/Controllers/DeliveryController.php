@@ -68,10 +68,8 @@ class DeliveryController extends Controller
             'photoColis' => 'required|file',
         ]);
 
-        if ($validatedData->fails()) {
-            return redirect()->back()
-                ->withErrors($validatedData)
-                ->withInput();
+        if ($validatedData->fails()) { 
+            return response()->json(['error'=>$validatedData->errors()], 401);            
         }
         $data['dateLivraison']=date("Y-m-d H:i:s");
         $time=auth('api')->user()->idmembre.'-'.time().$request->file('photoColis')->getClientOriginalExtension();
