@@ -78,7 +78,7 @@ class DeliveryController extends Controller
         $request['idmembre']=auth('api')->user()->idmembre;
         $request['photoColis']="delivery/".$time;
 
-        if ($request->hasFile('photoColis')) {
+        if ($request->hasFile('photo')) {
           $apicontroller->saveimage('app/public/delivery',$time,$request->file('photo'));
         }
         livraison::create($request->all());
