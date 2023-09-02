@@ -78,7 +78,7 @@ class DeliveryController extends Controller
           $apicontroller->saveimage('app/public/delivery',$time,$request->file('photoColis'));
         }
         $request['photoColis']=$time;
-        livraison::create($request);
+        livraison::create($request[0]);
 
         return response()->json(['message'=>'success'], 200);
 
