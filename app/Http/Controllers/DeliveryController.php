@@ -67,7 +67,7 @@ class DeliveryController extends Controller
             'telephoneDestinataire' => 'required',
             'adresseDestinataire' => 'required',
             'nomDestinataire' => 'required',
-            'photoColis' => 'required|file',
+            'photo' => 'required|file',
         ]);
 
         if ($validatedData->fails()) { 
@@ -79,7 +79,7 @@ class DeliveryController extends Controller
         $request['photoColis']="delivery/".$time;
 
         if ($request->hasFile('photoColis')) {
-          $apicontroller->saveimage('app/public/delivery',$time,$request->file('photoColis'));
+          $apicontroller->saveimage('app/public/delivery',$time,$request->file('photo'));
         }
         livraison::create($request->all());
 
