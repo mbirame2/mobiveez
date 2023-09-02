@@ -8,6 +8,7 @@ use App\zone;
 use App\livraison;
 use App\tarificationlivraison;
 use Validator;
+use App\Http\Controllers\ApiController;
 
 class DeliveryController extends Controller
 {
@@ -53,7 +54,7 @@ class DeliveryController extends Controller
 
     }
 
-    public function deliver(Request $request){
+    public function deliver(Request $request, ApiController $apicontroller){
 
         $validatedData = Validator::make($request->all(), [ 
             'id_dept' => 'required',
