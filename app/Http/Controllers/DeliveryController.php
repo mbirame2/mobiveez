@@ -72,13 +72,13 @@ class DeliveryController extends Controller
         if ($validatedData->fails()) { 
             return response()->json(['error'=>$validatedData->errors()], 401);            
         }
-        $data['dateLivraison']=date("Y-m-d H:i:s");
+        $request['dateLivraison']=date("Y-m-d H:i:s");
         $time=auth('api')->user()->idmembre.'-'.time().$request->file('photoColis')->getClientOriginalExtension();
         if ($request->hasFile('photoColis')) {
           $apicontroller->saveimage('app/public/delivery',$time,$request->file('photoColis'));
         }
-        $data['photoColis']=$time;
-        livraison::create($data);
+        $request['photoColis']=$time;
+        livraison::create($request);
 
         return response()->json(['message'=>'success'], 200);
 
