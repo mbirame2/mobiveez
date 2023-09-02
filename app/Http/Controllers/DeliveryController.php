@@ -74,7 +74,7 @@ class DeliveryController extends Controller
             return response()->json(['error'=>$validatedData->errors()], 401);            
         }
         $request['dateLivraison']=date("Y-m-d H:i:s");
-        $time=auth('api')->user()->idmembre.'-'.time().'jpg';
+        $time=auth('api')->user()->idmembre.'-'.time().'.jpg';
         $request['idmembre']=auth('api')->user()->idmembre;
         if ($request->hasFile('photoColis')) {
           $apicontroller->saveimage('app/public/delivery',$time,$request->file('photoColis'));
