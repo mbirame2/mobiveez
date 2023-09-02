@@ -64,14 +64,13 @@ class DeliveryController extends Controller
             'pointCollecte' => 'required',
             'telephoneDestinataire' => 'required',
             'adresseDestinataire' => 'required',
-            'reference' => 'required',
             'nomDestinataire' => 'required',
             'photoColis' => 'required|file',
         ]);
 
-        if ($validator->fails()) {
+        if ($validatedData->fails()) {
             return redirect()->back()
-                ->withErrors($validator)
+                ->withErrors($validatedData)
                 ->withInput();
         }
         $data['dateLivraison']=date("Y-m-d H:i:s");
