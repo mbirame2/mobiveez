@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\zone;
 use App\livraison;
+use App\departement;
 use App\tarificationlivraison;
 use Validator;
 use App\Http\Controllers\ApiController;
@@ -73,7 +74,8 @@ class DeliveryController extends Controller
             return response()->json(['error'=>$validatedData->errors()], 401);            
         }
         $request['dateLivraison']=date("Y-m-d H:i:s");
-        $time=auth('api')->user()->idmembre.'-'.time().$request->file('photoColis')->getClientOriginalExtension();
+        $time=auth('api')->user()->idmembre.'-'.time().'jpg';
+        $request['idmembre']=auth('api')->user()->idmembre;
         if ($request->hasFile('photoColis')) {
           $apicontroller->saveimage('app/public/delivery',$time,$request->file('photoColis'));
         }
@@ -86,6 +88,8 @@ class DeliveryController extends Controller
 
     public function getdeliver($id){
         $livraison = livraison::where('id',$id)->get(); 
+        $dep= departement::select('lib_dept')->where('id_dept', $livraison->id_dep)->first();
+        $livraison['lib_dept']=$dep->lib_dept;
         return response()->json($livraison);
     }
 }
