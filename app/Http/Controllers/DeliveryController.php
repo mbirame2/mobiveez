@@ -73,7 +73,7 @@ class DeliveryController extends Controller
         }
         $data['dateLivraison']=date("Y-m-d H:i:s");
         $time=auth('api')->user()->idmembre.'-'.time().$request->file('photoColis')->getClientOriginalExtension();
-        if ($req->hasFile('photoColis')) {
+        if ($request->hasFile('photoColis')) {
           $apicontroller->saveimage('app/public/delivery',$time,$req->file('photoColis'));
         }
         $data['photoColis']=$time;
