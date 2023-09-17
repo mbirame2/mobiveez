@@ -17,7 +17,7 @@ class plat extends Model
 
     
     protected $fillable = [
-        'photo', 'prix',  'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'dureepreparation','plat','description','statut','accompagnements','prixaccompagnements','categorie_plat','bloquer_commande','isdelivered'
+        'photo', 'prix','typelivraison',  'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'dureepreparation','plat','description','statut','accompagnements','prixaccompagnements','categorie_plat','bloquer_commande','isdelivered'
     ];
 
     public function restauration(){

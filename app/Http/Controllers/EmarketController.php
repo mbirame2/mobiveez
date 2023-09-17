@@ -55,7 +55,7 @@ class EmarketController extends Controller
 
     public function oneannonce($id)
     {
-      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','typelivraison','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
@@ -209,6 +209,7 @@ class EmarketController extends Controller
       $annonce->departement()->associate($dept);
       $annonce->titre=$req->input('title');
       $annonce->troc='non';
+      $annonce->typelivraison=$req->input('typelivraison');
       $annonce->statutvente='en vente';
       $annonce->statut='en attente';
       $annonce->localisation=$req->input('localisation');
@@ -356,7 +357,7 @@ class EmarketController extends Controller
     $dept=departement::where('id_dept',$req->input('id_dept'))->first(); 
     $annonce->departement()->associate($dept);
     $annonce->titre=$req->input('titre');
-
+    $annonce->typelivraison=$req->input('typelivraison');
     $annonce->statut='en attente';
 
     $annonce->localisation=$req->input('localisation');
@@ -1221,7 +1222,7 @@ class EmarketController extends Controller
     
       foreach($panier as $articl){
         
-        $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
+        $membre = annonce::select('localisation','typelivraison','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
         $articl['annonce']=$membre;
 
         $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre->idannonce )->first();

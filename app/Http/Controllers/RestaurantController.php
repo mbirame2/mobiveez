@@ -42,7 +42,7 @@ class RestaurantController extends Controller
         }
         
         $annonce->categorie_plat=$req->input('categorie_plat');
-
+        $annonce->typelivraison=$req->input('typelivraison');
         $annonce->statut="en attente";
         $annonce->accompagnements=$req->input('accompagnements');
         $annonce->prixaccompagnements=$req->input('prixaccompagnements');
@@ -379,7 +379,7 @@ public function delete_panier($id)
 
   foreach($panier as $articl){
     
-    $article = plat::select('photo','isdelivered','accompagnements','prixaccompagnements','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
+    $article = plat::select('photo','typelivraison','isdelivered','accompagnements','prixaccompagnements','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
   //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
     $articl['plat']=$article;
     $restauration = restauration::select('idmembre','idrestauration','designation','statut','jourdebut','jourfin')->where('idrestauration',$article['idrestauration'])->first();
@@ -535,7 +535,7 @@ return response()->json($article);
 
 public function oneplat($id)
 {
-  $articl = plat::select('photo','idmenu','prixpetit',  'prixmoyen', 'isdelivered', 'prixgrand','statut','description','accompagnements','prixaccompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
+  $articl = plat::select('photo','typelivraison','idmenu','prixpetit',  'prixmoyen', 'isdelivered', 'prixgrand','statut','description','accompagnements','prixaccompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
   $favoris= favoris::where('id_menu',$articl['idmenu'])->first(); 
   $articl['idfavoris']=$favoris['idfavoris'];
   $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
