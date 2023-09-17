@@ -19,7 +19,7 @@ Route::group([
    Route::get('/zone/{id_dept}',  ['uses'=>'DeliveryController@getZone']); 
    Route::post('/tarificationZone',  ['uses'=>'DeliveryController@tarificationZone']); 
    Route::post('/livreur',  ['uses'=>'DeliveryController@saveLivreur']); 
-   Route::post('/getLivreur',  ['uses'=>'DeliveryController@getlivreur']); 
+   Route::get('/getLivreur',  ['uses'=>'DeliveryController@getlivreur']); 
    Route::get('/getTarificationZone/{id}',  ['uses'=>'DeliveryController@getTarificationZone']); 
    Route::post('/deleteTarification',  ['uses'=>'DeliveryController@deleteTarification']); 
    Route::post('/deliver',  ['uses'=>'DeliveryController@deliver']); 
