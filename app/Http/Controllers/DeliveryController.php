@@ -34,17 +34,17 @@ class DeliveryController extends Controller
             'photolivreur' => 'required|file',
         ]);
         if ($request->hasFile('photolivreur')) {
-            $photolivreur=auth('api')->user()->idmembre.time().'.'.$request->hasFile('photolivreur')->getClientOriginalExtension();
+            $photolivreur=auth('api')->user()->idmembre.time().'.'.$request->file('photolivreur')->getClientOriginalExtension();
             $apicontroller->saveimage('app/public/livreur',$time,$request->file('photolivreur'));
             $request['photolivreur']="livreur/".$photolivreur;
         }
         if ($request->hasFile('cartedintentite')) {
-            $cartedintentite=auth('api')->user()->idmembre.time().'.'.$request->hasFile('cartedintentite')->getClientOriginalExtension();
+            $cartedintentite=auth('api')->user()->idmembre.time().'.'.$request->file('cartedintentite')->getClientOriginalExtension();
             $apicontroller->saveimage('app/public/livreur',$time,$request->file('cartedintentite'));
             $request['cartedintentite']="livreur/".$cartedintentite;
         }
         if ($request->hasFile('permisconduire')) {
-            $permisconduire=auth('api')->user()->idmembre.time().'.'.$request->hasFile('permisconduire')->getClientOriginalExtension();
+            $permisconduire=auth('api')->user()->idmembre.time().'.'.$request->file('permisconduire')->getClientOriginalExtension();
             $apicontroller->saveimage('app/public/livreur',$time,$request->file('permisconduire'));
             $request['permisconduire']="livreur/".$permisconduire;
         }
