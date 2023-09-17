@@ -20,7 +20,7 @@ class DeliveryController extends Controller
         return response()->json($zone); 
     }
 
-    public function saveLivreur(Request $request){
+    public function saveLivreur(Request $request, ApiController $apicontroller){
 
         $validatedData = Validator::make($request->all(), [ 
             'nomlivreur' => 'required',
