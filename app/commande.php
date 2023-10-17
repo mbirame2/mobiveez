@@ -15,7 +15,7 @@ class commande extends Model
     public $timestamps = false;
     protected $primaryKey = "idcommande";
     protected $fillable = [
-       'idpanier','datecommande','statut','quantite','reference','adresse','motif','feedback','datereceptioncommande', 'prixlivraison'
+       'idpanier','datecommande','statut','quantite','reference','adresse','motif','feedback'
     ];
     public function panier(){
         return $this->belongsTo('App\panier','idpanier');
