@@ -1268,7 +1268,7 @@ class EmarketController extends Controller
         $livraisoncommande= new livraisoncommande;
         $livraisoncommande->adresse=$req['adresse'];
         $livraisoncommande->iddestinataire=$req['iddestinataire'];
-      //  $livraisoncommande->id_tariflivraison=$reqpanier['id_tariflivraison'];
+        $livraisoncommande->idtariflivraison=$req['idtariflivraison'];
         $livraisoncommande->besoins=$req['besoins'];
         $livraisoncommande->datelivraisoncommande=date("Y-m-d H:i:s");
         $livraisoncommande->idcommande=$commande->idcommande;
@@ -1771,7 +1771,8 @@ $service['vendeur']=$user;
 $service['annonce']=$membre;
 $service['image']=$image;
 $livraison = livraisoncommande::where('idcommande',$service['idcommande'])->first();
-
+$tariflivraison = tarificationlivraison::where('id',$livraison['idtariflivraison'])->select('tarif')->first();
+$livraison['tarif'] = $tariflivraison['tarif'];
 $service['livraison']=$livraison;
 
 return response()->json($service); 
