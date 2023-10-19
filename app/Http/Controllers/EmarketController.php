@@ -1268,7 +1268,7 @@ class EmarketController extends Controller
         $livraisoncommande= new livraisoncommande;
         $livraisoncommande->adresse=$req['adresse'];
         $livraisoncommande->iddestinataire=$req['iddestinataire'];
-        $livraisoncommande->idtariflivraison=$req['idtariflivraison'];
+        $livraisoncommande->idtariflivraison=$reqpanier['idtariflivraison'];
         $livraisoncommande->besoins=$req['besoins'];
         $livraisoncommande->datelivraisoncommande=date("Y-m-d H:i:s");
         $livraisoncommande->idcommande=$commande->idcommande;
