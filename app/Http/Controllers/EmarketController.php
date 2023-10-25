@@ -1804,7 +1804,7 @@ public function listefavoris($id)
     $annonce['idfavoris']=$test->idfavoris;
     $annonce['image']=$imageannonce->urlimage;
     $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
-    $annonce['departement']=$dep->lib_dept;
+    $annonce['departement']=$dep['lib_dept'];
     array_push($annonces, $annonce);
    }else if($boutique) {
      if($boutique){
