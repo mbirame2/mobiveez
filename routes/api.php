@@ -50,6 +50,8 @@ Route::group([
 });
 Route::get('/getidmembreofboutiqur',      ['uses'=>'AuthentificationController@getidmembreofboutiqur']);
 
+Route::get('/getconditions/{id}',      ['middleware' => 'cors','uses'=>'ApiController@getconditions']);
+
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
 Route::get('/listetarificationlivraison',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@listetarificationlivraison']);
 

@@ -21,6 +21,7 @@ use App\imageannonce;
 use App\restauration;
 use App\commande_plat;
 use App\professionnel;
+use App\conditionsdutilisation;
 use App\souscategorie;
 use Illuminate\Http\Request;
 use App\tarificationlivraison;
@@ -83,6 +84,10 @@ class ApiController extends Controller
 
     }
 
+public function getconditions($acro){
+  $conditionsdutilisation=conditionsdutilisation::where('acro' , $acro)->get();
+  return response()->json($conditionsdutilisation); 
+} 
 
     public function vehicule(Request $req){
       $validator = Validator::make($req->all(), [ 
