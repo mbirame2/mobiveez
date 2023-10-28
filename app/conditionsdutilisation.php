@@ -11,7 +11,7 @@ class conditionsdutilisation extends Model
     protected $primaryKey = "id";
 
     protected $fillable = [
-        'type', 'texte','acro'
+        'type', 'fr','acro','en'
     ];
 
 

@@ -84,8 +84,8 @@ class ApiController extends Controller
 
     }
 
-public function getconditions($acro){
-  $conditionsdutilisation=conditionsdutilisation::where('acro' , $acro)->get();
+public function getconditions($acro,$lang){
+  $conditionsdutilisation=conditionsdutilisation::where([['acro' , $acro],[$lang ,$lang]])->get();
   return response()->json($conditionsdutilisation); 
 } 
 
