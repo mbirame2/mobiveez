@@ -55,7 +55,7 @@ class EmarketController extends Controller
 
     public function oneannonce($id)
     {
-      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','typelivraison','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
@@ -83,10 +83,10 @@ class EmarketController extends Controller
         $immobilier=immobilier::where('idannonce',$annonce->idannonce)->first();
         $automobile=automobile::where('idannonce',$annonce->idannonce)->first();
         if($habillement){
-          $habillement['idhabillement']=$habillement['id'];
+          $habillement['idhabillement']=$habillement['id'] ?? '';
           $annonce['habillement']=$habillement;
         }else if($immobilier){
-       //   $immobilier['idimmobilier']=$immobilier['id'];
+       //   $immobilier['idimmobilier']=$immobilier['id'] ?? '';
           $annonce['immobilier']=$immobilier;
         }else if($automobile){
           if($automobile->idmodelevoiture!=0){
@@ -96,7 +96,7 @@ class EmarketController extends Controller
             $automobile['idmodelevoiture']=$modele->idmodelevoiture;
             $automobile['idmarquevoiture']=$modele->idmarquevoiture;
   
-            $automobile['marque']=$marque['designation_marquevoiture'];
+            $automobile['marque']=$marque['designation_marquevoiture'] ?? '';
   
           }else{
             $automobile['idmodelevoiture']=$automobile['idmarquevoiture']=$automobile['marque']=$automobile['modele']=null;
@@ -141,7 +141,7 @@ class EmarketController extends Controller
     {
       $article = annonce::select('titre','prix','statut','localisation','idmembre','idannonce','referenceannonce','bloquer_commande')->where([['statut','!=','suppression'],['idmembre',$id]])->orderBy('idannonce','desc')->paginate(30);
       foreach($article as $articl){
-        $membre = imageannonce::where('idannonce',$articl['idannonce'])->get();
+        $membre = imageannonce::where('idannonce',$articl['idannonce'] ?? '')->get();
         if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
         }else if(File::exists(storage_path('app/public/compteur/'.strtolower($articl->referenceannonce).'_biens.txt'))){
@@ -159,7 +159,7 @@ class EmarketController extends Controller
           $articl['idshowroom']=null;
         }
         $favoris= favoris::where([['id_membre',$id],['id_annonce',$articl['idannonce']]])->first();
-        $articl['idfavoris']=$favoris['idfavoris'];
+        $articl['idfavoris']=$favoris['idfavoris']?? '';
         $prix=  propositionprix::where([['idannonce',$articl->idannonce],['statut','=',null]])->count();
         $articl['total_offer']=$prix;
         $articl['image']=$membre;
@@ -169,11 +169,11 @@ class EmarketController extends Controller
        //return response()->json($servicevendu->idservice); 
         if($servicevendu){
         $service=service::where('idService',$servicevendu->idservice)->first();
-        $service['dateachat']=$servicevendu['dateachat'];
-        $service['datefinservice']=$servicevendu['datefinservice'];
+        $service['dateachat']=$servicevendu['dateachat']?? '';
+        $service['datefinservice']=$servicevendu['datefinservice']?? '';
         $articl['service']=$service;
-      //  $articl['service']['dateachat']=$servicevendu['dateachat'];
-        //$articl['service']['datefinservice']=$servicevendu['datefinservice'];
+      //  $articl['service']['dateachat']=$servicevendu['dateachat'] ?? '';
+        //$articl['service']['datefinservice']=$servicevendu['datefinservice'] ?? '';
       }else{
         $articl['service']=null;
       }
@@ -209,6 +209,7 @@ class EmarketController extends Controller
       $annonce->departement()->associate($dept);
       $annonce->titre=$req->input('title');
       $annonce->troc='non';
+      $annonce->typelivraison=$req->input('typelivraison');
       $annonce->statutvente='en vente';
       $annonce->statut='en attente';
       $annonce->localisation=$req->input('localisation');
@@ -356,7 +357,7 @@ class EmarketController extends Controller
     $dept=departement::where('id_dept',$req->input('id_dept'))->first(); 
     $annonce->departement()->associate($dept);
     $annonce->titre=$req->input('titre');
-
+    $annonce->typelivraison=$req->input('typelivraison');
     $annonce->statut='en attente';
 
     $annonce->localisation=$req->input('localisation');
@@ -492,7 +493,7 @@ class EmarketController extends Controller
 
       $iman->idannonce= $req->idannonce;  
       $iman->urlimage="photo/".$time;  
-      if($param['parametre']){
+      if($param['parametre'] ?? ''){
         $iman->parametre=$param->parametre+$i+1; 
       } else {
         $iman->parametre=$i; 
@@ -647,7 +648,7 @@ class EmarketController extends Controller
        $annonce['categorie']=$cat;
 
        $favoris= favoris::where([['id_membre',$id],['id_showroom',$annonce['idshowroom']]])->first();
-       $annonce['idfavoris']=$favoris['idfavoris'];
+       $annonce['idfavoris']=$favoris['idfavoris'] ?? '';
 
       if(File::exists(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->idshowroom.'_showrooms.txt'));
@@ -1043,8 +1044,8 @@ class EmarketController extends Controller
         $user = User::select( 'departement_id','localisation','profil','idmembre','prenom','nom','telephoneportable','email','codemembre')->where(
           'idmembre', $articl->idmembre)->first();
        #   return $user->departement_id;
-          $dep=departement::where('id_dept',$user['departement_id'])->first(); 
-          $articl['departement']=$dep['lib_dept'];
+          $dep=departement::where('id_dept',$user['departement_id'] ?? '')->first(); 
+          $articl['departement']=$dep['lib_dept'] ?? '';
           $articl['vendeur']=$user;
       }
      
@@ -1077,23 +1078,23 @@ class EmarketController extends Controller
       $prix=  propositionprix::where('idmembre',$id)->whereIn('idannonce',$ann)->orderBy('idproposition','desc')->paginate(30);
       foreach($prix as $articl){
  
-          $annonce =annonce::where('idannonce',$articl['idannonce'])->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+          $annonce =annonce::where('idannonce',$articl['idannonce'] ?? '')->select('titre','prix','localisation','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
           $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$annonce['idannonce'] )->first();
 
           if($boutique){
-           $annonce['idshowroom']=$boutique['idshowroom'];
+           $annonce['idshowroom']=$boutique['idshowroom'] ?? '';
           }
           
-          $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce['idmembre'])->first();
+          $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce['idmembre'] ?? '')->first();
 
-          $image = imageannonce::where('idannonce',$annonce['idannonce'])->first();
+          $image = imageannonce::where('idannonce',$annonce['idannonce'] ?? '')->first();
           if($annonce){
-            $annonce['image']=$image['urlimage'];
+            $annonce['image']=$image['urlimage'] ?? '';
             $articl['annonce']=$annonce;
             $articl['vendeur']=$user;
           }
           
-         // $articl['annonce']['image']=$image['urlimage'];
+         // $articl['annonce']['image']=$image['urlimage'] ?? '';
       }
      
      
@@ -1106,15 +1107,15 @@ class EmarketController extends Controller
       $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$annonce['idannonce'] )->first();
 
       if($boutique){
-        $annonce['idshowroom']=$boutique['idshowroom'];
+        $annonce['idshowroom']=$boutique['idshowroom'] ?? '';
       }
-      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce['idmembre'])->first();
+      $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$annonce['idmembre'] ?? '')->first();
 
-      $image = imageannonce::where('idannonce',$annonce['idannonce'])->first();
+      $image = imageannonce::where('idannonce',$annonce['idannonce'] ?? '')->first();
         
       $articl['annonce']=$annonce;
       $articl['vendeur']=$user;
-      $articl['annonce']['image']=$image['urlimage'];
+      $articl['annonce']['image']=$image['urlimage'] ?? '';
       return $articl;
     }
 
@@ -1196,7 +1197,7 @@ class EmarketController extends Controller
           }else {
           $file=0;
         }
-        unset($articl['idannonce']);
+        unset($articl['idannonce'] );
         unset($articl['idservice']);
         $articl['boutique']=$annonce;
         $articl['categorie']=$cat;
@@ -1221,7 +1222,7 @@ class EmarketController extends Controller
     
       foreach($panier as $articl){
         
-        $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
+        $membre = annonce::select('localisation','typelivraison','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
         $articl['annonce']=$membre;
 
         $boutique = annoncesboutique::select('idshowroom')->where('idannonce',$membre->idannonce )->first();
@@ -1249,26 +1250,26 @@ class EmarketController extends Controller
       $array=[];
       foreach($req->panier as $reqpanier){
        
-        $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'])->first();
+        $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'] ?? '')->first();
       //return $panier;
       $commande= new commande;
-      //$commande->idpanier=$reqpanier['idpanier'];
+      //$commande->idpanier=$reqpanier['idpanier'] ?? '';
       $commande->panier()->associate($panier);
-      $commande->quantite=$reqpanier['quantite'];
+      $commande->quantite=$reqpanier['quantite'] ?? '';
       $commande->datecommande=date("Y/m/d");
       $commande->statut="AWAITING";
       $panier->statut="commandé";
       $panier->save();
      
-      $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier'].date("dmY");
+      $commande->reference=$panier->annonce->referenceannonce."c".$reqpanier['idpanier']?? ''.date("dmY");
       $commande->save();
 
       if($req['livraison']==true){
         $livraisoncommande= new livraisoncommande;
-        $livraisoncommande->adresse=$req['adresse'];
-        $livraisoncommande->iddestinataire=$req['iddestinataire'];
-      //  $livraisoncommande->id_tariflivraison=$reqpanier['id_tariflivraison'];
-        $livraisoncommande->besoins=$req['besoins'];
+        $livraisoncommande->adresse=$req['adresse'] ?? '';
+        $livraisoncommande->iddestinataire=$req['iddestinataire'] ?? null;
+        $livraisoncommande->idtariflivraison=$reqpanier['idtariflivraison'] ?? null;
+        $livraisoncommande->besoins=$req['besoins'] ?? '';
         $livraisoncommande->datelivraisoncommande=date("Y-m-d H:i:s");
         $livraisoncommande->idcommande=$commande->idcommande;
         $livraisoncommande->save();
@@ -1341,7 +1342,7 @@ class EmarketController extends Controller
         
         $articl['article']=$annonce;
         $articl['service']=$service->nomService;
-        $articl['image']=$img['urlimage'];
+        $articl['image']=$img['urlimage'] ?? '';
         $articl['vues']=$file;
       }
      
@@ -1361,8 +1362,8 @@ class EmarketController extends Controller
     {
       foreach($req->panier as $reqpanier){
        
-      //  $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'])->first();
-      $result=panier::where('idpanier','=',$reqpanier['idpanier'])->first(); 
+      //  $panier =panier::with('annonce')->where('idpanier','=',$reqpanier['idpanier'] ?? '')->first();
+      $result=panier::where('idpanier','=',$reqpanier['idpanier'] ?? '')->first(); 
       $result->quantite= $reqpanier['quantite'] ;
       $result->save();
       }
@@ -1387,16 +1388,16 @@ class EmarketController extends Controller
       $membre['idshowroom']=$boutique->idshowroom;
      }
 
-     $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'])->first();
+     $user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'] ?? '')->first();
 
-      $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
+      $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'] ?? '')->first();
       
       $articl['panier']['annonce']=$membre;
       $articl['panier']['vendeur']=$user;
-      $articl['panier']['image']=$image['urlimage'];
-      unset($articl['panier']['idpanier']);unset($articl['panier']['idmembre']);
-      unset($articl['panier']['idannonce']);unset($articl['panier']['statut']);
-      unset($articl['panier']['date']);unset($articl['idpanier']);unset($articl['panier']['quantite']);
+      $articl['panier']['image']=$image['urlimage'] ?? '';
+      unset($articl['panier']['idpanier'] );unset($articl['panier']['idmembre'] );
+      unset($articl['panier']['idannonce'] );unset($articl['panier']['statut'] );
+      unset($articl['panier']['date'] );unset($articl['idpanier'] );unset($articl['panier']['quantite']);
   }
   //  $article=$article->paginate(15);
       return response()->json($service); 
@@ -1424,8 +1425,8 @@ class EmarketController extends Controller
         $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
         $articl['annonce']=$membre;
         $articl['annonce']['client']=$user;
-        $articl['annonce']['image']=$image['urlimage'];
-        unset($articl['panier']);
+        $articl['annonce']['image']=$image['urlimage'] ?? '';
+        unset($articl['panier'] );
   
     }
     $proposition = propositionprix::whereIn('idannonce', $service)->where('statut', 'VALIDATED')->get();
@@ -1442,8 +1443,8 @@ class EmarketController extends Controller
       $image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre->idannonce)->first();
       $articl['annonce']=$membre;
       $articl['annonce']['client']=$user;
-      $articl['annonce']['image']=$image['urlimage'];
-      unset($articl['panier']);
+      $articl['annonce']['image']=$image['urlimage'] ?? '';
+      unset($articl['panier'] );
 
   }
    // $data =[];
@@ -1655,8 +1656,8 @@ class EmarketController extends Controller
   ->select('titre','prix','localisation','idmembre','idannonce','referenceannonce','statut')->where('statut','acceptee')->orderBy('idannonce','desc')->paginate(30);
   
   foreach($annonce as $articl){
-    unset($articl['departement']);
-    unset($articl['idmembre']);
+    unset($articl['departement'] );
+    unset($articl['idmembre'] );
     $membre = imageannonce::where('idannonce',$articl->idannonce)->first();
     if(File::exists(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'))){
     $file=File::get(storage_path('app/public/compteur/'.$articl->referenceannonce.'_biens.txt'));
@@ -1744,7 +1745,7 @@ public function gestionnaireshowroom($id)
   $user['idmembre']=$test->idmembre;
   $user['is_connected']=$test->is_connected;
   $user['departement']=$dept->lib_dept;
-  unset($user['departement_id']);
+  unset($user['departement_id'] );
   array_push($gest, $user);
   }
 
@@ -1759,18 +1760,19 @@ public function onecommande($id)
     $query->where('statut', 'commandé');
 })->first();
 
-$membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$service['panier']['idannonce']],['statut','acceptee']])->first();
-$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$service['panier']['idmembre'])->first();
+$membre = annonce::select('localisation','idmembre','idsouscategorie','prix','referenceannonce','titre','idannonce')->where([['idannonce',$service['panier']['idannonce']?? ''],['statut','acceptee']])->first();
+$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$service['panier']['idmembre'] ?? '')->first();
 $service['acheteur']=$user;
-unset($service['panier']);
-$image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'])->first();
-$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'])->first();
+unset($service['panier'] );
+$image = imageannonce::select('urlimage','idannonce')->where('idannonce',$membre['idannonce'] ?? '')->first();
+$user = User::select('prenom','nom','telephoneportable','email','localisation','idmembre','codemembre')->where('idmembre',$membre['idmembre'] ?? '')->first();
 
 $service['vendeur']=$user;
 $service['annonce']=$membre;
 $service['image']=$image;
-$livraison = livraisoncommande::where('idcommande',$service['idcommande'])->first();
-
+$livraison = livraisoncommande::where('idcommande',$service['idcommande'] ?? '')->first();
+$tariflivraison = tarificationlivraison::where('id',$livraison['idtariflivraison']??'')->select('tarif')->first();
+$livraison['tarif'] = $tariflivraison['tarif'] ?? '';
 $service['livraison']=$livraison;
 
 return response()->json($service); 
@@ -1802,7 +1804,7 @@ public function listefavoris($id)
     $annonce['idfavoris']=$test->idfavoris;
     $annonce['image']=$imageannonce->urlimage;
     $dep= departement::select('lib_dept')->where('id_dept', $annonce->id_dep)->first();
-    $annonce['departement']=$dep->lib_dept;
+    $annonce['departement']=$dep['lib_dept'] ?? '';
     array_push($annonces, $annonce);
    }else if($boutique) {
      if($boutique){

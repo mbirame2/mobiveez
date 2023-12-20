@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"  # Port pour accéder à l'application Laravel depuis l'hôte
+    volumes:
+      - .:/var/www/html  # Montage du répertoire de travail dans le conteneur
+    environment:
+      - "DB_HOST=mysql"
+      - "DB_DATABASE=websystechprod"
+      - "DB_USERNAME=birame"
+      - "DB_PASSWORD=sf68Lvr&PkDuexj9Q%dma"
+    depends_on:
+      - mysql
+    # networks:
+    #   mysql-phpmyadmin:
+    #       aliases:
+    #         - app
+
+  # Ajoutez la configuration de votre base de données externe (MySQL, PostgreSQL, etc.)
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: zM4cfJm$&5e%CvdqnaW8
+        MYSQL_DATABASE: database_name
+        MYSQL_USER: birame
+        MYSQL_PASSWORD: sf68Lvr&PkDuexj9Q%dma
+    ports:
+        - "3306:3306"
+    volumes:
+        - .db_data:/var/lib/mysql
+    # networks:
+    #   mysql-phpmyadmin:
+    #       aliases:
+    #         - mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.0
+    container_name: phpmyadmin
+    links:
+        - mysql
+    environment:
+        PMA_HOST: mysql
+        PMA_PORT: 3306
+        UPLOAD_LIMIT: 300M
+    ports:
+        - 8081:80
+    # networks:
+    #   mysql-phpmyadmin:
+    #       aliases:
+    #       - phpmyadmin
+# networks:
+#   mysql-phpmyadmin:
+#     driver: bridge
+
+volumes:
+  db_data:
+    driver: local
+

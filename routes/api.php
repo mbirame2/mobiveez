@@ -11,8 +11,21 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::group([
+   'prefix'=>'delivery',
+   'middleware' => 'cors',
+  // 'middleware' => 'auth:api',
+],function($route){
+   Route::get('/zone/{id_dept}',  ['uses'=>'DeliveryController@getZone']); 
+   Route::post('/tarificationZone',  ['uses'=>'DeliveryController@tarificationZone']); 
+   Route::post('/livreur',  ['uses'=>'DeliveryController@saveLivreur']); 
+   Route::get('/getLivreur',  ['uses'=>'DeliveryController@getlivreur']); 
+   Route::get('/getTarificationZone/{id}',  ['uses'=>'DeliveryController@getTarificationZone']); 
+   Route::post('/deleteTarification',  ['uses'=>'DeliveryController@deleteTarification']); 
+   Route::post('/deliver',  ['uses'=>'DeliveryController@deliver']); 
+   Route::get('/deliver/{id}',  ['uses'=>'DeliveryController@getdeliver']); 
 
-
+});
 //retourne tous les endpoints commençant par /api/auth fait appel à AuthentificationController
 Route::group([
    'prefix'=>'auth',
@@ -36,6 +49,8 @@ Route::group([
 
 });
 Route::get('/getidmembreofboutiqur',      ['uses'=>'AuthentificationController@getidmembreofboutiqur']);
+
+Route::get('/getconditions/{id}/{lang}',      ['middleware' => 'cors','uses'=>'ApiController@getconditions']);
 
 Route::get('/departement/{id}',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@getdepartement']);
 Route::get('/listetarificationlivraison',      ['as'=>'log','middleware' => 'cors','uses'=>'ApiController@listetarificationlivraison']);

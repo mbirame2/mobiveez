@@ -42,7 +42,7 @@ class RestaurantController extends Controller
         }
         
         $annonce->categorie_plat=$req->input('categorie_plat');
-
+        $annonce->typelivraison=$req->input('typelivraison');
         $annonce->statut="en attente";
         $annonce->accompagnements=$req->input('accompagnements');
         $annonce->prixaccompagnements=$req->input('prixaccompagnements');
@@ -161,9 +161,9 @@ public function listereservationid($cle, $valeur)
     $panier= reservationtable::select('idrestauration','titre','referencereservationtable','datereservation','heurearrivee','statut','idreservationtable','idmembre')->where($cle,$valeur)->orderBy('idreservationtable','desc')->get(); 
     foreach($panier as $articl){
       $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
-      $articl['photorestauration']=$membre['urlimagerestauration'];
+      $articl['photorestauration']=$membre['urlimagerestauration'] ?? '';
       $restauration = restauration::where('idrestauration',$articl['idrestauration'])->first();
-      $articl['designation']=$restauration['designation'];
+      $articl['designation']=$restauration['designation'] ?? '';
     }
   
     return response()->json($panier);
@@ -179,25 +179,25 @@ public function listereservationtable($id){
     $membre = imagerestauration::where('idrestauration',$articl->idrestauration)->first();
     $restauration = restauration::where('idrestauration',$articl->idrestauration)->first();
     $codemembre = User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
-    $articl['codemembre_proprio']=$codemembre['codemembre'];
-    $articl['designation']=$restauration['designation'];
-    $articl['photo']=$membre['urlimagerestauration'];
+    $articl['codemembre_proprio']=$codemembre['codemembre'] ?? '';
+    $articl['designation']=$restauration['designation'] ?? '';
+    $articl['photo']=$membre['urlimagerestauration'] ?? '';
     $invitereservationtable=invitereservationtable::select( 'idmembre', 'statut')->where('idreservationtable',$articl->idreservationtable)->get();
   //  $invite = explode(', ', $articl['invite']);
   foreach($invitereservationtable as $invit){
     $user = User::select('idmembre','prenom','nom','profil','codemembre')->where('idmembre',$invit['idmembre'])->first();
-    $invit['prenom']=$user['prenom'];
-    $invit['nom']=$user['nom'];
-    $invit['profil']=$user['profil'];
-    $invit['codemembre']=$user['codemembre'];
+    $invit['prenom']=$user['prenom'] ?? '';
+    $invit['nom']=$user['nom'] ?? '';
+    $invit['profil']=$user['profil'] ?? '';
+    $invit['codemembre']=$user['codemembre'] ?? '';
   }
     $articl['listeinvites']=$invitereservationtable;
     $commande = commandereservationtable::select('idcommandereservationtable', 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->orderBy('idcommandereservationtable','desc')->get();
     foreach($commande as $command){
       $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
-      $command['photo']=$article['photo'];
-      $command['prix']=$article['prix'];
-      $command['plat']=$article['plat'];
+      $command['photo']=$article['photo'] ?? '';
+      $command['prix']=$article['prix'] ?? '';
+      $command['plat']=$article['plat'] ?? '';
     }
     $articl['listecommandes']=$commande;
 
@@ -211,16 +211,16 @@ public function onereservationtable($id){
   $articl=reservationtable::where('idreservationtable',$id)->first();
  // foreach($reservationtable as $articl){
     $membre = imagerestauration::where('idrestauration',$articl['idrestauration'])->first();
-    $articl['photo']=$membre['urlimagerestauration'];
+    $articl['photo']=$membre['urlimagerestauration'] ?? '';
 
     $invitereservationtable=invitereservationtable::select( 'idmembre', 'statut')->where('idreservationtable',$articl->idreservationtable)->get();
     //  $invite = explode(', ', $articl['invite']);
     foreach($invitereservationtable as $invit){
       $user = User::select('idmembre','prenom','nom','profil','codemembre')->where('idmembre',$invit['idmembre'])->first();
-      $invit['prenom']=$user['prenom'];
-      $invit['nom']=$user['nom'];
-      $invit['profil']=$user['profil'];
-      $invit['codemembre']=$user['codemembre'];
+      $invit['prenom']=$user['prenom'] ?? '';
+      $invit['nom']=$user['nom'] ?? '';
+      $invit['profil']=$user['profil'] ?? '';
+      $invit['codemembre']=$user['codemembre'] ?? '';
     }
       $articl['listeinvites']=$invitereservationtable;
    // $invitereservationtable=invitereservationtable::select( 'idmembre')->where('idreservationtable',$articl->idreservationtable)->get();
@@ -230,9 +230,9 @@ public function onereservationtable($id){
     $commande = commandereservationtable::select('idcommandereservationtable', 'idmenu', 'idmembre', 'quantite')->where('idreservationtable',$articl['idreservationtable'])->get();
     foreach($commande as $command){
       $article = plat::select('photo', 'prix','plat')->where('idmenu',$command['idmenu'])->first();
-      $command['photo']=$article['photo'];
-      $command['prix']=$article['prix'];
-      $command['plat']=$article['plat'];
+      $command['photo']=$article['photo'] ?? '';
+      $command['prix']=$article['prix'] ?? '';
+      $command['plat']=$article['plat'] ?? '';
     }
     $articl['listecommandes']=$commande;
 
@@ -337,7 +337,7 @@ public function restauration(Request $req , ApiController $apicontroller){
     }
     $annonce['typecuisine']= $typecuisine;
   }
-  $annonce['departement']=$dept['lib_dept'];
+  $annonce['departement']=$dept['lib_dept'] ?? '';
   $annonce['codemembre']=$user->codemembre;
 
   $annonce['code']=200;
@@ -379,13 +379,13 @@ public function delete_panier($id)
 
   foreach($panier as $articl){
     
-    $article = plat::select('photo','isdelivered','accompagnements','prixaccompagnements','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
+    $article = plat::select('photo','typelivraison','isdelivered','accompagnements','prixaccompagnements','idmenu', 'prix', 'prixpetit',  'prixmoyen',  'prixgrand','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande','plat')->where('idmenu',$articl->idmenu)->first();
   //  $membre = annonce::select('localisation','idannonce','bloquer_commande','idsouscategorie','prix','referenceannonce','titre','validite','idmembre')->where('idannonce',$articl->idannonce)->first();
     $articl['plat']=$article;
-    $restauration = restauration::select('idmembre','idrestauration','designation','statut','jourdebut','jourfin')->where('idrestauration',$article['idrestauration'])->first();
-    $articl['plat']['designation']=$restauration['designation'];
+    $restauration = restauration::select('idmembre','idrestauration','designation','statut','jourdebut','jourfin')->where('idrestauration',$article['idrestauration']??'')->first();
+    $articl['plat']['designation']=$restauration['designation']??'';
     $user = User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
-    $articl['plat']['codemembre']=$user['codemembre'];
+    $articl['plat']['codemembre']=$user['codemembre']??'';
   } 
   if($panier->isEmpty()){
 
@@ -407,8 +407,8 @@ public function delete_panier($id)
       foreach($article as $articl){
     
         if(auth('api')->user()){
-          $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
-          $articl['idpanier']=$result['idpanier'];
+          $result=panier::where([["idmembre", auth('api')->user()->idmembre ?? null],['idmenu','=',$articl->idmenu]])->first(); 
+          $articl['idpanier']=$result['idpanier'] ?? null;
         }else{
           $articl['idpanier']=null;
         }
@@ -449,14 +449,14 @@ public function delete_panier($id)
       $dept=departement::where('id_dept',$articl->id_dep)->first(); 
      $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
      $articl['codemembre']=$user->codemembre;
-     $articl['photorestauration']=$membre['urlimagerestauration'];
+     $articl['photorestauration']=$membre['urlimagerestauration'] ?? '';
 
      $articl['departement']=$dept->lib_dept;
       $articl['vues']=$file;
       $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
-      $service = service::where('idService',$servicevendu['idservice'])->first();
-      $service['dateachat']=$servicevendu['dateachat'];
-      $service['datefinservice']=$servicevendu['datefinservice'];
+      $service = service::where('idService',$servicevendu['idservice']?? '')->first();
+      $service['dateachat']=$servicevendu['dateachat']?? '';
+      $service['datefinservice']=$servicevendu['datefinservice']?? '';
       if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
 
    //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -483,17 +483,17 @@ public function mesrestaurants($id)
         }
         $membre = imagerestauration::select('urlimagerestauration')->where('idrestauration',$articl->idrestauration)->get();
 
-        $dept=departement::where('id_dept',$articl->id_dep)->first(); 
+      $dept=departement::where('id_dept',$articl->id_dep)->first(); 
       $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
       $articl['codemembre']=$user->codemembre;
       $articl['photorestauration']=$membre;
 
       $articl['departement']=$dept->lib_dept;
-        $articl['vues']=$file;
-        $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
-      $service = service::where('idService',$servicevendu['idservice'])->first();
-      $service['dateachat']=$servicevendu['dateachat'];
-      $service['datefinservice']=$servicevendu['datefinservice'];
+      $articl['vues']=$file;
+      $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
+      $service = service::where('idService',$servicevendu['idservice']?? null)->first();
+      $service['dateachat']=$servicevendu['dateachat'] ?? '';
+      $service['datefinservice']=$servicevendu['datefinservice'] ?? '';
       if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
 
     }
@@ -508,7 +508,7 @@ public function platrestaurant($id)
   $article = plat::select('photo','categorie_plat','idmenu','isdelivered', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'dureepreparation','statut','plat')->where([['statut','!=','suppression'],['idrestauration',$id]])->orderBy('idmenu','desc')->paginate(30);
       foreach($article as $articl){
         
-        $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
+        $result=panier::where([["idmembre", auth('api')->user()['idmembre'] ?? null],['idmenu','=',$articl->idmenu]])->first(); 
         if($result){
           $articl['idpanier']=$result->idpanier;
         }else{
@@ -523,9 +523,9 @@ public function platrestaurant($id)
       
         $articl['vues']=$file;
         $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idmenu']]])->first();
-        $service = service::where('idService',$servicevendu['idservice'])->first();
-        $service['dateachat']=$servicevendu['dateachat'];
-        $service['datefinservice']=$servicevendu['datefinservice'];
+        $service = service::where('idService',$servicevendu['idservice']??'')->first();
+        $service['dateachat']=$servicevendu['dateachat'] ?? '';
+        $service['datefinservice']=$servicevendu['datefinservice'] ?? '';
         if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
         
     //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -535,10 +535,10 @@ return response()->json($article);
 
 public function oneplat($id)
 {
-  $articl = plat::select('photo','idmenu','prixpetit',  'prixmoyen', 'isdelivered', 'prixgrand','statut','description','accompagnements','prixaccompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
+  $articl = plat::select('photo','typelivraison','idmenu','prixpetit',  'prixmoyen', 'isdelivered', 'prixgrand','statut','description','accompagnements','prixaccompagnements', 'prix','idrestauration','lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche','bloquer_commande', 'categorie_plat','dureepreparation','plat')->where('idmenu',$id)->first();
   $favoris= favoris::where('id_menu',$articl['idmenu'])->first(); 
-  $articl['idfavoris']=$favoris['idfavoris'];
-  $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
+  $articl['idfavoris']=$favoris['idfavoris'] ?? '';
+  $result=panier::where([["idmembre", auth('api')->user()['idmembre'] ?? null],['idmenu','=',$articl->idmenu]])->first(); 
     if($result){
       $articl['idpanier']=$result->idpanier;
     }else{
@@ -589,7 +589,7 @@ public function onerestaurant($id)
       $type=typecuisine::whereIn('idtypecuisine',$specialite)->get();
       $articl['typecuisine']=$type;
       $favoris= favoris::where('id_restauration',$articl['idrestauration'])->first(); 
-      $articl['idfavoris']=$favoris['idfavoris'];
+      $articl['idfavoris']=$favoris['idfavoris'] ?? '';
         $articl['vues']=$file;
         Storage::disk('vue')->put($articl->idrestauration.'_restauration.txt', $file+1);
     return response()->json($articl); 
@@ -627,7 +627,7 @@ public function listefavoris($id)
         }
     $annonce['idfavoris']=$test->idfavoris;
     $article = restauration::select('designation')->where('idrestauration',$annonce['idrestauration'])->first();
-    $annonce['designation']=$article['designation'];
+    $annonce['designation']=$article['designation'] ?? '';
     array_push($annonces, $annonce);
    }else if($boutique) {
     $user = User::select('codemembre')->where('idmembre',$boutique->idmembre)->first();
@@ -707,14 +707,14 @@ public function getplatservice($pays)
   $servicevendu = servicevendu::select('dateachat','idannonce','datefinservice')->whereIn('idservice', $list)->whereIn('idannonce', $annonce)->where('datefinservice','>',date("Y/m/d-H:i"))->orderBy('idvente','desc')->paginate(30);
   foreach($servicevendu as $articl){
     $annonce = plat::select('photo','idmenu', 'prix','prixpetit',  'prixmoyen',  'prixgrand','idrestauration','bloquer_commande','plat')->where('idmenu',$articl->idannonce)->first();
-    $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$annonce['idmenu']]])->first(); 
+    $result=panier::where([["idmembre", auth('api')->user()['idmembre'] ?? null],['idmenu','=',$annonce['idmenu']]])->first(); 
     if($result){
       $annonce['idpanier']=$result->idpanier;
     }else{
       $annonce['idpanier']=null;
     }
     $article = restauration::select('designation')->where('idrestauration',$annonce['idrestauration'])->first();
-    $annonce['designation']=$article['designation'];
+    $annonce['designation']=$article['designation'] ?? '';
     $articl['plat']=$annonce;
     unset($articl['idannonce']);
   }
@@ -778,15 +778,15 @@ public function searchrestaurant($pays,$name)
 
     $dept=departement::where('id_dept',$articl['id_dep'])->first(); 
     $user = User::select('idmembre','codemembre')->where('idmembre',$articl['idmembre'])->orwhereRaw('LOWER(codemembre) like ?', '%'.strtolower($name).'%')->first();
-    $articl['codemembre']=$user['codemembre'];
-    $articl['photorestauration']=$membre['urlimagerestauration'];
+    $articl['codemembre']=$user['codemembre'] ?? '';
+    $articl['photorestauration']=$membre['urlimagerestauration'] ?? '';
 
-    $articl['departement']=$dept['lib_dept'];
+    $articl['departement']=$dept['lib_dept'] ?? '';
     $articl['vues']=$file;
     $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
     $service = service::where('idService',$servicevendu['idservice'])->first();
-    $service['dateachat']=$servicevendu['dateachat'];
-    $service['datefinservice']=$servicevendu['datefinservice'];
+    $service['dateachat']=$servicevendu['dateachat'] ?? '';
+    $service['datefinservice']=$servicevendu['datefinservice'] ?? '';
     if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
 
  //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -809,7 +809,7 @@ public function searchplat($pays,$name)
        });
    })->paginate(30);
   foreach($article as $articl){
-  $result=panier::where([["idmembre", auth('api')->user()['idmembre']],['idmenu','=',$articl->idmenu]])->first(); 
+  $result=panier::where([["idmembre", auth('api')->user()['idmembre'] ?? null],['idmenu','=',$articl->idmenu]])->first(); 
   if($result){
     $articl['idpanier']=$result->idpanier;
   }else{
@@ -824,7 +824,7 @@ public function searchplat($pays,$name)
     $articl['vues']=$file;
     $rest=restauration::where('idrestauration','=',$articl['idrestauration'])->first();
     $user = User::select('idmembre','codemembre')->where('idmembre',$rest['idmembre'])->first();
-    $articl['codemembre']=$user['codemembre'];
+    $articl['codemembre']=$user['codemembre'] ?? '';
 }
 return response()->json($article); 
 }
@@ -842,7 +842,7 @@ public function searchcategorieplat($pays,$name)
   foreach($article as $articl){
     if(auth('api')->user()){
       $result=panier::where([["idmembre", auth('api')->user()->idmembre],['idmenu','=',$articl->idmenu]])->first(); 
-      $articl['idpanier']=$result['idpanier'];
+      $articl['idpanier']=$result['idpanier'] ?? '';
     } else{
       $articl['idpanier']=null;
     }
@@ -858,7 +858,7 @@ public function searchcategorieplat($pays,$name)
     }
     $rest=restauration::where('idrestauration','=',$articl['idrestauration'])->first();
     $user = User::select('idmembre','codemembre')->where('idmembre',$rest['idmembre'])->first();
-    $articl['codemembre']=$user['codemembre'];
+    $articl['codemembre']=$user['codemembre'] ?? '';
     $articl['vues']=$file;
 }
 return response()->json($article); 
@@ -1006,7 +1006,7 @@ public function buyboostrestauration(Request $req)
   $type=typecuisine::whereIn('idtypecuisine',$specialite)->get();
   $articl['typecuisine']=$type;
   $favoris= favoris::where('id_restauration',$articl['idrestauration'])->first(); 
-  $articl['idfavoris']=$favoris['idfavoris'];
+  $articl['idfavoris']=$favoris['idfavoris'] ?? '';
     $articl['vues']=$file;
 
 
@@ -1053,23 +1053,23 @@ public function buyboostrestauration(Request $req)
     $idcommanderestauration=$a->idcommanderestauration +1 ;
 
     $annonce->referencecommande=auth('api')->user()->codemembre."-".$reqpanier['idmenu']."c".$idcommanderestauration.date("dmY");
-    $annonce->idmenu=$reqpanier['idmenu'];
-    $annonce->place=$reqpanier['place'];
-    $annonce->nombreaccompagnements=$reqpanier['nombreaccompagnements'];
- //   $annonce->adresselivraison=$reqpanier['adresse'];
-    $annonce->idmembre=$reqpanier['idmembre'];
-    $annonce->quantite=$reqpanier['quantite'];
-    $annonce->prixpizza=$reqpanier['prixpizza'];
-    if($reqpanier['besoins']){$annonce->besoin=$reqpanier['besoins'];}
-    if($reqpanier['dateheure']){$annonce->datelivraison=$reqpanier['dateheure'];}
-    if($reqpanier['accompagnements']){$annonce->accompagnements=$reqpanier['accompagnements'];}
-    if($reqpanier['prixaccompagnements']){$annonce->prixaccompagnements=$reqpanier['prixaccompagnements'];}
-    if($reqpanier['destinataire']){$annonce->destinataire=$reqpanier['destinataire'];}
-    if($reqpanier['adresse']){$annonce->adresselivraison=$reqpanier['adresse'];}
- //   $annonce->datelivraison=$reqpanier['dateheure'];
+    $annonce->idmenu=$reqpanier['idmenu'] ?? '';
+    $annonce->place=$reqpanier['place'] ?? '';
+    $annonce->nombreaccompagnements=$reqpanier['nombreaccompagnements'] ?? '';
+ //   $annonce->adresselivraison=$reqpanier['adresse'] ?? '';
+    $annonce->idmembre=$reqpanier['idmembre'] ?? '';
+    $annonce->quantite=$reqpanier['quantite'] ?? '';
+    $annonce->prixpizza=$reqpanier['prixpizza'] ?? '';
+    if($reqpanier['besoins']){$annonce->besoin=$reqpanier['besoins'] ?? '';}
+    if($reqpanier['dateheure']){$annonce->datelivraison=$reqpanier['dateheure'] ?? '';}
+    if($reqpanier['accompagnements']){$annonce->accompagnements=$reqpanier['accompagnements'] ?? '';}
+    if($reqpanier['prixaccompagnements']){$annonce->prixaccompagnements=$reqpanier['prixaccompagnements'] ?? '';}
+    if($reqpanier['destinataire']){$annonce->destinataire=$reqpanier['destinataire'] ?? '';}
+    if($reqpanier['adresse']){$annonce->adresselivraison=$reqpanier['adresse'] ?? '';}
+ //   $annonce->datelivraison=$reqpanier['dateheure'] ?? '';
     $annonce->datecommande=date("Y-m-d H:i:s");
-//    $annonce->accompagnements=$reqpanier['accompagnements'];
-  //  $annonce->destinataire=$reqpanier['destinataire'];
+//    $annonce->accompagnements=$reqpanier['accompagnements'] ?? '';
+  //  $annonce->destinataire=$reqpanier['destinataire'] ?? '';
 
     $annonce->save();
     array_push($array, $annonce->idcommanderestauration);
@@ -1134,11 +1134,11 @@ public function buyboostrestauration(Request $req)
       $article = plat::select('photo','idmenu', 'prix','prixpetit', 'isdelivered', 'prixmoyen',  'prixgrand','plat','idrestauration')->where('idmenu',$articl['idmenu'])->first();
       $restauration = restauration::select('idmembre')->where("idrestauration",$article['idrestauration'] )->first();
       $user=User::select('codemembre')->where('idmembre',$restauration['idmembre'])->first();
-      $articl['codemembre']=$user['codemembre'];
-      $articl['photo']=$article['photo'];
-      $articl['prix']=$article['prix'];
-      $articl['plat']=$article['plat'];
-      $articl['idrestauration']=$article['idrestauration'];
+      $articl['codemembre']=$user['codemembre'] ?? '';
+      $articl['photo']=$article['photo'] ?? '';
+      $articl['prix']=$article['prix'] ?? '';
+      $articl['plat']=$article['plat'] ?? '';
+      $articl['idrestauration']=$article['idrestauration'] ?? '';
 
     }
   return response()->json($service); 
@@ -1154,12 +1154,12 @@ public function onecommandeplat($id)
     $restauration = restauration::select('designation')->where("idrestauration",$article['idrestauration'] )->first();
     $user=User::select('prenom','nom','idmembre','codemembre',"localisation")->where('idmembre',$articl->idmembre)->first();
 
-    $articl['designation']=$restauration['designation'];
+    $articl['designation']=$restauration['designation'] ?? '';
     $articl['client']=$user;
-    $articl['photo']=$article['photo'];
-    $articl['prix']=$article['prix'];
-    $articl['plat']=$article['plat'];
-    $articl['idrestauration']=$article['idrestauration'];
+    $articl['photo']=$article['photo'] ?? '';
+    $articl['prix']=$article['prix'] ?? '';
+    $articl['plat']=$article['plat'] ?? '';
+    $articl['idrestauration']=$article['idrestauration'] ?? '';
 
   
 return response()->json($articl); 
@@ -1215,13 +1215,13 @@ foreach($annonce as $articl){
   $dept=departement::where('id_dept',$articl->id_dep)->first(); 
   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
   $articl['codemembre']=$user->codemembre;
-  $articl['photorestauration']=$membre['urlimagerestauration'];
+  $articl['photorestauration']=$membre['urlimagerestauration'] ?? '';
   $articl['departement']=$dept->lib_dept;
   $articl['vues']=$file;
   $servicevendu = servicevendu::select('dateachat','datefinservice','idservice')->whereIn('idservice', $list)->where([['datefinservice','>',date("Y/m/d-H:i")],['idannonce',$articl['idrestauration']]])->first();
   $service = service::where('idService',$servicevendu['idservice'])->first();
-  $service['dateachat']=$servicevendu['dateachat'];
-  $service['datefinservice']=$servicevendu['datefinservice'];
+  $service['dateachat']=$servicevendu['dateachat'] ?? '';
+  $service['datefinservice']=$servicevendu['datefinservice'] ?? '';
   if($servicevendu){$articl['service']=$service;}else{$articl['service']= null;}
 
 //   $articl['url']="api.iveez.com/api/image/{imagename}";   

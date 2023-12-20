@@ -61,10 +61,10 @@ class AuthentificationController extends Controller
         
         $check_email=false;
         if(isset($input['email'])){
-            $check_email=User::where('email', $input['email'])->exists();
+            $check_email=User::where('email', $input['email'] ?? '')->exists();
         }
 
-        $check=User::where('telephoneportable',$input['phone'])->exists();
+        $check=User::where('telephoneportable',$input['phone'] ?? '')->exists();
         if( $check_email || $check){
             return response()->json(['error'=>'Phone numer or email already found'], 400); 
         }
@@ -72,10 +72,10 @@ class AuthentificationController extends Controller
         
 
           $co=new User();
-          $co->prenom=$input['first_name'];
-        $co->nom=$input['last_name'];
-        $co->password=$input['password'];
-        $co->telephoneportable=$input['phone'];
+          $co->prenom=$input['first_name'] ?? '';
+        $co->nom=$input['last_name'] ?? '';
+        $co->password=$input['password'] ?? '';
+        $co->telephoneportable=$input['phone'] ?? '';
         $co->email=$input['email'] ?? null;
         $co->num_whatsapp=$input['num_whatsapp'] ?? null;
         $co->localisation=$input['adresse'] ?? null;
@@ -84,11 +84,11 @@ class AuthentificationController extends Controller
        // $dept=departement::where('lib_dept',$input['city'])->first(); 
         /*var_dump($dept->lib_dept);die();*/
         //$co->departement()->associate($dept);
-        $co->pays=$input['country'];
+        $co->pays=$input['country'] ?? '';
         if($request->accountType=="particulier")
         {
             $co->typecompte="particulier";
-            $article = User::where('pays',$input['country'])->where('typecompte',"particulier")->get();  
+            $article = User::where('pays',$input['country'] ?? '')->where('typecompte',"particulier")->get();  
             $article = count($article)+1;
             $co->sexe=$request->gender;
            // return ucfirst($request->countryCode);
@@ -101,7 +101,7 @@ class AuthentificationController extends Controller
         }else if($request->accountType=="professionnel"){
 
             $co->typecompte="professionnel";
-            $article = User::where('pays',$input['country'])->where('typecompte',"professionnel")->get();  
+            $article = User::where('pays',$input['country'] ?? '')->where('typecompte',"professionnel")->get();  
             $article = count($article)+1;
 
             $code=strtolower($request->countryCode).strval(date("y"))."Pr".strval($article);
@@ -114,7 +114,7 @@ class AuthentificationController extends Controller
         }else{
             return response()->json("Erreur: choisir pour le compte entre particulier et professionnel"); 
         }
-        $co['id']=$co['idmembre'];
+        $co['id']=$co['idmembre'] ?? '';
         $success['token'] =  $co->createToken('MyApp')->accessToken; 
         $success['user']=$co;
         return response()->json(['success'=>$success],200); 
@@ -163,8 +163,8 @@ class AuthentificationController extends Controller
     {
         $user = User::select( 'idmembre','prenom','departement_id','profil','nom','telephoneportable','localisation','telephonefixe','email','codemembre')->where(
             'idmembre', $id)->first();
-            $dep=departement::where('id_dept',$user['departement_id'])->first(); 
-            $user['departement']=$dep['lib_dept'];
+            $dep=departement::where('id_dept',$user['departement_id'] ?? '')->first(); 
+            $user['departement']=$dep['lib_dept'] ?? '';
             return response()->json($user);
         
     }
@@ -283,19 +283,19 @@ class AuthentificationController extends Controller
         $input = $request->all(); 
         $co = User::find(auth('api')->user()->idmembre);
        
-        $co->prenom=$input['prenom'];
-        $co->nom=$input['nom']; 
-        $co->telephoneportable=$input['telephoneportable'];
-        $co->telephonefixe=$input['telephonefixe'];
-        $co->societe=$input['societe'];
-        $co->email=$input['email'];
+        $co->prenom=$input['prenom'] ?? '';
+        $co->nom=$input['nom'] ?? ''; 
+        $co->telephoneportable=$input['telephoneportable'] ?? '';
+        $co->telephonefixe=$input['telephonefixe'] ?? '';
+        $co->societe=$input['societe'] ?? '';
+        $co->email=$input['email'] ?? '';
         if($input['newpassword']){
-        $co->password= sha1($input['newpassword']); 
+        $co->password= sha1($input['newpassword'] ?? ''); 
         }
-        $co->num_whatsapp=$input['num_whatsapp'];
-        $co->localisation=$input['localisation'];
+        $co->num_whatsapp=$input['num_whatsapp'] ?? '';
+        $co->localisation=$input['localisation'] ?? '';
        
-        $dept=departement::find($input['departement_id']); 
+        $dept=departement::find($input['departement_id'] ?? ''); 
         /*var_dump($dept->lib_dept);die();*/
         $co->departement()->associate($dept);
         
@@ -372,10 +372,10 @@ class AuthentificationController extends Controller
         foreach($array as $an){
             $user =User::where([['idmembre',$an['idmembre']],['typecompte',"particulier"]])->first(); 
             if($user){
-                //if($user['country'])
+                //if($user['country'] ?? '')
                 error_log('user'.$user['idmembre']);
 
-                $article = User::where('pays',$user['pays'])->where('typecompte',"professionnel")->get();  
+                $article = User::where('pays',$user['pays'] ?? '')->where('typecompte',"professionnel")->get();  
                 $article = count($article)+1;
 
                 

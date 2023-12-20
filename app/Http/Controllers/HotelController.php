@@ -282,15 +282,15 @@ class HotelController extends Controller
          })->paginate(30);
         foreach($article as $articl){
             $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
-            $articl['idmembre']=$hebergement['idmembre'];
-            $articl['adresse']=$hebergement['adresse'];
+            $articl['idmembre']=$hebergement['idmembre'] ?? '';
+            $articl['adresse']=$hebergement['adresse'] ?? '';
             
             $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
             $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
-            $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+            $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'] ?? '';
             $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
             $articl['codemembre']=$user->codemembre;
-            $articl['urlimagechambre']=$membre['urlimagechambre'];
+            $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
         
            
         //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -310,7 +310,7 @@ class HotelController extends Controller
     
             $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
             $articl['codemembre']=$user->codemembre;
-            $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+            $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
             $dept=departement::where('id_dept',$articl->id_dep)->first(); 
             $articl['departement']=$dept->lib_dept;
 
@@ -325,7 +325,7 @@ class HotelController extends Controller
         $articl = chambre::where('idchambre',$idchambre)->first();
 
         $favoris= favoris::where('id_chambre',$idchambre)->first(); 
-        $articl['idfavoris']=$favoris['idfavoris'];
+        $articl['idfavoris']=$favoris['idfavoris'] ?? '';
         
         $membre = imagechambre::where('idchambre',$articl['idchambre'])->get();
         $articl['images']=$membre;
@@ -334,8 +334,8 @@ class HotelController extends Controller
         $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
         $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement->idmembre)->first();
         $articl['codemembre']=$user->codemembre;
-        $articl['designation']=$hebergement['designation'];
-        $articl['adresse']=$hebergement['adresse'];
+        $articl['designation']=$hebergement['designation'] ?? '';
+        $articl['adresse']=$hebergement['adresse'] ?? '';
         $dept=departement::where('id_dept',$hebergement['id_dep'])->first(); 
         $articl['departement']=$dept->lib_dept;
 
@@ -349,16 +349,16 @@ class HotelController extends Controller
            $article = chambre::select('idhebergement','bloquer_reservation','idchambre','typechambre','prix','typelit','statut')->where([['idhebergement',$idhotel],['statut','!=','suppression']] )->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
-               $articl['idmembre']=$hebergement['idmembre'];
-               $articl['adresse']=$hebergement['adresse'];
+               $articl['idmembre']=$hebergement['idmembre'] ?? '';
+               $articl['adresse']=$hebergement['adresse'] ?? '';
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
-               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'] ?? '';
                
                $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                $articl['codemembre']=$user->codemembre;
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
               
            }
@@ -372,17 +372,17 @@ class HotelController extends Controller
            foreach($article as $articl){
               
                $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
-               $articl['typechambre']=$chambre['typechambre'];
-               $articl['prix']=$chambre['prix'];
+               $articl['typechambre']=$chambre['typechambre'] ?? '';
+               $articl['prix']=$chambre['prix'] ?? '';
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
-               $articl['designation']=$hebergement['designation'];
+               $articl['designation']=$hebergement['designation'] ?? '';
 
                $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement->idmembre)->first();
                $articl['codemembre']=$user->codemembre;
 
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
               
            }
@@ -398,17 +398,17 @@ class HotelController extends Controller
            foreach($article as $articl){
               
                $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
-               $articl['typechambre']=$chambre['typechambre'];
-               $articl['prix']=$chambre['prix'];
+               $articl['typechambre']=$chambre['typechambre'] ?? '';
+               $articl['prix']=$chambre['prix'] ?? '';
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
-               $articl['designation']=$hebergement['designation'];
+               $articl['designation']=$hebergement['designation'] ?? '';
                
                $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement->idmembre)->first();
                $articl['codemembre']=$user->codemembre;
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
               
            }
@@ -429,17 +429,17 @@ class HotelController extends Controller
             foreach($article as $articl){
               
                $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
-               $articl['typechambre']=$chambre['typechambre'];
-               $articl['prix']=$chambre['prix'];
+               $articl['typechambre']=$chambre['typechambre'] ?? '';
+               $articl['prix']=$chambre['prix'] ?? '';
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
-               $articl['designation']=$hebergement['designation'];
-               $articl['idhebergement']=$hebergement['idhebergement'];
+               $articl['designation']=$hebergement['designation'] ?? '';
+               $articl['idhebergement']=$hebergement['idhebergement'] ?? '';
                $user = User::select('idmembre','codemembre')->where('idmembre',$hebergement['idmembre'])->first();
-               $articl['idmembre']=$user['idmembre'];
-               $articl['codemembre']=$user['codemembre'];
+               $articl['idmembre']=$user['idmembre'] ?? '';
+               $articl['codemembre']=$user['codemembre'] ?? '';
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
               
            }
@@ -454,12 +454,12 @@ class HotelController extends Controller
            
           
                $chambre = chambre::select('typechambre','bloquer_reservation','prix','idhebergement','statut')->where('idchambre',$articl->idchambre)->first();
-               $articl['typechambre']=$chambre['typechambre'];
-               $articl['prix']=$chambre['prix'];
+               $articl['typechambre']=$chambre['typechambre'] ?? '';
+               $articl['prix']=$chambre['prix'] ?? '';
 
                $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
-               $articl['designation']=$hebergement['designation'];
-               $articl['idhebergement']=$hebergement['idhebergement'];
+               $articl['designation']=$hebergement['designation'] ?? '';
+               $articl['idhebergement']=$hebergement['idhebergement'] ?? '';
 
                $user = User::select('idmembre','codemembre','prenom','nom','localisation')->where('idmembre',$articl->destinataire)->first();
                $proprietaire = User::select('idmembre','codemembre' )->where('idmembre',$hebergement->idmembre)->first();
@@ -468,7 +468,7 @@ class HotelController extends Controller
                $articl['proprietaire']=$proprietaire;
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
             
            
@@ -488,7 +488,7 @@ class HotelController extends Controller
             $articl['departement']=$dept->lib_dept;
 
             $favoris= favoris::where('id_hebergement',$id)->first(); 
-            $articl['idfavoris']=$favoris['idfavoris'];
+            $articl['idfavoris']=$favoris['idfavoris'] ?? '';
             
             if(File::exists(storage_path('app/public/compteur/'.$id.'_hebergement.txt'))){
             $file=File::get(storage_path('app/public/compteur/'.$id.'_hebergement.txt'));
@@ -498,7 +498,7 @@ class HotelController extends Controller
             }
             
             $article = restauration::select('idrestauration')->where('idhebergement',$articl['idhebergement'])->first();
-            $articl['idrestauration']=$article['idrestauration'];
+            $articl['idrestauration']=$article['idrestauration'] ?? '';
         
             $articl['vues']=$file;
             Storage::disk('vue')->put($id.'_hebergement.txt', $file+1);
@@ -526,7 +526,7 @@ class HotelController extends Controller
 
                   $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                   $articl['codemembre']=$user->codemembre;
-                  $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+                  $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
                   $dept=departement::where('id_dept',$articl->id_dep)->first(); 
                   $articl['departement']=$dept->lib_dept;
       
@@ -602,20 +602,20 @@ class HotelController extends Controller
             
                         $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                         $articl['codemembre']=$user->codemembre;
-                        $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+                        $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
                         $articl['idfavoris']=$test->idfavoris;
                         array_push($hebergements, $articl);
                     }else if ($chambre){
                         $hebergement = hebergement::where('idhebergement',$chambre->idhebergement)->first();
-                        $chambre['idmembre']=$hebergement['idmembre'];
-                        $chambre['adresse']=$hebergement['adresse'];
+                        $chambre['idmembre']=$hebergement['idmembre'] ?? '';
+                        $chambre['adresse']=$hebergement['adresse'] ?? '';
                         
                         $membre = imagechambre::where('idchambre',$chambre->idchambre)->first();
                         $reserverhotel = reserverhotel::where('idchambre',$chambre->idchambre)->first();
-                        $chambre['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+                        $chambre['idreservationhebergement']=$reserverhotel['idreservationhebergement'] ?? '';
                         $user = User::select('idmembre','codemembre')->where('idmembre',$chambre->idmembre)->first();
                         $chambre['codemembre']=$user->codemembre;
-                        $chambre['urlimagechambre']=$membre['urlimagechambre'];
+                        $chambre['urlimagechambre']=$membre['urlimagechambre'] ?? '';
                         $chambre['idfavoris']=$test->idfavoris;
                         array_push($chambres, $chambre);
                     
@@ -654,15 +654,15 @@ class HotelController extends Controller
                 foreach($servicevendu as $article){
                     $articl = chambre::select('idhebergement','idchambre','typechambre','bloquer_reservation','prix','typelit','statut')->where('idchambre',$article['idannonce'])->first();
                     $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
-                    $articl['idmembre']=$hebergement['idmembre'];
-                    $articl['adresse']=$hebergement['adresse'];
+                    $articl['idmembre']=$hebergement['idmembre'] ?? '';
+                    $articl['adresse']=$hebergement['adresse'] ?? '';
                     
                     $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                     $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
-                    $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+                    $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'] ?? '';
                     $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                     $articl['codemembre']=$user->codemembre;
-                    $articl['urlimagechambre']=$membre['urlimagechambre'];
+                    $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
                 
                     $article['chambre']=$articl;
                 //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -688,7 +688,7 @@ class HotelController extends Controller
         
                 $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                 $articl['codemembre']=$user->codemembre;
-                $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+                $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
                 $article['hebergement']=$articl;
                 
             //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -718,7 +718,7 @@ class HotelController extends Controller
         $articl = hebergement::select('idhebergement','idmembre','designation','nombreetoile','typehebergement','adresse','heurearrivee','heuredepart','statut')->where('idhebergement',$article['idhebergement'])->first();
 
         $membre = imagehebergement::where('idhebergement',$articl->idhebergement)->first();
-        $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+        $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
         
         $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
         $article['hebergement']=$articl;
@@ -767,7 +767,7 @@ class HotelController extends Controller
       
               $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
               $articl['codemembre']=$user->codemembre;
-              $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+              $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
           
              
           //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -794,15 +794,15 @@ class HotelController extends Controller
              })->orderBy('idchambre','desc')->paginate(30);
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
-               $articl['idmembre']=$hebergement['idmembre'];
-               $articl['adresse']=$hebergement['adresse'];
+               $articl['idmembre']=$hebergement['idmembre'] ?? '';
+               $articl['adresse']=$hebergement['adresse'] ?? '';
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
-               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'] ?? '';
                $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                $articl['codemembre']=$user->codemembre;
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
               
            //   $articl['url']="api.iveez.com/api/image/{imagename}";   
@@ -860,15 +860,15 @@ class HotelController extends Controller
 
            foreach($article as $articl){
                $hebergement = hebergement::where('idhebergement',$articl->idhebergement)->first();
-               $articl['idmembre']=$hebergement['idmembre'];
-               $articl['adresse']=$hebergement['adresse'];
+               $articl['idmembre']=$hebergement['idmembre'] ?? '';
+               $articl['adresse']=$hebergement['adresse'] ?? '';
                
                $membre = imagechambre::where('idchambre',$articl->idchambre)->first();
                $reserverhotel = reserverhotel::where('idchambre',$articl->idchambre)->first();
-               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'];
+               $articl['idreservationhebergement']=$reserverhotel['idreservationhebergement'] ?? '';
                $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
                $articl['codemembre']=$user->codemembre;
-               $articl['urlimagechambre']=$membre['urlimagechambre'];
+               $articl['urlimagechambre']=$membre['urlimagechambre'] ?? '';
            
               
            }
@@ -917,7 +917,7 @@ class HotelController extends Controller
       
               $user = User::select('idmembre','codemembre')->where('idmembre',$articl->idmembre)->first();
               $articl['codemembre']=$user->codemembre;
-              $articl['urlimagehebergement']=$membre['urlimagehebergement'];
+              $articl['urlimagehebergement']=$membre['urlimagehebergement'] ?? '';
           
              
           //   $articl['url']="api.iveez.com/api/image/{imagename}";   
