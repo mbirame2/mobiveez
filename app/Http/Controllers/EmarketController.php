@@ -55,7 +55,7 @@ class EmarketController extends Controller
 
     public function oneannonce($id)
     {
-      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','typelivraison','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
+      $annonce =annonce::with('departement')->where('idannonce',$id)->select('titre','prix','bloquer_commande','statut','localisation','typelivraison','typelivraison','id_dep','idannonce','referenceannonce','idmembre','idsouscategorie','description','nomvendeur','paiementtranche','typeannonce','dateannonce','validite')->first();   
       if($annonce){
       if(File::exists(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'))){
         $file=File::get(storage_path('app/public/compteur/'.$annonce->referenceannonce.'_biens.txt'));
