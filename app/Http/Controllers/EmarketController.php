@@ -318,7 +318,7 @@ class EmarketController extends Controller
       
       }
     //  $url=$time;
-      if( $req->input('idshowroom')){
+      if( $req->input('idshowroom')!=null){
       
         $iman= new annoncesboutique;
         $iman->idannonce= $a->idannonce;  
