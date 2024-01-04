@@ -202,7 +202,7 @@ class EmarketController extends Controller
       $annonce->prix=$req->input('price');
       $article = annonce::all();  
       $artic= count($article)+1;
-      $annonce->referenceannonce=$req->input('codemembre').'-'.$artic;
+      $annonce->referenceannonce=$req->input('code_membre').'-'.$artic;
       $annonce->typeannonce=$req->input('publish_type');
       $annonce->paiementtranche=$req->input('payment_type');
       $dept=departement::where('id_dept',$req->input('id_dept'))->first(); 
