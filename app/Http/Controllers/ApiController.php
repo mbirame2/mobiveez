@@ -300,6 +300,8 @@ public function getconditions($acro,$lang){
         $pays="Gambia";
       }else if(strtolower(substr(auth('api')->user()->codemembre,0,2))=="sn"){
         $pays="Sénégal";
+      }else if(strtolower(substr(auth('api')->user()->codemembre,0,2))=="ci"){
+        $pays="Côte d’Ivoire";
       }
       $service=service::where([['nomcomplet', 'LIKE', $pays ],['module',$module]])->get();
       return response()->json($service); 

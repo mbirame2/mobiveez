@@ -8,8 +8,9 @@ class imageannonce extends Model
 {
     //
     protected $table="imageannonce";
+    protected $primaryKey = "idimageannonce";
     public $timestamps = false;
     protected $fillable = [
-      'idannonce','urlimage','parametre' 
+      'idannonce','urlimage','parametre','idimageannonce'
     ];
 }

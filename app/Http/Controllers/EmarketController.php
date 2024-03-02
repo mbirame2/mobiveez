@@ -473,37 +473,21 @@ class EmarketController extends Controller
       $iman->save();
      // array_push($details, $iman);
     }
-    $param=imageannonce::select('parametre')->where('idannonce',$req->input('idannonce'))->orderBy('parametre', 'desc')->first();
-    for($i=0;$i<$req->numberOfImages;$i++){
-      $iman= new imageannonce;
-      //$img=$req->input('image'.$i);
-    
-     // $base64_str = substr($img, strpos($img, ",")+1);
-      //var_dump($base64_str);die();
-      //$data = base64_decode($base64_str);
-      $time=$req->idannonce+$i.'-'.time().'.png';
-      //Storage::disk('annonce')->put($time, $data);
-      //$time=$a->idannonce+$i.'-'.time().'.png';
-      if ($req->hasFile('image'.$i)) {
-        $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
-      }else{
-        return response()->json(['error'=>"Image file doesn't send"], 401);    
-      }
-     // $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
-
-      $iman->idannonce= $req->idannonce;  
-      $iman->urlimage="photo/".$time;  
-      if($param['parametre'] ?? ''){
-        $iman->parametre=$param->parametre+$i+1; 
-      } else {
-        $iman->parametre=$i; 
-      }
+   // $param=imageannonce::select('parametre')->where('idannonce',$req->input('idannonce'))->orderBy('parametre', 'desc')->first();
+    for($i=0;$i<4;$i++){
       
-      //array_push($details, $annonce);
-      $iman->save();
-     
-    //  array_push($details, $iman->urlimage);
-    
+      if ($req->file('image'.$i)) {
+        $iman= imageannonce::where([['idannonce',$req->input('idannonce')],['parametre',$i+1]])->first();
+        if($iman===null){
+          $iman=new imageannonce;
+        }
+        $time=$req->idannonce+$i.'-'.time().'.png';
+        $apicontroller->saveimage('app/public/photo',$time,$req->file('image'.$i));
+        $iman->idannonce= $req->idannonce;  
+        $iman->urlimage="photo/".$time;  
+        $iman->parametre=$i+1;  
+        $iman->save();
+      }
     }
  
     return response()->json(['succes'=>"Modification de lannonce avec succes","code"=>200,
